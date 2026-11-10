@@ -47,7 +47,7 @@ if (existsSync(join(root, 'index.js'))) {
 }
 
 // Library modules live in lib/; a copy at the root is dead code and ships twice.
-for (const name of ['api.js', 'connection.js', 'forwards.js', 'routing.js', 'ssh-config.js', 'terminal.js', 'util.js']) {
+for (const name of ['api.js', 'connection.js', 'forwards.js', 'remote-jobs.js', 'routing.js', 'ssh-config.js', 'terminal.js', 'tool-forward.js', 'tool-remote-jobs.js', 'util.js']) {
   if (existsSync(join(root, name))) problems.push(`unexpected root-level copy: ${name} (belongs in lib/)`)
 }
 

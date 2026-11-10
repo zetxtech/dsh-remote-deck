@@ -41,7 +41,27 @@ addresses and paths are demo data (`dev-box`, `203.0.113.10`, `/srv/demo-app`).
 | Console | Machine rail, host overview, stats, workspace cards, recent sessions, search, and a remote file browser with download / save-to-local / reveal |
 | Terminal | Remote PTY in a full xterm.js terminal: colours, cursor, full-screen programs, paste and replay buffer |
 | Ports | Automatic discovery of remote listening ports, one-click forwarding, persistence and restore on reconnect |
+| Agent tools | `bash` with `run_in_background` starts remote background jobs, `remote_job` lists, reads and kills them, and `remote_forward` requests and manages loopback port forwards |
 | Theme | Light and dark, driven by DSH theme tokens |
+
+## Agent tools
+
+Three tools connect the model to the remote machine:
+
+| Tool | What it does |
+| --- | --- |
+| `bash` with `run_in_background` | Runs the command detached on the remote host (`setsid`, its own session), streams its output into a per-job file and returns a job id immediately instead of waiting |
+| `remote_job` | `list` running and finished jobs with status, pid and elapsed time; `output` reads what the job printed since a previous offset (`wait: true` follows until it exits); `kill` terminates the whole process group; `forget` drops a finished job and its remote directory |
+| `remote_forward` | `list` the active forwards; `detect` the ports listening on the remote host; `start` a forward from a remote port to `127.0.0.1:<local port>` on the DSH machine; `stop` one by id |
+
+When the composition carries the DSH job registry (the desktop app does), each remote job is also
+registered there: it appears in the Session header job list with live output and a stop control, sends
+the usual completion notice, and answers the built-in `job_list`, `job_output` and `job_kill` tools.
+Without the registry it stays reachable through `remote_job`.
+
+Background-job bookkeeping lives inside the DSH process and does **not** survive a DSH restart: the remote
+processes keep running, but the job list starts empty. For a service that must outlive DSH, start it with
+`tmux` or `systemd-run --user` instead.
 
 ## Install
 
@@ -135,6 +155,7 @@ the host; the terminal is one PTY channel; forwarding is one local listener per 
 
 ## Known limits
 
+- Background-job bookkeeping (`remote_job`) is not persisted across a DSH restart; the remote processes keep running.
 - The terminal ships a vendored xterm.js build (colours, cursor, full-screen programs). If the
   asset loader is blocked, the plugin falls back to a plain line renderer.
 - The UI is Chinese-first; English strings land in v1.1.0.

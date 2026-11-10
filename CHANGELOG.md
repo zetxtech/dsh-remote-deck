@@ -11,6 +11,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - v1.1.0: full xterm.js terminal, i18n (zh/en), explicit debug switch, virtualized large folders.
 
+## [1.3.0] - 2026-11-11
+
+### Added
+
+- The `bash` tool accepts `run_in_background` and starts the command detached on the remote host: it
+  gets its own session, its output is captured to a per-job file, and the call returns a job id
+  immediately instead of waiting for the command.
+- New `remote_job` tool for those background jobs: list them with status and elapsed time, read the
+  output produced since a previous offset (optionally waiting for the exit), kill the whole process
+  group, and forget finished bookkeeping.
+- New `remote_forward` tool: list active forwards, detect the remote ports that are listening, start a
+  forward from a remote port to `127.0.0.1:<local port>`, and stop one. Agent-created forwards are
+  persisted in `forwards.json` and restored after a reconnect, like the ones started from the console.
+
+- Remote background jobs are mirrored into the DSH job registry when the composition has one: they show
+  up in the Session header job list with live output and a stop control, deliver completion notices, and
+  answer the built-in `job_list`, `job_output` and `job_kill` tools. Without the registry they stay
+  reachable through `remote_job`.
+
+### Notes
+
+- Background jobs are not persisted across a DSH restart. The remote processes keep running, but the
+  host-side bookkeeping starts empty, so the job list does not survive.
+
 ## [1.2.7] - 2026-11-06
 
 ### Changed
