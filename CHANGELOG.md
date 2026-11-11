@@ -37,6 +37,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - The scan is bounded (20 s through `timeout` where available, plus a route-side abort) and folds its
   output through `sort | uniq -c`, so it stays a handful of lines however large the tree is.
+- This release also merges the upstream line (see the imported sections near the end). Its `bash` job
+  mechanism replaces the `remote_job` tool this branch shipped in 1.3.0: background commands now run as
+  DSH jobs, collected through the built-in `job_output` / `job_list` / `job_kill`, and the remote job
+  manager plus its `remote_job` tool were removed.
 
 ## [1.5.0] - 2026-11-11
 
@@ -81,6 +85,117 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   exit code: the command runs in a subshell, so an inner `exit` ends the subshell instead of the wrapper
   that publishes the status. Previously such a job was reported as `failed` with an unknown code.
 
+## Upstream line (dsh-plugins-cn) — imported 2026-11-11
+
+The sections below arrived with the upstream merge of 2026-11-11 (`dsh-plugins-cn/dsh-remote-deck`
+through 1.4.0): the hang root-cause fix (promoted jobs, stdin EOF), transport/fs/sandbox hardening,
+the `dsh-app` loopback CORS origin, remote↔local cwd handling, the dual-world routing feature and
+`RELEASE-POLICY.md`. Their version numbers belong to that line; this branch continues from 1.6.0 with
+the same code, which is why the headings are prefixed.
+
+## [upstream 1.4.0] - 2026-11-11
+
+### Changed
+
+- Remote development can use local Windows resources again. A remote Session
+  routes POSIX paths (absolute or relative) to the SSH host, including paths
+  that leave the workspace (/tmp, /var, ...), while drive/backslash paths
+  (`C:\\...`, `E:\\...`) explicitly resolve to the local machine. The previous
+  path guard that rejected local paths inside a remote Session was removed; it
+  broke the normal workflow of editing remotely while using local Windows
+  files/resources.
+- `/local/download` uses the original DSH_HOME root again (the earlier
+  workspace/remote-deck/attachments narrowing removed legitimate files).
+- README security note updated: both worlds are intentionally reachable from a
+  remote Session; review remote-sourced content before letting it touch local
+  paths.
+
+## [upstream 1.3.4] - 2026-11-11
+
+### Fixed
+
+- A remote Session's path guard no longer blocks switching back to the local
+  machine. The guard applied whenever the working directory was POSIX, so after
+  `cd /` (the local drive root) a local Windows path was rejected with
+  `FS_REMOTE_ONLY_PATH`. It now applies only when the working directory is
+  inside a registered remote workspace; a POSIX cwd outside every workspace
+  keeps local path semantics. Remote workspaces still reject Windows/backslash
+  escapes.
+
+## [upstream 1.3.3] - 2026-11-11
+
+### Fixed
+
+- Restore desktop access to the loopback API. 1.3.2 narrowed CORS to loopback
+  HTTP(S) origins, but the desktop app serves its page from the custom
+  `dsh-app://app` scheme, so every plugin fetch was blocked and the panel showed
+  "Remote Deck 服务未连接 / 插件还没激活" even though the host was running. The
+  `dsh-app:` scheme is now accepted again (the per-session token still guards
+  every route); loopback HTTP(S) stays allowed and unknown web origins stay
+  blocked.
+
+## [upstream 1.3.2] - 2026-11-11
+
+### Fixed
+
+- Keep the SFTP operation deadline timer referenced. An unref'd timer let the
+  event loop drain before it fired in short-lived processes/Linux CI, turning a
+  pending call into a cancelled test (and, in production, a promise that could
+  never settle). The 1.3.1 tag was never released; use 1.3.2.
+
+## [upstream 1.3.1] - 2026-11-11
+
+### Fixed
+
+- **P0: a failed SSH handshake no longer crashes the whole DSH host.** ssh2 emits a second
+  `error` while tearing down a timed-out/aborted handshake; a single `once()` listener left it
+  unhandled, and the host treated that uncaught exception as fatal. The client now keeps an error
+  listener for its whole lifetime, closes during handshake reject cleanly, and the SFTP failure
+  path no longer leaks a live socket.
+- **P0: local `write`/`edit` keep their sandbox policy.** The fs wrappers dropped the fifth
+  `sandboxPolicy` argument when delegating to the local provider, so a remote-Session write could
+  bypass the session's read-only/workspace preset on desktop. Local passthrough now forwards every
+  argument.
+- **P0: remote mutating fs methods are complete.** `patchText`, `deleteFile`, `moveFile` and
+  `processPath` are wrapped: remote `deleteFile`/`moveFile` use SFTP (move prefers the
+  posix-rename extension), remote `apply_patch` fails explicitly instead of touching the local
+  machine, and remote `processPath` displays the remote path.
+- **P0: the remote `bash` tool no longer prevents plugin load on POSIX.** Where the official
+  `bash` tool is already registered, a duplicate registration aborted the composition; it now falls
+  back to a `remote_bash` tool name instead of failing to load.
+- Remote file overwrites and edits work on OpenSSH again: writes prefer the posix-rename extension,
+  then a plain rename, then an in-place write (plain rename refuses to overwrite an existing target).
+- `readByteRange` reads only the requested window instead of downloading the whole file (file
+  drag/preview no longer becomes O(n²)), honors the abort signal, and respects the file size.
+- Remote ripgrep honors the caller's output cap and reports real `lossy` truncation; abort kills the
+  remote process, and the command has a deadline.
+- Absolute POSIX paths outside a workspace root resolve to the remote Session's host instead of the
+  local Windows drive (`/tmp` no longer becomes `E:\tmp`); local/Windows path escapes from a
+  remote Session are rejected with `FS_REMOTE_ONLY_PATH` (DSH-owned paths stay local).
+- SFTP calls, the handshake probe and killPid have finite deadlines; a half-dead socket can no
+  longer hang a filesystem tool (and the whole turn) forever.
+- Editing a connection's host/port/user/auth/key or secret now disconnects and reconnects it, so the
+  next command runs on the edited machine.
+- JSON reads tolerate a UTF-8 BOM (a BOM-prefixed marker/connection file used to read as empty and be
+  overwritten on the next save).
+- Deleting a connection disposes its live host object, forwards stop their established sockets,
+  terminals free their replay buffer after exit, and the terminal SSE stream uses a separate UTF-8
+  decoder from terminal bytes.
+- The loopback API reflects CORS only for local DSH origins; `/local/download` is limited to
+  registered workspaces, `remote-deck` data and attachments instead of all of `DSH_HOME`.
+- Pinned host keys are verified when `hostKeyFingerprint` is present on a connection record
+  (otherwise ssh2's default acceptance still applies).
+- Remote `bash` job pid files live in a 0700 directory and stale files are swept only for the
+  current user.
+
+### Known limits (documented in README)
+
+- Remote commands intentionally run outside the local DSH sandbox/approval layer; the remote host
+  is the execution boundary. Use the connection's host-key pinning and a restricted SSH account.
+- `apply_patch` is not supported for remote targets yet (edit/write are).
+- The terminal is plugin-owned rather than the official terminal service; sessions therefore do not
+  participate in official terminal lifecycle events yet.
+
 ## [1.3.0] - 2026-11-11
 
 ### Added
@@ -111,6 +226,66 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Background jobs are not persisted across a DSH restart. The remote processes keep running, but the
   host-side bookkeeping starts empty, so the job list does not survive.
+
+<!-- Upstream 1.3.0 (dsh-plugins-cn line), imported with the 2026-11-11 merge: the same background-job
+     capability, implemented on the DSH job registry. It replaced the `remote_job` tool this branch
+     shipped in 1.3.0; `job_output` / `job_list` / `job_kill` take its place. -->
+
+- Remote `bash` now registers every command as a DSH background job. A foreground wait (default
+  10 minutes, env `DSH_REMOTE_DECK_FOREGROUND_TIMEOUT_MS`, model `timeoutMs` overrides) returns a
+  job id instead of killing a long command; `job_output`, `job_list` and `job_kill` keep working
+  through the built-in job tools.
+- `run_in_background: true` returns a job id immediately (servers, long acceptance runs).
+- `job_kill` / the Stop button now signal the recorded remote pid (TERM, grace, KILL) instead of
+  only closing the SSH channel.
+- Job lifecycle events record the originating tool call, so archiving or stopping a Session also
+  stops the jobs it owns.
+
+### Changed
+
+- The bash tool schema gains `timeoutMs` and `run_in_background`; its result gains an optional
+  `jobId` and allows `exitCode: null` for background/promoted results.
+- Profiles without a job controller fall back to the previous foreground behaviour with an
+  explicit notice; nothing hangs.
+
+### Fixed
+
+- The supervised command tail is newline-separated instead of appended with `; __rc=$?`, so
+  commands ending with `&`, a trailing newline, an empty string, or a comment no longer break the
+  wrapper or leak the pid file. (Review P0)
+- Job outcomes keep the terminal state: a killed command settles as `killed` with its signal, and a
+  completed command carries `exit code: N` in `job_output`/`job_list` instead of a bare
+  `completed`. (Review P1)
+- Stopping a foreground call now waits for the kill to settle and removes the job record, so no
+  late completion notice or stale `job_list` entry follows a Stop. (Review P1)
+- Degrading to a foreground run happens only when the profile has no job controller, and is
+  bounded by the foreground timeout; `run_in_background` without jobs fails with a clear error
+  instead of blocking. Other job preflight failures surface as errors. (Review P1)
+- Remote chunk decoding uses a UTF-8 string decoder, so multibyte characters split across SSH
+  chunks no longer turn into replacement characters. (Review P2)
+- The unit suite resolves its own directory and loads the vendored ssh2 copy, so it runs from a
+  fresh clone/CI without an extra dependency. (Review P1)
+- The supervised pid file is kept while background children still share the process group
+  (`sleep 30 & `), so a later `job_kill` can still terminate them; stale pid files older than
+  3 hours are swept on the next command. (Live acceptance finding)
+
+## [1.2.8] - 2026-11-11
+
+### Fixed
+
+- Remote `bash` no longer hangs when a command waits for stdin. The exec channel's stdin is
+  ended immediately, so a prompting command (for example `psql` without `PGPASSWORD`) fails
+  fast with its own error instead of blocking the whole turn forever.
+- A missing remote working directory is now a hard error. The old wrapper silently fell back to
+  the home directory (`cd … || cd ~`), which could run stateful commands (git, file edits) in the
+  wrong place.
+- Relative `workdir` values resolve against the session workspace instead of being ignored;
+  Windows-style paths are rejected with a clear message.
+- Oversized output is flagged with `[output truncated; first N bytes captured]` instead of being
+  dropped silently, and the captured text is capped exactly at the configured limit.
+- Transport failures, signals and missing exit statuses are reported with explicit markers
+  (`[transport error: …]`, `[killed by signal: …]`) so a genuine failure is no longer confused
+  with a normal non-zero exit code.
 
 ## [1.2.7] - 2026-11-06
 

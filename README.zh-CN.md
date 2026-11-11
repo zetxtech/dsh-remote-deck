@@ -133,7 +133,30 @@ powershell -ExecutionPolicy Bypass -File .\install.ps1 -Profile desktop
 POSIX 路径。落在标记目录下的路径走 SFTP；命令走带远端 cwd 的 exec 通道；ripgrep 移到远端；
 终端是一条 PTY；每个转发是一个本地监听。
 
+### 远端 bash 行为
+
+- 每次调用都会注册成 DSH 后台 job。前台等待默认 10 分钟
+  （`DSH_REMOTE_DECK_FOREGROUND_TIMEOUT_MS`）；超时后命令**继续在后台运行**，工具返回 job id，
+  **不会杀进程**。用内置 `job_output` / `job_list` 跟进，用 `job_kill` 停止。
+- `run_in_background: true` 立即返回 job id，适合常驻服务与长时间验收。
+- 远端 stdin 立即关闭：需要交互输入的命令（例如没带 `PGPASSWORD` 的 `psql`）会快速返回自己的
+  错误，而不是把整个 turn 挂死。
+- 工作目录严格：相对路径相对会话工作区解析；目录不存在直接报错，不再静默回退到 home。
+- 每个流输出上限 4 MiB（`DSH_REMOTE_DECK_MAX_OUTPUT_BYTES`），超出标记
+  `[output truncated; …]`。
+- 停止工具或 `job_kill` 会向记录的远端 pid 发 TERM→KILL；`setsid`/双 fork 脱离的孙进程可能
+  残留，这类命令请自己加 `timeout`。
+
 ## 安全
+
+- 远端命令在 SSH 主机上执行，不经过本地 DSH 沙箱/审批层；远端账号就是执行边界。对不可信仓库请
+  在连接记录里固定 `hostKeyFingerprint`，并使用受限账号。
+- 远端工作区暂不支持 `apply_patch`，请用 `edit`/`write`。
+- 远程会话把 POSIX 路径路由到 SSH 主机、把盘符/反斜杠路径（`C:\\...`、`E:\\...`）
+  路由到本机，远程开发仍然可以使用 Windows 本机文件与资源；两边都可访问，请留意来自
+  遥测/远端内容的路径指令。
+- 本地回环 API 只对本地 DSH 源反射 CORS；`/local/download` 限定在工作区、Remote Deck 数据与
+  attachments 目录。
 
 - 密码、私钥口令存 DSH 凭据库，不写进 `connections.json`。
 - 浏览器半通过带回环 token 的本地 HTTP 与 host 通信；终端与转发接口同样受 token 保护。

@@ -4,12 +4,12 @@
  * One DSH, many execution environments. Each configured SSH host owns one
  * persistent connection; marked workspace stubs route `ctx.fs` through SFTP,
  * a `bash` tool runs commands on the host, and ripgrep moves there too.
- * The agent also gets remote background jobs (`bash` with
- * `run_in_background`, managed through `remote_job`) and loopback port
- * forwards (`remote_forward`).
+ * The agent also gets remote background jobs (`bash` with `run_in_background` or
+ * a foreground wait that promotes to a job; collected with the built-in
+ * job_output / job_kill) and loopback port forwards (`remote_forward`).
  * A loopback API feeds the sidebar chip, the quick panel and the console.
  */
-import { randomBytes } from 'node:crypto'
+import { randomBytes, randomUUID } from 'node:crypto'
 import { existsSync } from 'node:fs'
 import { realpath } from 'node:fs/promises'
 import { homedir } from 'node:os'
@@ -18,13 +18,12 @@ import { fileURLToPath } from 'node:url'
 import { createApi } from './lib/api.js'
 import { ConnectionStore, RemoteHost, Secrets, ssh2SelfTest } from './lib/connection.js'
 import { ForwardManager } from './lib/forwards.js'
-import { RemoteJobManager } from './lib/remote-jobs.js'
 import { Routing } from './lib/routing.js'
 import { readSshConfig } from './lib/ssh-config.js'
 import { TerminalManager } from './lib/terminal.js'
 import { portForwardToolSpec } from './lib/tool-forward.js'
-import { remoteJobToolSpec } from './lib/tool-remote-jobs.js'
-import { errorText, normalizeRemotePath } from './lib/util.js'
+import { errorText } from './lib/util.js'
+import { renderBashResult, renderPromoted, resolveWorkdir } from './lib/bash-result.js'
 
 const PLUGIN_DIR = dirname(fileURLToPath(import.meta.url))
 const ASSET_DIR = join(PLUGIN_DIR, 'vendor', 'xterm')
@@ -44,6 +43,29 @@ void ssh2SelfTest().then((result) => {
   }
 })
 const SHELL_TIMEOUT_MS = 120000
+
+/** Clamp an integer environment override; invalid values fall back to the default. */
+function readIntEnv(name, fallback, min, max) {
+  const raw = process.env[name]
+  if (typeof raw !== 'string' || raw.trim().length === 0) return fallback
+  const value = Number(raw)
+  if (!Number.isFinite(value)) return fallback
+  return Math.min(max, Math.max(min, Math.round(value)))
+}
+
+/** Remote bash execution limits; dsh-remote-deck-fix/DESIGN.md 5.5 is the contract. */
+const BASH_CONFIG = Object.freeze({
+  foregroundTimeoutMs: readIntEnv('DSH_REMOTE_DECK_FOREGROUND_TIMEOUT_MS', 600000, 1000, 7200000),
+  maxOutputBytes: readIntEnv('DSH_REMOTE_DECK_MAX_OUTPUT_BYTES', 4 * 1024 * 1024, 65536, 16 * 1024 * 1024),
+  killGraceMs: readIntEnv('DSH_REMOTE_DECK_KILL_GRACE_MS', 1000, 200, 10000),
+  progressIntervalMs: readIntEnv('DSH_REMOTE_DECK_PROGRESS_MS', 5000, 1000, 60000),
+})
+
+/** Resolve a request timeout against the configured default and hard cap. */
+function clampTimeoutMs(value) {
+  if (typeof value !== 'number' || !Number.isFinite(value) || value <= 0) return BASH_CONFIG.foregroundTimeoutMs
+  return Math.min(7200000, Math.max(1000, Math.round(value)))
+}
 
 /** Services the plugin needs; web server and credentials store stay optional. */
 export const inject = ['fs', 'workingDirectory', 'tools']
@@ -109,37 +131,65 @@ export function apply(ctx) {
 
   const forwards = new ForwardManager({ hostFor, secrets, dataDir: DATA_DIR, onLog: debug })
   const terminals = new TerminalManager({ hostFor, secrets, onLog: debug })
-  const remoteSettlers = new Map()
-  const jobs = new RemoteJobManager({
-    hostFor,
-    secrets,
-    onLog: debug,
-    onSettle: (view) => {
-      debug('remote job settled', view.id, view.status)
-      const settle = remoteSettlers.get(view.id)
-      if (settle !== undefined) {
-        remoteSettlers.delete(view.id)
-        settle(view)
-      }
-    },
-  })
-
   // --- ctx.fs routing -------------------------------------------------------
   const restoreFs = routing.installFs(ctx.fs)
   ctx.effect(() => () => restoreFs(), 'remote-deck: fs patch')
 
   // --- bash tool ------------------------------------------------------------
-  ctx.tools.register({
+  /**
+   * Bounded foreground execution used only when the profile exposes no job
+   * controller (or the job preflight rejects the call). The deadline closes
+   * the channel instead of leaving the turn waiting forever; the remote
+   * process may continue, which the notice states explicitly.
+   */
+  const runForegroundWithDeadline = async (host, cwd, exec, timeoutMs, command) => {
+    const controller = new AbortController()
+    let timedOut = false
+    const forwardAbort = () => controller.abort()
+    if (exec.signal !== undefined) {
+      if (exec.signal.aborted === true) controller.abort()
+      else exec.signal.addEventListener('abort', forwardAbort, { once: true })
+    }
+    const timer = setTimeout(() => {
+      timedOut = true
+      controller.abort()
+    }, timeoutMs)
+    timer.unref?.()
+    try {
+      const result = await host.runCommand(command, cwd, {
+        signal: controller.signal,
+        maxBytes: BASH_CONFIG.maxOutputBytes,
+      })
+      if (timedOut === true) {
+        return {
+          text: `[command still running after ${timeoutMs}ms; background jobs are unavailable in this profile, so it may keep running on the remote host]`,
+          exitCode: null,
+        }
+      }
+      return renderBashResult(result, { maxBytes: BASH_CONFIG.maxOutputBytes })
+    } finally {
+      clearTimeout(timer)
+      if (exec.signal !== undefined) exec.signal.removeEventListener('abort', forwardAbort)
+    }
+  }
+
+  // Every call registers a DSH background job, waits a bounded time in the
+  // foreground, and on timeout returns the job id instead of killing the
+  // remote process. This mirrors @deepseek-ai/dsh-tool-bash: long legitimate
+  // tasks are promoted, never interrupted; only job_kill / the Stop button
+  // terminate the remote process.
+  const bashToolConfiguration = {
     name: 'bash',
     description:
-      'Run a shell command on the connected remote SSH host. Use it for every command inside a remote workspace: build, test, git, ripgrep, package managers. The working directory is the remote workspace (a POSIX path); use POSIX paths, not Windows paths. Set run_in_background to true for servers, watchers and other long-running work: the command is detached on the remote host and is managed with the remote_job tool.',
+      'Run a shell command on the connected remote SSH host. Use it for every command inside a remote workspace: build, test, git, ripgrep, package managers. The working directory is the remote workspace (a POSIX path); use POSIX paths, not Windows paths. The working directory is strict: a missing directory fails the command instead of falling back to the home directory. Long commands keep running as a background job after the foreground wait; use job_output to read their output and job_kill to stop them.',
     parameters: {
       type: 'object',
       properties: {
         command: { type: 'string', description: 'The bash command to run on the remote host.' },
         description: { type: 'string', description: 'Clear, concise description of what this command does in 5-10 words.' },
-        workdir: { type: 'string', description: 'Optional absolute POSIX working directory on the remote host; defaults to the session workspace.' },
-        run_in_background: { type: 'boolean', description: 'Start the command detached on the remote host and return immediately with a job id; read, list and stop it with the remote_job tool.' },
+        workdir: { type: 'string', description: 'Optional remote working directory. An absolute POSIX path is used as-is; a relative path resolves against the session workspace.' },
+        timeoutMs: { type: 'number', description: 'How long to wait in the foreground before moving the command to a background job. Defaults to the plugin limit; the command is not killed on timeout.' },
+        run_in_background: { type: 'boolean', description: 'Run the command as a background job and return its job id immediately; collect it with job_output and stop it with job_kill.' },
       },
       required: ['command'],
       additionalProperties: false,
@@ -147,7 +197,11 @@ export function apply(ctx) {
     output: {
       schema: {
         type: 'object',
-        properties: { text: { type: 'string' }, exitCode: { type: 'integer' } },
+        properties: {
+          text: { type: 'string' },
+          exitCode: { oneOf: [{ type: 'integer' }, { type: 'null' }] },
+          jobId: { type: 'string' },
+        },
         required: ['text', 'exitCode'],
         additionalProperties: false,
       },
@@ -166,40 +220,193 @@ export function apply(ctx) {
         const host = hostFor(target.connectionId)
         if (host === undefined) return { text: 'That connection no longer exists; recreate it.', exitCode: 1 }
         await host.connect(secrets)
-        const cwd = typeof args.workdir === 'string' && args.workdir.startsWith('/')
-          ? normalizeRemotePath(args.workdir)
-          : target.path
-        if (args.run_in_background === true) {
-          const started = await jobs.start(target.connectionId, {
-            command: args.command,
-            cwd,
-            label: typeof args.description === 'string' && args.description.trim().length > 0
-              ? args.description.trim()
-              : args.command.split('\n')[0].slice(0, 120),
-          })
-          const published = publishJob(started, exec)
-          const text = [
-            `started background job ${started.id} (pid ${started.pid}) on ${started.host} in ${cwd}`,
-            `read output: remote_job { "action": "output", "id": "${started.id}" }  (add "wait": true to follow until it exits)`,
-            `stop: remote_job { "action": "kill", "id": "${started.id}" }`,
-          ]
-          if (published !== undefined) {
-            text.push(
-              `this job is also in the DSH job list: job_output { "job_id": "${published}" }, or stop it with job_kill { "job_id": "${published}" }`,
-            )
-          }
-          return { text: text.join('\n'), exitCode: 0 }
+        const resolved = resolveWorkdir(args.workdir, target.path)
+        if (resolved.error !== undefined) return { text: resolved.error, exitCode: 1 }
+        if (exec.signal !== undefined && exec.signal.aborted === true) {
+          return { text: 'Error: tool call aborted', exitCode: 1 }
         }
-        const result = await host.runCommand(args.command, cwd, { signal: exec.signal, maxBytes: 4 * 1024 * 1024 })
-        const parts = [result.stdout]
-        if (result.stderr.trim().length > 0) parts.push(`[stderr]\n${result.stderr}`)
-        if (result.code !== 0) parts.push(`[exit code: ${result.code}]`)
-        return { text: parts.filter((part) => part.length > 0).join('\n').trimEnd(), exitCode: result.code }
+        const timeoutMs = clampTimeoutMs(args.timeoutMs)
+        const background = args.run_in_background === true
+        const jobs = ctx.get('jobs')
+        if (jobs === undefined) {
+          if (background === true) {
+            return {
+              text: 'Error: run_in_background requires the DSH background-jobs capability (load @deepseek-ai/dsh-tool-jobs in this profile).',
+              exitCode: 1,
+            }
+          }
+          return await runForegroundWithDeadline(host, resolved.cwd, exec, timeoutMs, args.command)
+        }
+        const owner = exec.agent?.id
+        const jobKey = randomUUID().replaceAll('-', '').slice(0, 16)
+        const startedAt = Date.now()
+        let commandResultPromise = null
+        let commandHandle = null
+        let pendingKill = null
+        let jobId
+        try {
+          jobId = jobs.start({
+            kind: 'bash',
+            label: String(args.command).slice(0, 80),
+            ...(owner !== undefined ? { owner } : {}),
+            ...(typeof exec.callId === 'string'
+              ? { toolCall: { callId: exec.callId, ...(typeof exec.rootCallId === 'string' ? { rootCallId: exec.rootCallId } : {}) } }
+              : {}),
+            outputLimitBytes: BASH_CONFIG.maxOutputBytes,
+            run: (handle) => {
+              commandResultPromise = (async () => {
+                const started = await host.startCommand(args.command, resolved.cwd, {
+                  jobKey,
+                  maxBytes: BASH_CONFIG.maxOutputBytes,
+                  killGraceMs: BASH_CONFIG.killGraceMs,
+                  onChunk: (channel, text) => {
+                    try {
+                      handle.append(text, { channel })
+                    } catch {
+                      /* job already settled */
+                    }
+                  },
+                })
+                commandHandle = started
+                if (pendingKill !== null) void started.kill(pendingKill)
+                return await started.done
+              })()
+              const timer = setInterval(() => {
+                try {
+                  handle.updateProgress(`running for ${Math.round((Date.now() - startedAt) / 1000)}s`)
+                } catch {
+                  /* settled */
+                }
+              }, BASH_CONFIG.progressIntervalMs)
+              timer.unref?.()
+              const done = commandResultPromise.then(
+                (result) => {
+                  clearInterval(timer)
+                  if (typeof result.transportError === 'string' && result.transportError.length > 0) {
+                    return { status: 'failed', detail: result.transportError }
+                  }
+                  if (pendingKill !== null || (typeof result.signal === 'string' && result.signal.length > 0)) {
+                    return {
+                      status: 'killed',
+                      detail: pendingKill !== null ? pendingKill : `signal: ${result.signal}`,
+                    }
+                  }
+                  return { status: 'completed', detail: `exit code: ${result.code}` }
+                },
+                (error) => {
+                  clearInterval(timer)
+                  return { status: 'failed', detail: errorText(error) }
+                },
+              )
+              return {
+                done,
+                cancel: (reason) => {
+                  pendingKill = typeof reason === 'string' && reason.length > 0 ? reason : 'killed'
+                  if (commandHandle !== null) void commandHandle.kill(pendingKill)
+                },
+              }
+            },
+          })
+        } catch (jobError) {
+          const message = errorText(jobError)
+          if (!/job controller|jobs unavailable|no job controller/i.test(message)) {
+            return { text: `Error: ${message}`, exitCode: 1 }
+          }
+          if (background === true) {
+            return { text: `Error: run_in_background is unavailable in this profile: ${message}`, exitCode: 1 }
+          }
+          const rendered = await runForegroundWithDeadline(host, resolved.cwd, exec, timeoutMs, args.command)
+          const notice = `[background jobs unavailable: ${message}]`
+          return { ...rendered, text: `${notice}\n${rendered.text}`.trimEnd() }
+        }
+        if (background === true) {
+          return {
+            text: `[started background job ${jobId}; use job_output to read output, job_kill to stop]`,
+            exitCode: null,
+            jobId,
+          }
+        }
+        let view
+        try {
+          view = await jobs.wait(jobId, timeoutMs, owner, exec.signal)
+        } catch (waitError) {
+          if (exec.signal === undefined || exec.signal.aborted !== true) {
+            try {
+              jobs.kill(jobId, owner, 'wait failed')
+            } catch {
+              /* already settled */
+            }
+            return { text: `Error: ${errorText(waitError)}`, exitCode: null, jobId }
+          }
+          try {
+            jobs.kill(jobId, owner, 'tool call aborted')
+          } catch {
+            /* already settled */
+          }
+          try {
+            await jobs.wait(jobId, 5000, owner)
+          } catch {
+            /* settlement takes longer; the record stays */
+          }
+          try {
+            jobs.remove(jobId, owner)
+          } catch {
+            /* not settled/removable yet */
+          }
+          return { text: 'Error: tool call aborted', exitCode: null, jobId }
+        }
+        if (view.status === 'running' || view.status === 'stopping') {
+          try {
+            const read = jobs.read(jobId, owner)
+            return renderPromoted(read, jobId, timeoutMs)
+          } catch {
+            return {
+              text: `[still running after ${timeoutMs}ms; moved to background job ${jobId}; use job_output to read output, job_kill to stop]`,
+              exitCode: null,
+              jobId,
+            }
+          }
+        }
+        let result = null
+        try {
+          result = commandResultPromise === null ? null : await commandResultPromise
+        } catch (starterError) {
+          try {
+            jobs.remove(jobId, owner)
+          } catch {
+            /* keep the record when removal is not allowed */
+          }
+          return { text: errorText(starterError), exitCode: 1, jobId }
+        }
+        try {
+          jobs.remove(jobId, owner)
+        } catch {
+          /* keep the record when removal is not allowed */
+        }
+        return renderBashResult(result ?? { code: -1 }, { maxBytes: BASH_CONFIG.maxOutputBytes })
       } catch (error) {
         return { text: errorText(error), exitCode: 1 }
       }
     },
-  })
+  }
+  try {
+    ctx.tools.register(bashToolConfiguration)
+  } catch (error) {
+    // POSIX compositions already register the official bash tool; a duplicate
+    // name throws and used to abort the whole plugin load. Fall back to a
+    // remote-only tool name instead of failing the composition.
+    const message = errorText(error)
+    debug('bash tool registration failed:', message)
+    try {
+      ctx.tools.register({
+        ...bashToolConfiguration,
+        name: 'remote_bash',
+        description: `${bashToolConfiguration.description} (remote-only tool; the official bash tool is already registered on this platform)`,
+      })
+    } catch (fallbackError) {
+      debug('remote bash fallback registration failed:', errorText(fallbackError))
+    }
+  }
 
   // --- shared session -> remote target resolution ---------------------------
   const resolveSession = async (exec) => {
@@ -207,110 +414,12 @@ export function apply(ctx) {
     return routing.resolveTarget(sessionCwd, undefined)
   }
 
-  // --- DSH job registry bridge ---------------------------------------------
-  // Remote background jobs are mirrored into the composition's job registry so
-  // they show up in the session job list, deliver completion notices and answer
-  // the built-in job_list / job_output / job_kill tools. The registry is
-  // optional: without it (or without a live owner) everything still works
-  // through the remote_job tool.
-  let jobRegistry
-  const bridgeTimers = new Set()
-
-  ctx.inject(['jobs'], (jobCtx) => {
-    jobRegistry = jobCtx.jobs
-    debug('dsh job registry available')
-  })
-
-  const jobOutcome = (view) => {
-    if (view.status === 'killed') return { status: 'killed', detail: 'stopped by the user' }
-    const code = view.exitCode === null || view.exitCode === undefined ? 'unknown' : view.exitCode
-    if (view.status === 'failed') return { status: 'failed', detail: `exit code: ${code}` }
-    return { status: 'completed', detail: `exit code: ${code}` }
-  }
-
-  /** Register one remote background job in the DSH job registry. */
-  const publishJob = (view, exec) => {
-    if (jobRegistry === undefined || typeof jobRegistry.start !== 'function') return undefined
-    const owner = exec !== null && exec !== undefined && exec.agent !== null && exec.agent !== undefined
-      ? exec.agent.id
-      : undefined
-    if (typeof owner !== 'string' || owner.length === 0) return undefined
-    try {
-      return jobRegistry.start({
-        kind: 'remote-bash',
-        label: view.label,
-        owner,
-        output: [],
-        run: (handle) => {
-          let offset = 0
-          let settled = false
-          const pump = setInterval(() => {
-            if (settled) return
-            void jobs.read(view.id, { offset })
-              .then((chunk) => {
-                if (chunk.text.length > 0) {
-                  offset = chunk.offset
-                  handle.append(chunk.text, { channel: 'stdout' })
-                }
-                handle.updateProgress(`${offset} bytes from ${view.host}`)
-              })
-              .catch((error) => debug('job pump failed', errorText(error)))
-          }, 500)
-          if (typeof pump.unref === 'function') pump.unref()
-          bridgeTimers.add(pump)
-          const done = new Promise((resolve) => {
-            remoteSettlers.set(view.id, (settledView) => {
-              settled = true
-              clearInterval(pump)
-              bridgeTimers.delete(pump)
-              void jobs.read(view.id, { offset })
-                .then((chunk) => {
-                  if (chunk.text.length > 0) handle.append(chunk.text, { channel: 'stdout' })
-                })
-                .catch(() => {})
-                .then(() => resolve(jobOutcome(settledView)))
-            })
-          })
-          return {
-            cancel: (reason) => {
-              void jobs.kill(view.id, reason === undefined ? 'stopped by the user' : reason)
-                .catch((error) => debug('job cancel failed', errorText(error)))
-            },
-            done,
-          }
-        },
-      })
-    } catch (error) {
-      debug('job registry rejected the job', errorText(error))
-      return undefined
-    }
-  }
-
-  const closeJobBridge = () => {
-    for (const timer of bridgeTimers) clearInterval(timer)
-    bridgeTimers.clear()
-    remoteSettlers.clear()
-  }
-
-  // --- agent-facing remote background jobs ---------------------------------
-  ctx.tools.register(remoteJobToolSpec({ resolveSession, jobs }))
-
   // --- agent-facing port forwarding ----------------------------------------
   ctx.tools.register(portForwardToolSpec({
     resolveSession,
     forwards,
     hostNameFor: (connectionId) => store.get(connectionId)?.name,
   }))
-
-  // Running background jobs are polled so completions settle and are noticed
-  // without a remote round trip on every request.
-  ctx.effect(() => {
-    const timer = setInterval(() => {
-      void jobs.refreshAll().catch((error) => debug('job poll failed', errorText(error)))
-    }, 3000)
-    if (typeof timer.unref === 'function') timer.unref()
-    return () => clearInterval(timer)
-  }, 'remote-deck: job poller')
 
   // --- ripgrep on the connected host ---------------------------------------
   const subprocessService = ctx.get('subprocess')
@@ -372,11 +481,22 @@ export function apply(ctx) {
     }
   }
 
+  const dropHost = (id) => {
+    const host = hosts.get(id)
+    hosts.delete(id)
+    try {
+      host?.dispose()
+    } catch {
+      /* ignore */
+    }
+  }
+
   const server = createApi({
     token,
     store,
     secrets,
     hostFor,
+    dropHost,
     listHosts,
     routing,
     getRegistry: () => ctx.get('workspaceRegistry'),
@@ -463,8 +583,6 @@ export function apply(ctx) {
 
   // --- teardown -------------------------------------------------------------
   ctx.effect(() => () => {
-    closeJobBridge()
-    jobs.closeAll()
     terminals.closeAll()
     forwards.closeAll()
     for (const host of hosts.values()) host.dispose()

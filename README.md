@@ -147,7 +147,34 @@ marker records the connection id and the remote POSIX path. Every path under a m
 resolves through SFTP; commands run through an exec channel with the remote cwd; ripgrep moves to
 the host; the terminal is one PTY channel; forwarding is one local listener per port.
 
+### Remote bash behaviour
+
+- Every call runs as a DSH background job. The foreground wait defaults to 10 minutes
+  (`DSH_REMOTE_DECK_FOREGROUND_TIMEOUT_MS`); when it expires the command keeps running in the
+  background and the tool returns its job id — it is never killed on timeout. Follow it with the
+  built-in `job_output` / `job_list` tools and stop it with `job_kill`.
+- `run_in_background: true` returns a job id immediately, for servers and long acceptance runs.
+- The remote stdin is closed immediately. Interactive prompts (for example `psql` without
+  `PGPASSWORD`) fail fast with their own error instead of blocking the turn forever.
+- The working directory is strict. Relative paths resolve against the session workspace; a missing
+  directory fails the command instead of silently falling back to the home directory.
+- Output is capped at 4 MiB per stream (`DSH_REMOTE_DECK_MAX_OUTPUT_BYTES`) and marked
+  `[output truncated; …]` when it exceeds the cap.
+- Stopping the tool or calling `job_kill` signals the recorded remote pid (TERM, then KILL).
+  Processes detached with `setsid`/double fork may survive; use `timeout` for those.
+
 ## Security
+
+- Remote commands run on the SSH host outside the local DSH sandbox/approval layer; the remote
+  account is the execution boundary. Pin the host key with `hostKeyFingerprint` on the connection
+  record and use a restricted account for untrusted repositories.
+- `apply_patch` is not supported on remote workspaces yet; use `edit`/`write`.
+- A remote Session routes POSIX paths to the SSH host and drive/backslash paths (`C:\\...`,
+  `E:\\...`) to the local machine, so remote development can still use local Windows
+  files/resources. Both worlds are intentionally reachable; review remote-sourced content before
+  letting it touch local paths.
+- The loopback API accepts the desktop `dsh-app://app` origin and loopback HTTP(S); every route
+  still requires the per-session token.
 
 - Passwords and key passphrases live in the DSH credential store, never in `connections.json`.
 - The browser half talks to the host over a loopback HTTP server guarded by a per-session token.
@@ -185,3 +212,7 @@ recorded in the CHANGELOG. The version plan is in [ROADMAP.md](ROADMAP.md), rele
 ## License
 
 MIT
+
+## Release policy
+
+See [RELEASE-POLICY.md](./RELEASE-POLICY.md): batch fixes, test before publishing, and use semantic versions (patch = bugfix, minor = capability).

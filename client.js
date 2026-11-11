@@ -1873,14 +1873,15 @@ window.__ModuleLoader__.load({
           })
           if (!response.ok || !response.body) throw new Error('terminal stream failed: HTTP ' + response.status)
           const reader = response.body.getReader()
-          const decoder = new TextDecoder('utf-8', { stream: true })
+          const sseDecoder = new TextDecoder('utf-8', { stream: true })
+          const terminalDecoder = new TextDecoder('utf-8', { stream: true })
           let pending = ''
           void (async () => {
             try {
               for (;;) {
                 const { value, done } = await reader.read()
                 if (done) break
-                pending += decoder.decode(value, { stream: true })
+                pending += sseDecoder.decode(value, { stream: true })
                 let index
                 while ((index = pending.indexOf('\n\n')) >= 0) {
                   const frame = pending.slice(0, index)
@@ -2016,7 +2017,8 @@ window.__ModuleLoader__.load({
           })
           if (!response.ok || !response.body) throw new Error('terminal stream failed: HTTP ' + response.status)
           setStatus('open')
-          const decoder = new TextDecoder('utf-8', { stream: true })
+          const sseDecoder = new TextDecoder('utf-8', { stream: true })
+          const terminalDecoder = new TextDecoder('utf-8', { stream: true })
           const reader = response.body.getReader()
           let pending = ''
           void (async () => {
@@ -2024,7 +2026,7 @@ window.__ModuleLoader__.load({
               for (;;) {
                 const { value, done } = await reader.read()
                 if (done) break
-                pending += decoder.decode(value, { stream: true })
+                pending += sseDecoder.decode(value, { stream: true })
                 let index
                 while ((index = pending.indexOf('\n\n')) >= 0) {
                   const frame = pending.slice(0, index)
@@ -2039,7 +2041,7 @@ window.__ModuleLoader__.load({
                   }
                   if (event.type === 'data') {
                     const bytes = Uint8Array.from(atob(event.b64), (char) => char.charCodeAt(0))
-                    bufferRef.current += cleanTerminalText(stripAnsi(decoder.decode(bytes, { stream: true })))
+                    bufferRef.current += cleanTerminalText(stripAnsi(terminalDecoder.decode(bytes, { stream: true })))
                     if (bufferRef.current.length > 400000) bufferRef.current = bufferRef.current.slice(-300000)
                     schedule()
                   } else if (event.type === 'exit') {

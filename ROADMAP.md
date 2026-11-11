@@ -3,7 +3,7 @@
 > Remote Deck（远程工作台）：把任意 SSH 机器接进 DeepSeek Harness，
 > 用同一个对话界面在远端开发。**对话是主界面，配置是辅助。**
 
-- 当前版本：`0.3.0-dev.0`（阶段 1 开发中）
+- 当前版本：`1.4.0`（远程+本地双通道路由，移除限制型行为）
 - 设计稿：`docs/design/v2/`（6 屏，已确认）
 - 旧插件：`dsh-remote-ssh`（保持可用，直到 v1.0.0 切换）
 
@@ -22,6 +22,15 @@
 ---
 
 ## 1. 版本路线
+
+### v1.2.8 — 远程 bash 卡死修复（2026-11-11）
+交付：远端命令 stdin 立即 EOF；工作目录严格校验（相对路径解析、非法路径报错、不再回退 home）；
+输出截断标记；退出码/信号/传输错误区分；mock sshd 单测。
+验收：等 stdin 的命令（如无 PGPASSWORD 的 psql）秒级返回错误、turn 继续；普通命令行为不变；
+`npm run check` / `npm test` 全绿。
+后续 v1.3.0（已交付）：接入 DSH job（前台有界等待、超时转后台、run_in_background、真 kill），见
+工作区 `dsh-remote-deck-fix/DESIGN.md`。
+
 
 ### v0.3.0 — 基座（Foundation）
 **目标**：新名字、新仓库、数据平滑迁移、连接层重写、两屏设计落脚。
