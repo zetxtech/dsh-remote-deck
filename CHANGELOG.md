@@ -11,6 +11,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - v1.1.0: full xterm.js terminal, i18n (zh/en), explicit debug switch, virtualized large folders.
 
+## [1.7.1] - 2026-11-11
+
+### Changed
+
+- Detected SSH keys are ordered for the default pick: `id_rsa` first, then the other `id_rsa*` files
+  (backups and variants), then everything else — a-z inside each group. The connection dialog's
+  "use the first one" link and the `~/.ssh/config` import now both land on `id_rsa` even when the
+  directory also holds a cloud key or an older copy.
+
 ## [1.7.0] - 2026-11-11
 
 ### Added

@@ -1,6 +1,35 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
-import { parseSshConfig } from '../lib/ssh-config.js'
+import { keyRank, listSshKeys, parseSshConfig, sortSshKeys } from '../lib/ssh-config.js'
+
+const namesOf = (paths) => paths.map((path) => path.split(/[\\/]/).pop())
+
+test('key ranking prefers id_rsa, then its variants, then the rest', () => {
+  assert.equal(keyRank('id_rsa'), 0)
+  assert.equal(keyRank('ID_RSA'), 0)
+  assert.equal(keyRank('id_rsa_old'), 1)
+  assert.equal(keyRank('id_rsa_backup'), 1)
+  assert.equal(keyRank('id_ed25519'), 2)
+  assert.equal(keyRank('aliyun.pem'), 2)
+})
+
+test('keys sort id_rsa first, then id_rsa*, then a-z', () => {
+  const sorted = sortSshKeys([
+    'C:\\Users\\Jack\\.ssh\\aliyun.pem',
+    'C:\\Users\\Jack\\.ssh\\id_rsa_old',
+    'C:\\Users\\Jack\\.ssh\\id_rsa',
+    'C:\\Users\\Jack\\.ssh\\beta.pem',
+    'C:\\Users\\Jack\\.ssh\\id_rsa_backup',
+  ])
+  assert.deepEqual(namesOf(sorted), ['id_rsa', 'id_rsa_backup', 'id_rsa_old', 'aliyun.pem', 'beta.pem'])
+  assert.deepEqual(namesOf(sortSshKeys(['/home/me/.ssh/z.pem', '/home/me/.ssh/a.pem'])), ['a.pem', 'z.pem'])
+})
+
+test('listSshKeys returns a sorted list without throwing', () => {
+  const keys = listSshKeys()
+  assert.ok(Array.isArray(keys))
+  assert.deepEqual(keys, sortSshKeys(keys))
+})
 
 test('parses hosts with common options', () => {
   const config = `
