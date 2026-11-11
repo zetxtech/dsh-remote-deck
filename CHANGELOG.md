@@ -11,6 +11,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - v1.1.0: full xterm.js terminal, i18n (zh/en), explicit debug switch, virtualized large folders.
 
+## [1.11.0] - 2026-11-12
+
+### Changed
+
+- The sidebar terminal no longer needs a system SSH client. It replaced the `ssh.exe` argv rewrite with a
+  terminal handle backed by the connection's own ssh2 channel (`exec` with a PTY), so it works wherever
+  the plugin works — hosts without OpenSSH included, and connections that authenticate with a password
+  as well as a key. The previous approach's binary discovery, key-file check and `-tt` argv are gone.
+
+### Notes
+
+- The handle implements exactly what the controller consumes: `done` (an exit code, or a rejection when
+  the connection drops so the tab shows a failure), `output` as an async iterable, `write`, `resize`
+  (ssh2 `setWindow`), `inspectActivity` (never claims `idle` on thin evidence, so the retention sweep
+  cannot reap a terminal someone is watching) and an idempotent `terminate` that settles even on a
+  half-dead socket.
+- Verified on a real host: a PTY opened at 80x24 reports 80x24 and then 120x40 after a resize, closes
+  with exit code 0, and the handle streams output, resizes, reports `busy` and settles on terminate.
+
+### Superseded
+
+- 1.10.0 (same day) opened the remote shell by rewriting the spawn into the local OpenSSH client, which
+  assumed the host had `ssh`; see above for the replacement.
+
 ## [1.10.0] - 2026-11-12
 
 ### Added
