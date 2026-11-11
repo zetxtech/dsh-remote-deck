@@ -36,6 +36,7 @@ addresses and paths are demo data (`dev-box`, `203.0.113.10`, `/srv/demo-app`).
 | Area | What you get |
 | --- | --- |
 | Connections | Multiple hosts, key or password auth, `~/.ssh/config` import, connection test with OS/latency, per-host auto-connect (off by default; toggle in the dialog, quick panel or console), keepalive and backoff reconnect |
+| Header pill | Click it for a dropdown: the machine's port forwards with open / copy / stop per row, plus a button into the remote console |
 | ProxyJump | Reach a machine through one or more jump hosts: `[user@]host[:port]`, comma-separated for a chain. A hop reuses the configured connection it names, otherwise the target's own key |
 | Workspaces | Browse remote folders with breadcrumbs, filters and keyboard navigation; add one as a DSH workspace; custom sidebar name; remove locally without touching the remote directory |
 | Sessions | Remote sessions get a header pill, a colour-coded sidebar badge and a hover line; local sessions are unchanged |

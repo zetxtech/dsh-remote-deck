@@ -11,6 +11,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - v1.1.0: full xterm.js terminal, i18n (zh/en), explicit debug switch, virtualized large folders.
 
+## [1.4.1] - 2026-11-11
+
+### Changed
+
+- The Session header pill now opens a dropdown instead of jumping straight into the console. It shows the
+  host, every port forward of that machine — with the `Agent` / `手动` badge and 打开 / 复制 / 停止 per row —
+  and a footer button that opens the remote console for that machine. Escape or a click outside closes it,
+  and it follows the pill when the header reflows.
+
 ## [1.4.0] - 2026-11-11
 
 ### Added

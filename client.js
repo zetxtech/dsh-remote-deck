@@ -424,6 +424,22 @@ window.__ModuleLoader__.load({
       .rd-hpill { box-sizing:border-box;height:28px;padding:0 8px;border-radius:var(--dsw-radius-sm);border-color:transparent;background:transparent;color:var(--dsw-alias-label-secondary,#5f6672);font-size:12px;line-height:18px }
       .rd-hpill:hover { background:var(--dsw-alias-interactive-bg-hover,rgba(15,23,42,.05));color:var(--dsw-alias-label-primary,#1f2329) }
       .rd-hpill-count { display:inline-flex;align-items:center;gap:3px;height:18px;padding:0 5px;border-radius:999px;background:var(--dsw-alias-state-business-tertiary,rgba(47,125,221,.12));color:var(--dsw-alias-state-business-primary,#1d6fc4);font-size:11px;font-variant-numeric:tabular-nums }
+      .rd-hmenu { position:fixed;z-index:1200;width:300px;box-sizing:border-box;padding:8px;background:var(--dsw-alias-bg-layer-1,#fff);color:var(--dsw-alias-label-primary,#1f2329);border:1px solid var(--dsw-alias-border-l1,#e8e8ec);border-radius:12px;box-shadow:0 24px 60px rgba(16,24,40,.22),0 2px 6px rgba(16,24,40,.06);font-size:11.5px }
+      .rd-hmenu-head { display:flex;align-items:center;gap:7px;padding:3px 6px 8px;font-size:12px }
+      .rd-hmenu-head .nm { overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500 }
+      .rd-hmenu-head .path { margin-left:auto;flex:none;color:var(--dsw-alias-label-tertiary,#8f959e);font-size:10.5px }
+      .rd-hmenu-sect { padding:6px 6px 4px;color:var(--dsw-alias-label-tertiary,#8f959e);font-size:10.5px }
+      .rd-hmenu-list { display:flex;flex-direction:column;gap:2px;max-height:240px;overflow:auto }
+      .rd-hmenu-row { display:flex;align-items:center;gap:6px;padding:5px 6px;border-radius:8px }
+      .rd-hmenu-row:hover { background:var(--dsw-alias-bg-layer-2,rgba(15,23,42,.04)) }
+      .rd-hmenu-row .map { font-family:ui-monospace,Consolas,monospace;font-size:10.5px;color:var(--dsw-alias-label-secondary,#5f6672) }
+      .rd-hmenu-row .arrow { color:var(--dsw-alias-label-tertiary,#8f959e) }
+      .rd-hmenu-row .acts { margin-left:auto;display:flex;gap:4px;flex:none }
+      .rd-hmenu-row .acts .rd-btn { height:22px;padding:0 7px;font-size:10.5px }
+      .rd-hmenu-empty { padding:6px;color:var(--dsw-alias-label-tertiary,#8f959e);line-height:1.6 }
+      .rd-hmenu-empty .sub { display:block;margin-top:3px;font-size:10.5px }
+      .rd-hmenu-foot { width:100%;margin-top:7px;height:30px;border:0;border-radius:8px;background:rgba(47,125,221,.1);color:var(--dsw-alias-state-business-primary,#1d6fc4);font:inherit;font-size:11.5px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px }
+      .rd-hmenu-foot:hover { background:rgba(47,125,221,.16) }
 
       .rd-badge { width:15px;height:15px;border-radius:4px;display:grid;place-items:center;color:#fff;flex:none }
       .rd-badge svg { width:9px;height:9px;stroke-width:2.4 }
@@ -681,6 +697,9 @@ window.__ModuleLoader__.load({
       [data-rd-theme="dark"] .rd-hpill { color:var(--dsw-alias-label-secondary,#a8b0bb);background:transparent;border-color:transparent }
       [data-rd-theme="dark"] .rd-hpill:hover { background:var(--dsw-alias-interactive-bg-hover,rgba(255,255,255,.06));color:var(--dsw-alias-label-primary,#e6e8eb) }
       [data-rd-theme="dark"] .rd-hpill-count { background:rgba(47,125,221,.22);color:#8cc6ff }
+      [data-rd-theme="dark"] .rd-hmenu { background:var(--dsw-alias-bg-layer-1,#1b1e23);border-color:var(--dsw-alias-border-l1,#2c3138) }
+      [data-rd-theme="dark"] .rd-hmenu-row:hover { background:rgba(255,255,255,.06) }
+      [data-rd-theme="dark"] .rd-hmenu-foot { background:rgba(47,125,221,.22);color:#8cc6ff }
       [data-rd-theme="dark"] .rd-err { color:#ff9a9a }
       [data-rd-theme="dark"] .rd-testok { color:#7ee2a0;border-color:rgba(46,160,67,.4) }
       [data-rd-theme="dark"] .rd-testok .mono { color:#9fe3b5 }
@@ -2806,14 +2825,68 @@ window.__ModuleLoader__.load({
       const { sessionId } = props
       const remote = useRemote(sessionId)
       const recovery = useRecovery(sessionId)
+      const [menu, setMenu] = React.useState(null)
+      const [busy, setBusy] = React.useState('')
+      const anchor = React.useRef(null)
+      const place = React.useCallback(() => {
+        const node = anchor.current
+        if (node === null) return
+        const box = node.getBoundingClientRect()
+        const width = 300
+        const viewport = typeof window.innerWidth === 'number' && window.innerWidth > 0 ? window.innerWidth : 1200
+        const left = Math.max(8, Math.min(Math.max(8, viewport - width - 8), box.right - width))
+        setMenu({ left, top: Math.round(box.bottom + 6) })
+      }, [])
+      React.useEffect(() => {
+        if (menu === null) return undefined
+        const onPointer = (event) => {
+          const node = anchor.current
+          if (node !== null && node.contains(event.target)) return
+          setMenu(null)
+        }
+        const onKey = (event) => {
+          if (event.key === 'Escape') setMenu(null)
+        }
+        const onMove = () => place()
+        document.addEventListener('mousedown', onPointer)
+        document.addEventListener('keydown', onKey)
+        window.addEventListener('resize', onMove)
+        window.addEventListener('scroll', onMove, true)
+        return () => {
+          document.removeEventListener('mousedown', onPointer)
+          document.removeEventListener('keydown', onKey)
+          window.removeEventListener('resize', onMove)
+          window.removeEventListener('scroll', onMove, true)
+        }
+      }, [menu !== null, place])
       if (!remote) return null
       const host = (store.state && store.state.connections || []).find((row) => row.id === remote.connectionId)
       const status = host ? host.status : 'disconnected'
       const forwards = ((store.state && store.state.forwards) || []).filter((row) => row.connectionId === remote.connectionId)
-      const open = () => {
-        openConsole(remote.connectionId)
+      const toggle = () => {
+        if (menu !== null) {
+          setMenu(null)
+          return
+        }
+        void refresh()
+        place()
       }
-      return h('span', { className: 'rd-pill rd-hpill', onClick: open, title: remote.path },
+      const stopForward = async (id) => {
+        setBusy(id)
+        try {
+          await call('/forwards/' + id, { method: 'DELETE' })
+        } catch {
+          /* the refreshed list is the truth */
+        }
+        try {
+          await refresh()
+        } catch {
+          /* ignore */
+        }
+        setBusy('')
+      }
+      return h('span', { className: 'rd-hpill-wrap', ref: anchor },
+        h('span', { className: 'rd-pill rd-hpill', onClick: toggle, title: remote.path },
         h(Dot, { state: status }),
         h(Icon, { name: 'server', size: 14 }),
         h('span', null, remote.host + ' · ' + (remote.folder || remote.title)),
@@ -2822,13 +2895,42 @@ window.__ModuleLoader__.load({
             h(Icon, { name: 'link', size: 11 }), String(forwards.length))
           : null,
         h(Icon, { name: 'chev', size: 11 }),
-        recovery
-          ? h('button', {
-            className: 'rd-pill-restore',
-            title: '恢复上一条发送失败的消息',
-            onClick: (event) => { event.stopPropagation(); restoreRecovery(sessionId, props.inputActions) },
-          }, '恢复')
-          : null,
+          recovery
+            ? h('button', {
+              className: 'rd-pill-restore',
+              title: '恢复上一条发送失败的消息',
+              onClick: (event) => { event.stopPropagation(); restoreRecovery(sessionId, props.inputActions) },
+            }, '恢复')
+            : null,
+        ),
+        menu === null
+          ? null
+          : h('div', { className: 'rd-hmenu', style: { left: menu.left, top: menu.top } },
+            h('div', { className: 'rd-hmenu-head' },
+              h(Dot, { state: status }),
+              h('span', { className: 'nm' }, remote.host + ' · ' + (remote.folder || remote.title)),
+              host ? h('span', { className: 'path' }, host.username) : null,
+            ),
+            h('div', { className: 'rd-hmenu-sect' }, '端口转发' + (forwards.length > 0 ? ' · ' + forwards.length : '')),
+            forwards.length === 0
+              ? h('div', { className: 'rd-hmenu-empty' }, '还没有端口转发',
+                h('span', { className: 'sub' }, 'Agent 可以用 remote_forward 创建，也能在控制台的端口页手动添加。'))
+              : h('div', { className: 'rd-hmenu-list' }, forwards.map((row) => h('div', { key: row.id, className: 'rd-hmenu-row' },
+                h('span', { className: 'map' }, '127.0.0.1:' + row.localPort),
+                h('span', { className: 'arrow' }, '→'),
+                h('span', { className: 'map' }, String(row.remotePort)),
+                row.origin === 'agent'
+                  ? h('span', { className: 'rd-origin agent', title: '由 Agent 创建' }, 'Agent')
+                  : h('span', { className: 'rd-origin', title: '手动创建' }, '手动'),
+                h('span', { className: 'acts' },
+                  h('button', { className: 'rd-btn sm', onClick: () => window.open(row.url, '_blank') }, '打开'),
+                  h('button', { className: 'rd-btn sm', onClick: () => { void navigator.clipboard?.writeText(row.url) } }, '复制'),
+                  h('button', { className: 'rd-btn sm', disabled: busy === row.id, onClick: () => void stopForward(row.id) }, busy === row.id ? '…' : '停止'),
+                ),
+              ))),
+            h('button', { className: 'rd-hmenu-foot', onClick: () => { setMenu(null); openConsole(remote.connectionId) } },
+              h(Icon, { name: 'server', size: 13 }), '进入远程开发'),
+          ),
       )
     }
 
