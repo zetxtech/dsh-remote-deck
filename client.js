@@ -384,6 +384,11 @@ window.__ModuleLoader__.load({
       .rd-qa { border:1px solid var(--dsw-alias-border-l1, rgba(15,23,42,.08));border-radius:9px;padding:9px 4px 7px;display:flex;flex-direction:column;align-items:center;gap:5px;font-size:10.5px;color:var(--dsw-alias-label-secondary,#5f6672);background:transparent;cursor:pointer }
       .rd-qa:hover { background:var(--dsw-alias-bg-layer-2, rgba(15,23,42,.04)) }
       .rd-qa[disabled] { opacity:.45;cursor:default }
+      .rd-fwdsum { display:flex;align-items:center;gap:6px;margin:-4px 0 6px;padding:7px 9px;border:1px solid var(--dsw-alias-border-l1, rgba(15,23,42,.08));border-radius:9px;font-size:11px;color:var(--dsw-alias-label-secondary,#5f6672);background:transparent;cursor:pointer }
+      .rd-fwdsum:hover { background:var(--dsw-alias-bg-layer-2, rgba(15,23,42,.04)) }
+      .rd-fwdsum .sub { color:var(--dsw-alias-label-tertiary,#8f959e) }
+      .rd-fwdsum .go { margin-left:auto;color:var(--dsw-alias-brand-primary,#1d6fc4) }
+      [data-rd-theme="dark"] .rd-fwdsum .go { color:#7cc4ff }
 
       .rd-foot { border-top:1px solid var(--dsw-alias-border-l1, rgba(15,23,42,.08));background:var(--dsw-alias-bg-layer-2, rgba(15,23,42,.02));padding:8px 14px;display:flex;align-items:center;gap:6px;font-size:10px;color:var(--dsw-alias-label-secondary,#8f959e) }
       .rd-foot .mono { font-family:ui-monospace,Consolas,monospace }
@@ -416,6 +421,9 @@ window.__ModuleLoader__.load({
       .rd-pill { display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 9px;border-radius:7px;border:1px solid #c8dcf3;background:rgba(47,125,221,.08);color:#175a99;font-size:11.5px;white-space:nowrap;cursor:pointer;max-width:340px }
       .rd-pill .mono { font-family:ui-monospace,Consolas,monospace;font-size:10.5px;overflow:hidden;text-overflow:ellipsis }
       .rd-pill:hover { background:rgba(47,125,221,.14) }
+      .rd-hpill { box-sizing:border-box;height:28px;padding:0 8px;border-radius:var(--dsw-radius-sm);border-color:transparent;background:transparent;color:var(--dsw-alias-label-secondary,#5f6672);font-size:12px;line-height:18px }
+      .rd-hpill:hover { background:var(--dsw-alias-interactive-bg-hover,rgba(15,23,42,.05));color:var(--dsw-alias-label-primary,#1f2329) }
+      .rd-hpill-count { display:inline-flex;align-items:center;gap:3px;height:18px;padding:0 5px;border-radius:999px;background:var(--dsw-alias-state-business-tertiary,rgba(47,125,221,.12));color:var(--dsw-alias-state-business-primary,#1d6fc4);font-size:11px;font-variant-numeric:tabular-nums }
 
       .rd-badge { width:15px;height:15px;border-radius:4px;display:grid;place-items:center;color:#fff;flex:none }
       .rd-badge svg { width:9px;height:9px;stroke-width:2.4 }
@@ -664,8 +672,15 @@ window.__ModuleLoader__.load({
       .rd-portrow2 .mono { font-family:ui-monospace,Consolas,monospace }
       .rd-portempty { padding:14px 12px;font-size:11px;color:var(--dsw-alias-label-secondary,#8f959e) }
       .rd-portadd { display:flex;align-items:center;gap:8px;margin-top:12px;padding:10px 12px;border:1px dashed rgba(15,23,42,.18);border-radius:10px }
+      .rd-origin { display:inline-flex;align-items:center;height:16px;padding:0 5px;border-radius:4px;background:rgba(15,23,42,.06);color:var(--dsw-alias-label-secondary,#8f959e);font-size:10px;flex:none }
+      .rd-origin.agent { background:rgba(47,125,221,.12);color:#1d6fc4 }
+      [data-rd-theme="dark"] .rd-origin { background:rgba(255,255,255,.08);color:#a8b0bb }
+      [data-rd-theme="dark"] .rd-origin.agent { background:rgba(47,125,221,.22);color:#8cc6ff }
 
       [data-rd-theme="dark"] .rd-pill { color:#8cc6ff;border-color:#2b4f74;background:rgba(47,125,221,.18) }
+      [data-rd-theme="dark"] .rd-hpill { color:var(--dsw-alias-label-secondary,#a8b0bb);background:transparent;border-color:transparent }
+      [data-rd-theme="dark"] .rd-hpill:hover { background:var(--dsw-alias-interactive-bg-hover,rgba(255,255,255,.06));color:var(--dsw-alias-label-primary,#e6e8eb) }
+      [data-rd-theme="dark"] .rd-hpill-count { background:rgba(47,125,221,.22);color:#8cc6ff }
       [data-rd-theme="dark"] .rd-err { color:#ff9a9a }
       [data-rd-theme="dark"] .rd-testok { color:#7ee2a0;border-color:rgba(46,160,67,.4) }
       [data-rd-theme="dark"] .rd-testok .mono { color:#9fe3b5 }
@@ -818,6 +833,9 @@ window.__ModuleLoader__.load({
       const fillers = connections.filter((row) => !pinnedSet.has(row.id)).slice(0, Math.max(0, 3 - pinnedHosts.length))
       const shownHosts = hasPins ? pinnedHosts.concat(fillers).slice(0, 3) : connections.slice(0, 5)
       const first = connected[0] || connections[0]
+      const fwdHost = (selectedHost && connections.find((row) => row.id === selectedHost)) || first
+      const fwdRows = fwdHost ? ((state && state.forwards) || []).filter((row) => row.connectionId === fwdHost.id) : []
+      const fwdAgent = fwdRows.filter((row) => row.origin === 'agent').length
       const shownWorkspaces = workspaces.filter((row) => !selectedHost || row.connectionId === selectedHost)
 
       const toggle = (row) => {
@@ -924,6 +942,18 @@ window.__ModuleLoader__.load({
             h('button', { className: 'rd-qa', onClick: () => openConsole(first ? first.id : undefined) },
               h(Icon, { name: 'server', size: 14 }), '控制台'),
           ),
+          fwdRows.length > 0
+            ? h('div', {
+              className: 'rd-fwdsum',
+              title: '打开 ' + (fwdHost.name || '当前机器') + ' 的端口转发',
+              onClick: () => openConsole(fwdHost.id, 'ports'),
+            },
+              h(Icon, { name: 'link', size: 12 }),
+              h('span', null, fwdRows.length + ' 个端口转发'),
+              fwdAgent > 0 ? h('span', { className: 'sub' }, '（' + fwdAgent + ' 个由 Agent 创建）') : null,
+              h('span', { className: 'go' }, '查看'),
+            )
+            : null,
         ),
         h(ToastStack),
         h('div', { className: 'rd-foot' },
@@ -2061,13 +2091,14 @@ window.__ModuleLoader__.load({
       }
 
       const forwarded = new Map(forwards.map((row) => [row.remotePort, row]))
+      const agentCount = forwards.filter((row) => row.origin === 'agent').length
 
       return h('div', { className: 'rd-ports' },
         h('div', { className: 'rd-porthead' },
           h('div', null,
             h('div', { className: 'rd-csect', style: { margin: '0 0 4px' } },
               h('span', { className: 'st2' }, '已转发'),
-              h('span', { className: 'ct2' }, forwards.length + ' 个 · 连接恢复后自动重建'),
+              h('span', { className: 'ct2' }, forwards.length + ' 个 · 连接恢复后自动重建' + (agentCount > 0 ? ' · ' + agentCount + ' 个由 Agent 创建' : '')),
             ),
           ),
           h('button', { className: 'rd-btn sm', onClick: () => void load(), disabled: busy !== '' }, h(Icon, { name: 'refresh', size: 12 }), '刷新'),
@@ -2079,6 +2110,9 @@ window.__ModuleLoader__.load({
             h('span', { className: 'rd-portmap mono' }, '127.0.0.1:' + row.localPort),
             h('span', { className: 'rd-portarrow' }, '→'),
             h('span', { className: 'rd-portmap mono' }, host.name + ':' + row.remotePort),
+            row.origin === 'agent'
+              ? h('span', { className: 'rd-origin agent', title: '由 Agent 创建' }, 'Agent')
+              : h('span', { className: 'rd-origin', title: '手动创建' }, '手动'),
             h('span', { className: 'rd-portactions' },
               h('button', { className: 'rd-btn sm', onClick: () => window.open(row.url, '_blank') }, '打开'),
               h('button', { className: 'rd-btn sm', onClick: () => { void navigator.clipboard?.writeText(row.url) } }, h(Icon, { name: 'copy', size: 12 }), '复制'),
@@ -2775,13 +2809,18 @@ window.__ModuleLoader__.load({
       if (!remote) return null
       const host = (store.state && store.state.connections || []).find((row) => row.id === remote.connectionId)
       const status = host ? host.status : 'disconnected'
+      const forwards = ((store.state && store.state.forwards) || []).filter((row) => row.connectionId === remote.connectionId)
       const open = () => {
         openConsole(remote.connectionId)
       }
-      return h('span', { className: 'rd-pill', onClick: open, title: remote.path },
+      return h('span', { className: 'rd-pill rd-hpill', onClick: open, title: remote.path },
         h(Dot, { state: status }),
-        h(Icon, { name: 'server', size: 12 }),
+        h(Icon, { name: 'server', size: 14 }),
         h('span', null, remote.host + ' · ' + (remote.folder || remote.title)),
+        forwards.length > 0
+          ? h('span', { className: 'rd-hpill-count', title: forwards.length + ' 个端口转发，点开查看' },
+            h(Icon, { name: 'link', size: 11 }), String(forwards.length))
+          : null,
         h(Icon, { name: 'chev', size: 11 }),
         recovery
           ? h('button', {

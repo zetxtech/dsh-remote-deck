@@ -30,6 +30,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   answer the built-in `job_list`, `job_output` and `job_kill` tools. Without the registry they stay
   reachable through `remote_job`.
 
+- Port forwards remember whether the console or the agent opened them: `remote_forward` marks its own as
+  `agent`, the console's port-forwarding tab shows an `Agent` badge and an agent-created count, and the
+  Session header pill counts the forwards of that session's host next to the machine name.
+- The Session header pill is aligned with DSH's native header chips (28 px high,
+  `var(--dsw-radius-sm)`, 12 px text, neutral label colours and the shared hover background) instead of
+  the previous 26 px blue capsule. The connection dot keeps the machine colour.
+
 ### Notes
 
 - Background jobs are not persisted across a DSH restart. The remote processes keep running, but the

@@ -52,12 +52,16 @@ Three tools connect the model to the remote machine:
 | --- | --- |
 | `bash` with `run_in_background` | Runs the command detached on the remote host (`setsid`, its own session), streams its output into a per-job file and returns a job id immediately instead of waiting |
 | `remote_job` | `list` running and finished jobs with status, pid and elapsed time; `output` reads what the job printed since a previous offset (`wait: true` follows until it exits); `kill` terminates the whole process group; `forget` drops a finished job and its remote directory |
-| `remote_forward` | `list` the active forwards; `detect` the ports listening on the remote host; `start` a forward from a remote port to `127.0.0.1:<local port>` on the DSH machine; `stop` one by id |
+| `remote_forward` | `list` the active forwards; `detect` the ports listening on the remote host; `start` a forward from a remote port to `127.0.0.1:<local port>` on the DSH machine; `stop` one by id. A forward remembers its origin: the console marks agent-created ones with an `Agent` badge, and the Session header pill counts the forwards of that session's host |
 
 When the composition carries the DSH job registry (the desktop app does), each remote job is also
 registered there: it appears in the Session header job list with live output and a stop control, sends
 the usual completion notice, and answers the built-in `job_list`, `job_output` and `job_kill` tools.
 Without the registry it stays reachable through `remote_job`.
+
+The header pill shares its row with DSH's own chips (agent team, mode, subagents) and now matches their
+metrics: 28 px high, `var(--dsw-radius-sm)`, 12 px text, neutral colours and the same hover background.
+The connection dot keeps the per-machine colour identity.
 
 Background-job bookkeeping lives inside the DSH process and does **not** survive a DSH restart: the remote
 processes keep running, but the job list starts empty. For a service that must outlive DSH, start it with
