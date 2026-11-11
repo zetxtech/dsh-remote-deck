@@ -11,6 +11,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - v1.1.0: full xterm.js terminal, i18n (zh/en), explicit debug switch, virtualized large folders.
 
+## [1.8.0] - 2026-11-11
+
+### Added
+
+- The console's file tab gained a context menu and an upload button: right-clicking empty space offers
+  上传到此处 / 下载此目录 / 打开为工作区; right-clicking an entry targets that entry (a file downloads
+  directly, a folder is packed, a folder can become a workspace); and the header carries an 上传到目录
+  button. The menu is themed, clamps to the viewport and closes on Escape or an outside click.
+- Upload batches, archive links, direct downloads and workspace creation now live in one implementation
+  shared by the right-sidebar file actions and the console file tab, so the two cannot drift apart.
+
+### Fixed
+
+- The `copy` glyph was missing from the icon set, so 复制 buttons rendered an empty icon.
+
 ## [1.7.2] - 2026-11-11
 
 ### Changed

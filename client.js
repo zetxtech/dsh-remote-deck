@@ -313,6 +313,7 @@ window.__ModuleLoader__.load({
     const ICONS = {
       server: '<rect x="3" y="3" width="18" height="7" rx="2"/><rect x="3" y="14" width="18" height="7" rx="2"/><path d="M7 6.5h.01M7 17.5h.01"/>',
       plus: '<path d="M12 5v14M5 12h14"/>',
+      copy: '<rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/>',
       chev: '<path d="M6 9l6 6 6-6"/>',
       x: '<path d="M6 6l12 12M18 6L6 18"/>',
       folder: '<path d="M3 7a2 2 0 0 1 2-2h4l2 2h6a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
@@ -573,6 +574,15 @@ window.__ModuleLoader__.load({
       [data-rd-theme="dark"] .rd-crumb:hover, [data-rd-theme="dark"] .rd-frow:hover { background:rgba(255,255,255,.06) }
       [data-rd-theme="dark"] .rd-fnotice { background:rgba(99,182,255,.14);color:#8ecbff }
       [data-rd-theme="dark"] .rd-fsearch { background:#12161b;border-color:rgba(255,255,255,.14) }
+      .rd-ctx { position:fixed;z-index:1300;width:196px;box-sizing:border-box;padding:4px;background:var(--dsw-alias-bg-layer-1,#fff);color:var(--dsw-alias-label-primary,#1f2329);border:1px solid var(--dsw-alias-border-l1,#e8e8ec);border-radius:10px;box-shadow:0 18px 44px rgba(16,24,40,.2),0 2px 6px rgba(16,24,40,.06);font-size:11.5px }
+      .rd-ctx-i { display:flex;align-items:center;gap:7px;width:100%;height:28px;box-sizing:border-box;padding:0 8px;border:0;border-radius:7px;background:transparent;color:inherit;font:inherit;font-size:11.5px;text-align:left;cursor:pointer }
+      .rd-ctx-i:hover { background:var(--dsw-alias-bg-layer-2,rgba(15,23,42,.04)) }
+      .rd-ctx-i svg { flex:none;opacity:.75 }
+      .rd-ctx-i[disabled] { opacity:.42;cursor:default }
+      .rd-ctx-i[disabled]:hover { background:transparent }
+      [data-rd-theme="dark"] .rd-ctx { background:var(--dsw-alias-bg-layer-1,#1b1e23);border-color:var(--dsw-alias-border-l1,#2c3138) }
+      [data-rd-theme="dark"] .rd-ctx-i:hover { background:rgba(255,255,255,.07) }
+      [data-rd-theme="dark"] .rd-ctx-i[disabled]:hover { background:transparent }
 
       .rd-pill-restore { border:1px solid rgba(29,111,196,.35);background:rgba(29,111,196,.08);color:#1d6fc4;border-radius:999px;font-size:11px;padding:2px 8px;margin-left:6px;cursor:pointer;line-height:1.5 }
       .rd-pill-restore:hover { background:rgba(29,111,196,.16) }
@@ -1455,11 +1465,7 @@ window.__ModuleLoader__.load({
           setBusy('add')
           setError('')
           try {
-            const result = await call('/connections/' + host.id + '/workspaces', {
-              method: 'POST',
-              body: { path: targetPath, title: titleEdited ? title : undefined, writeGuide },
-            })
-            await refresh()
+            const result = await addRemoteWorkspace(host.id, targetPath, { title: titleEdited ? title : undefined, writeGuide })
             if (openAfter) {
               const item = (store.workspaces.items || []).find((entry) => samePath(entry.path, result.stub))
               const ui = ctxRef ? ctxRef.get('uiWorkspace') : undefined
@@ -2306,6 +2312,10 @@ window.__ModuleLoader__.load({
       const stateWorkspaces = (store.state && store.state.workspaces) || []
       const workspace = stateWorkspaces.find((row) => row.connectionId === host.id)
       const root = workspace ? workspace.path : '/'
+      const [ctx, setCtx] = React.useState(null)
+      const menuRef = React.useRef(null)
+      const upload = useDirectoryUpload()
+      const archive = useArchiveDownload()
 
       const load = React.useCallback(async (next) => {
         setLoading(true)
@@ -2330,16 +2340,8 @@ window.__ModuleLoader__.load({
         void load(root)
       }, [host.id])
 
-      async function download(entry) {
-        const info = boot()
-        if (info === null) return
-        const url = apiBase() + '/connections/' + host.id + '/download?path=' + encodeURIComponent(entry.path) + '&token=' + encodeURIComponent(info.token)
-        const anchor = document.createElement('a')
-        anchor.href = url
-        anchor.download = entry.name
-        document.body.appendChild(anchor)
-        anchor.click()
-        anchor.remove()
+      function download(entry) {
+        if (!startFileDownload(host.id, entry.path, entry.name)) return
         setNotice('已开始下载 ' + entry.name)
       }
 
@@ -2363,11 +2365,124 @@ window.__ModuleLoader__.load({
         return all
       }
 
+      const currentDir = path || root
+      const banner = archive.note.length > 0 ? archive.note : upload.note.length > 0 ? upload.note : notice
+      const openBlankMenu = (event) => {
+        event.preventDefault()
+        setCtx({ x: Number(event.clientX) || 0, y: Number(event.clientY) || 0, entry: null })
+      }
+      const openEntryMenu = (event, entry) => {
+        event.preventDefault()
+        event.stopPropagation()
+        setCtx({ x: Number(event.clientX) || 0, y: Number(event.clientY) || 0, entry })
+      }
+      React.useEffect(() => {
+        if (ctx === null) return undefined
+        const onDown = (event) => {
+          const node = menuRef.current
+          if (node !== null && node.contains(event.target)) return
+          setCtx(null)
+        }
+        const onKey = (event) => {
+          if (event.key === 'Escape') setCtx(null)
+        }
+        const onLeave = () => setCtx(null)
+        document.addEventListener('mousedown', onDown)
+        document.addEventListener('keydown', onKey)
+        window.addEventListener('resize', onLeave)
+        window.addEventListener('scroll', onLeave, true)
+        return () => {
+          document.removeEventListener('mousedown', onDown)
+          document.removeEventListener('keydown', onKey)
+          window.removeEventListener('resize', onLeave)
+          window.removeEventListener('scroll', onLeave, true)
+        }
+      }, [ctx !== null])
+      const openWorkspace = async (dir) => {
+        try {
+          await addRemoteWorkspace(host.id, dir, { notice: true })
+        } catch (failure) {
+          pushToast(failure)
+        }
+      }
+      const packDirectory = (dir, name) => {
+        void archive.run({ connectionId: host.id, path: dir, name })
+      }
+      const menuItemsFor = () => {
+        if (ctx === null) return []
+        const entry = ctx.entry
+        if (entry !== null && entry !== undefined) {
+          const isDir = entry.type === 'dir'
+          const taken = isDir && workspaceAt(stateWorkspaces, host.id, entry.path) !== null
+          return [
+            {
+              key: 'download',
+              icon: 'download',
+              label: '下载',
+              title: isDir ? '打包下载此目录（tar.gz）：' + entry.path : '下载此文件：' + entry.path,
+              run: () => {
+                if (isDir) packDirectory(entry.path, entry.name)
+                else if (startFileDownload(host.id, entry.path, entry.name)) setNotice('已开始下载 ' + entry.name)
+              },
+            },
+            {
+              key: 'workspace',
+              icon: 'folder',
+              label: '打开为工作区',
+              title: !isDir ? '只有目录可以添加为工作区' : taken ? '该目录已经是工作区' : '把 ' + entry.path + ' 添加为 DSH 工作区',
+              disabled: !isDir || taken,
+              run: () => { void openWorkspace(entry.path) },
+            },
+          ]
+        }
+        const taken = workspaceAt(stateWorkspaces, host.id, currentDir) !== null
+        return [
+          {
+            key: 'upload',
+            icon: 'upload',
+            label: '上传到此处',
+            title: '上传文件到 ' + currentDir,
+            run: () => upload.pick({ connectionId: host.id, path: currentDir }),
+          },
+          {
+            key: 'download',
+            icon: 'download',
+            label: '下载此目录',
+            title: '打包下载 ' + currentDir + '（tar.gz）',
+            run: () => packDirectory(currentDir, ''),
+          },
+          {
+            key: 'workspace',
+            icon: 'folder',
+            label: '打开为工作区',
+            title: taken ? '该目录已经是工作区' : '把 ' + currentDir + ' 添加为 DSH 工作区',
+            disabled: taken,
+            run: () => { void openWorkspace(currentDir) },
+          },
+        ]
+      }
       const crumbs = crumbsFor(path || root)
       const hostWorkspaces = stateWorkspaces.filter((row) => row.connectionId === host.id)
       const visible = entries.filter((entry) => entry.name.toLowerCase().includes(filter.toLowerCase()))
 
-      return h('div', { className: 'rd-files' },
+      const menuItems = menuItemsFor()
+      const menu = ctx === null ? null : h('div', {
+        className: 'rd-ctx',
+        ref: menuRef,
+        role: 'menu',
+        'aria-label': ctx.entry ? '条目操作' : '当前目录操作',
+        style: ctxMenuStyle(ctx.x, ctx.y, menuItems.length),
+        onContextMenu: (event) => event.preventDefault(),
+      }, menuItems.map((item) => h('button', {
+        key: item.key,
+        type: 'button',
+        role: 'menuitem',
+        className: 'rd-ctx-i',
+        disabled: item.disabled === true,
+        title: item.title,
+        onClick: item.disabled === true ? undefined : () => { setCtx(null); item.run() },
+      }, h(Icon, { name: item.icon, size: 13 }), item.label)))
+      return h('div', { className: 'rd-files', onContextMenu: openBlankMenu },
         h('div', { className: 'rd-fbar' },
           h('div', { className: 'rd-crumbs' },
             crumbs.map((crumb, index) => h('button', {
@@ -2378,6 +2493,12 @@ window.__ModuleLoader__.load({
           ),
           h('div', { className: 'rd-fright' },
             h('input', { className: 'rd-fsearch', value: filter, placeholder: '筛选文件…', onChange: (event) => setFilter(event.target.value) }),
+            h('button', {
+              className: 'rd-btn sm',
+              disabled: upload.busy,
+              title: '上传到当前目录',
+              onClick: () => upload.pick({ connectionId: host.id, path: currentDir }),
+            }, h(Icon, { name: 'upload', size: 12 }), upload.busy ? '上传中…' : '上传到目录'),
             h('button', { className: 'rd-btn sm', onClick: () => void load(path) }, h(Icon, { name: 'refresh', size: 12 }), '刷新'),
           ),
         ),
@@ -2385,7 +2506,7 @@ window.__ModuleLoader__.load({
           h('span', null, '快速跳转：'),
           hostWorkspaces.map((row) => h('button', { key: row.workspaceId || row.path, className: 'rd-fchip', onClick: () => void load(row.path) }, row.folder || row.title || row.path)),
         ) : null,
-        notice ? h('div', { className: 'rd-fnotice' }, notice) : null,
+        banner.length > 0 ? h('div', { className: 'rd-fnotice' }, banner) : null,
         error ? h('div', { className: 'rd-err' }, friendlyText(error)) : null,
         loading ? h('div', { className: 'rd-empty', style: { padding: '20px' } }, '正在读取远程目录…') : null,
         !loading && !error && visible.length === 0 ? h('div', { className: 'rd-empty', style: { padding: '20px' } }, '这个目录是空的。') : null,
@@ -2394,6 +2515,7 @@ window.__ModuleLoader__.load({
             key: entry.path,
             className: 'rd-frow' + (entry.type === 'dir' ? ' dir' : ''),
             onClick: entry.type === 'dir' ? () => void load(entry.path) : undefined,
+            onContextMenu: (event) => openEntryMenu(event, entry),
           },
             h(Icon, { name: entry.type === 'dir' ? 'folder' : 'file', size: 14 }),
             h('span', { className: 'rd-fname', title: entry.name }, entry.name),
@@ -2402,7 +2524,7 @@ window.__ModuleLoader__.load({
             h('span', { className: 'rd-factions' },
               entry.type === 'dir' ? null : h('button', {
                 className: 'rd-btn sm',
-                onClick: (event) => { event.stopPropagation(); void download(entry) },
+                onClick: (event) => { event.stopPropagation(); download(entry) },
               }, '下载'),
               entry.type === 'dir' ? null : h('button', {
                 className: 'rd-btn sm',
@@ -2411,6 +2533,16 @@ window.__ModuleLoader__.load({
             ),
           )),
         ) : null,
+        menu,
+        h('input', {
+          ref: upload.inputRef,
+          type: 'file',
+          multiple: true,
+          style: { display: 'none' },
+          onChange: upload.onFiles,
+        }),
+        upload.prompt === null ? null : transferDialog(upload.prompt, upload.decide),
+        archive.prompt === null ? null : transferDialog(archive.prompt, archive.decide),
       )
     }
 
@@ -3138,6 +3270,20 @@ window.__ModuleLoader__.load({
       return countOf(scan.unreadable) > 0 || countOf(scan.links) > 0 || scan.complete === false
     }
 
+    const CTX_MENU_WIDTH = 196
+    const CTX_MENU_ROW = 28
+    const CTX_MENU_PAD = 8
+
+    /** Cursor-placed menu that never leaves the viewport. */
+    function ctxMenuStyle(x, y, count) {
+      const viewportW = typeof window.innerWidth === 'number' && window.innerWidth > 0 ? window.innerWidth : 1200
+      const viewportH = typeof window.innerHeight === 'number' && window.innerHeight > 0 ? window.innerHeight : 800
+      const height = count * CTX_MENU_ROW + CTX_MENU_PAD
+      const left = Math.max(8, Math.min(Number(x) || 0, viewportW - CTX_MENU_WIDTH - 8))
+      const top = Math.max(8, Math.min(Number(y) || 0, viewportH - height - 8))
+      return { left: Math.round(left), top: Math.round(top) }
+    }
+
     function transferDialog(prompt, decide) {
       return h('div', { className: 'rd-tf-mask' },
         h('div', { className: 'rd-tf-dlg', role: 'dialog', 'aria-label': prompt.title },
@@ -3154,8 +3300,75 @@ window.__ModuleLoader__.load({
         ))
     }
 
-    function DirDownloadAction(props) {
-      const found = useFilesTarget(props)
+    // ------------------------------------------------------- shared transfers
+    // One implementation per transfer, shared by the files-tab slot actions and
+    // the console file list (header button + context menu), so the two surfaces
+    // cannot drift apart.
+
+    /** Click an <a download>; the browser owns the rest of the transfer. */
+    function startAnchorDownload(href, name) {
+      const anchor = document.createElement('a')
+      anchor.href = href
+      anchor.download = name
+      document.body.appendChild(anchor)
+      anchor.click()
+      anchor.remove()
+    }
+
+    function baseNameOf(value) {
+      const parts = String(value || '').split('/').filter(Boolean)
+      return parts.length > 0 ? parts[parts.length - 1] : ''
+    }
+
+    /** Directory archive direct link; the host streams a tar.gz. */
+    function startArchiveDownload(connectionId, dir, name) {
+      const info = boot()
+      if (info === null) return false
+      const file = typeof name === 'string' && name.length > 0 ? name : baseNameOf(dir) || 'download'
+      startAnchorDownload(
+        apiBase() + '/connections/' + encodeURIComponent(connectionId) + '/archive?path=' + encodeURIComponent(dir) + '&token=' + encodeURIComponent(info.token),
+        file + '.tar.gz',
+      )
+      return true
+    }
+
+    /** Single file direct link. */
+    function startFileDownload(connectionId, path, name) {
+      const info = boot()
+      if (info === null) return false
+      startAnchorDownload(
+        apiBase() + '/connections/' + encodeURIComponent(connectionId) + '/download?path=' + encodeURIComponent(path) + '&token=' + encodeURIComponent(info.token),
+        typeof name === 'string' && name.length > 0 ? name : baseNameOf(path),
+      )
+      return true
+    }
+
+    /**
+     * The one place that registers a remote directory as a DSH workspace. The
+     * console dialog and the file list both come through here; only the file
+     * list asks for the success notice, because it has no dialog to close.
+     */
+    async function addRemoteWorkspace(connectionId, dir, options) {
+      const opt = options || {}
+      const result = await call('/connections/' + encodeURIComponent(connectionId) + '/workspaces', {
+        method: 'POST',
+        body: { path: dir, title: opt.title, writeGuide: opt.writeGuide },
+      })
+      await refresh()
+      if (opt.notice === true) pushNotice('已添加工作区', result && result.stub ? result.stub : dir)
+      return result
+    }
+
+    /** The workspace row already pointing at this exact remote directory, if any. */
+    function workspaceAt(stateWorkspaces, connectionId, dir) {
+      return stateWorkspaces.find((row) => row.connectionId === connectionId && samePath(row.path, dir)) || null
+    }
+
+    /**
+     * Directory download state machine: pre-flight scan, optional confirmation,
+     * then the archive direct link. `run({ connectionId, path, name })`.
+     */
+    function useArchiveDownload() {
       const [busy, setBusy] = React.useState(false)
       const [note, setNote] = React.useState('')
       const [prompt, setPrompt] = React.useState(null)
@@ -3172,17 +3385,11 @@ window.__ModuleLoader__.load({
           const resolve = decisionRef.current
           decisionRef.current = null
           setPrompt(null)
-          if (resolve !== null) resolve(prompt.kind === 'download' ? 'cancel' : 'skip')
+          if (resolve !== null) resolve('cancel')
         }
         document.addEventListener('keydown', onKey)
         return () => document.removeEventListener('keydown', onKey)
       }, [prompt])
-      if (found === null) return null
-      const info = boot()
-      if (info === null) return null
-      const dir = found.target
-      const connectionId = found.remote.connectionId
-      const base = dir.split('/').filter(Boolean).pop() || 'download'
       const flash = (text, ms) => {
         setNote(text)
         if (timerRef.current !== null) clearTimeout(timerRef.current)
@@ -3201,81 +3408,65 @@ window.__ModuleLoader__.load({
         setPrompt(null)
         if (resolve !== null) resolve(choice)
       }
-      const startArchive = () => {
-        const href = apiBase() + '/connections/' + encodeURIComponent(connectionId) + '/archive?path=' + encodeURIComponent(dir) + '&token=' + encodeURIComponent(info.token)
-        const anchor = document.createElement('a')
-        anchor.href = href
-        anchor.download = base + '.tar.gz'
-        document.body.appendChild(anchor)
-        anchor.click()
-        anchor.remove()
-      }
-      const runOnce = async () => {
-        setBusy(true)
-        setNote('正在扫描目录…')
-        let scan = null
-        try {
-          scan = await call('/connections/' + encodeURIComponent(connectionId) + '/scan?path=' + encodeURIComponent(dir), { timeoutMs: 120000 })
-        } catch {
-          scan = null
-        }
-        setBusy(false)
-        if (scan === null || typeof scan !== 'object' || scan.ok === false) {
-          flash('预检失败，已直接开始打包', 2500)
-          startArchive()
-          return
-        }
-        if (scanNeedsConfirm(scan)) {
-          setNote('')
-          const choice = await ask({
-            kind: 'download',
-            title: '打包确认',
-            subtitle: dir,
-            body: scanSummary(scan),
-            actions: [
-              { value: 'continue', label: '继续', tone: 'primary' },
-              { value: 'cancel', label: '取消', tone: 'ghost' },
-            ],
-          })
-          if (choice !== 'continue') {
-            flash('已取消打包', 2000)
-            return
-          }
-        }
-        flash('已开始打包', 1500)
-        startArchive()
-      }
-      const run = async () => {
-        if (busy || runRef.current) return
+      const run = async (target) => {
+        const connectionId = target && target.connectionId ? String(target.connectionId) : ''
+        const dir = target && typeof target.path === 'string' ? target.path : ''
+        if (connectionId === '' || dir === '' || busy || runRef.current) return
         runRef.current = true
         try {
-          await runOnce()
+          setBusy(true)
+          setNote('正在扫描目录…')
+          let scan = null
+          try {
+            scan = await call('/connections/' + encodeURIComponent(connectionId) + '/scan?path=' + encodeURIComponent(dir), { timeoutMs: 120000 })
+          } catch {
+            scan = null
+          }
+          setBusy(false)
+          if (scan === null || typeof scan !== 'object' || scan.ok === false) {
+            flash('预检失败，已直接开始打包', 2500)
+            startArchiveDownload(connectionId, dir, target.name)
+            return
+          }
+          if (scanNeedsConfirm(scan)) {
+            setNote('')
+            const choice = await ask({
+              kind: 'download',
+              title: '打包确认',
+              subtitle: dir,
+              body: scanSummary(scan),
+              actions: [
+                { value: 'continue', label: '继续', tone: 'primary' },
+                { value: 'cancel', label: '取消', tone: 'ghost' },
+              ],
+            })
+            if (choice !== 'continue') {
+              flash('已取消打包', 2000)
+              return
+            }
+          }
+          flash('已开始打包', 1500)
+          startArchiveDownload(connectionId, dir, target.name)
         } finally {
           runRef.current = false
         }
       }
-      return h('span', { className: 'rd-dl-wrap rd-tf-wrap' },
-        h('button', {
-          type: 'button',
-          className: 'rd-dl',
-          disabled: busy,
-          title: busy ? '正在扫描目录…' : '下载此目录（tar.gz）：' + dir,
-          'aria-label': '下载此目录（tar.gz）',
-          onClick: run,
-        }, h(Icon, { name: 'download', size: 16 })),
-        note.length > 0 ? h('span', { className: 'rd-tf-note' }, note) : null,
-        prompt === null ? null : transferDialog(prompt, decide),
-      )
+      return { busy, note, prompt, decide, run }
     }
 
-    function DirUploadAction(props) {
-      const found = useFilesTarget(props)
+    /**
+     * Directory upload state machine: pick files, pre-check the size limit,
+     * upload one by one, and ask on every failure. `pick({ connectionId, path })`
+     * opens the shared file input; `onFiles` is that input's change handler.
+     */
+    function useDirectoryUpload() {
       const inputRef = React.useRef(null)
       const [busy, setBusy] = React.useState(false)
       const [note, setNote] = React.useState('')
       const [prompt, setPrompt] = React.useState(null)
       const decisionRef = React.useRef(null)
       const batchRef = React.useRef(false)
+      const targetRef = React.useRef(null)
       React.useEffect(() => {
         if (note.length === 0) return undefined
         const timer = setTimeout(() => setNote(''), 6000)
@@ -3293,13 +3484,12 @@ window.__ModuleLoader__.load({
         document.addEventListener('keydown', onKey)
         return () => document.removeEventListener('keydown', onKey)
       }, [prompt])
-      if (found === null) return null
-      const info = boot()
-      if (info === null) return null
-      const dir = found.target
-      const connectionId = found.remote.connectionId
-      const pick = () => {
+      const pick = (target) => {
         if (busy) return
+        const connectionId = target && target.connectionId ? String(target.connectionId) : ''
+        const dir = target && typeof target.path === 'string' ? target.path : ''
+        if (connectionId === '' || dir === '') return
+        targetRef.current = { connectionId, dir }
         const node = inputRef.current
         if (node !== null) node.click()
       }
@@ -3313,7 +3503,9 @@ window.__ModuleLoader__.load({
         setPrompt(null)
         if (resolve !== null) resolve(choice)
       }
-      const send = async (file, name) => {
+      const send = async (connectionId, dir, file, name) => {
+        const info = boot()
+        if (info === null) return { ok: false, message: 'remote-deck is not active yet; restart DSH' }
         const url = apiBase() + '/connections/' + encodeURIComponent(connectionId) + '/upload?path=' + encodeURIComponent(dir) + '&name=' + encodeURIComponent(name)
         try {
           const response = await fetch(url, {
@@ -3332,11 +3524,7 @@ window.__ModuleLoader__.load({
           return { ok: false, message: message.length > 0 ? message : '网络中断，上传失败。' }
         }
       }
-      const runBatch = async (event) => {
-        const node = event.currentTarget
-        const list = node && node.files ? Array.prototype.slice.call(node.files) : []
-        if (list.length === 0) return
-        if (node) node.value = ''
+      const runBatch = async (connectionId, dir, list) => {
         setBusy(true)
         setNote('上传中 0/' + list.length)
         const skipDirs = new Set()
@@ -3354,7 +3542,7 @@ window.__ModuleLoader__.load({
           }
           const result = file && typeof file.size === 'number' && file.size > UPLOAD_LIMIT_BYTES
             ? { ok: false, message: '「' + name + '」超过 ' + UPLOAD_LIMIT_LABEL + ' 上限，未上传。' }
-            : await send(file, name)
+            : await send(connectionId, dir, file, name)
           if (result.ok) {
             done += 1
             setNote('上传中 ' + (done + failed + skipped) + '/' + list.length)
@@ -3387,32 +3575,69 @@ window.__ModuleLoader__.load({
         void refresh()
       }
       const onFiles = async (event) => {
+        const node = event.currentTarget
+        const list = node && node.files ? Array.prototype.slice.call(node.files) : []
+        const target = targetRef.current
+        targetRef.current = null
+        if (list.length === 0 || target === null) return
+        if (node) node.value = ''
         if (batchRef.current) return
         batchRef.current = true
         try {
-          await runBatch(event)
+          await runBatch(target.connectionId, target.dir, list)
         } finally {
           batchRef.current = false
         }
       }
+      return { busy, note, prompt, decide, pick, onFiles, inputRef }
+    }
+
+    function DirDownloadAction(props) {
+      const found = useFilesTarget(props)
+      const connectionId = found === null ? '' : found.remote.connectionId
+      const dir = found === null ? '' : found.target
+      const download = useArchiveDownload()
+      if (found === null) return null
+      if (boot() === null) return null
       return h('span', { className: 'rd-dl-wrap rd-tf-wrap' },
         h('button', {
           type: 'button',
           className: 'rd-dl',
-          disabled: busy,
-          title: busy ? '正在上传…' : '上传到此处：' + dir,
+          disabled: download.busy,
+          title: download.busy ? '正在扫描目录…' : '下载此目录（tar.gz）：' + dir,
+          'aria-label': '下载此目录（tar.gz）',
+          onClick: () => void download.run({ connectionId, path: dir }),
+        }, h(Icon, { name: 'download', size: 16 })),
+        download.note.length > 0 ? h('span', { className: 'rd-tf-note' }, download.note) : null,
+        download.prompt === null ? null : transferDialog(download.prompt, download.decide),
+      )
+    }
+
+    function DirUploadAction(props) {
+      const found = useFilesTarget(props)
+      const connectionId = found === null ? '' : found.remote.connectionId
+      const dir = found === null ? '' : found.target
+      const upload = useDirectoryUpload()
+      if (found === null) return null
+      if (boot() === null) return null
+      return h('span', { className: 'rd-dl-wrap rd-tf-wrap' },
+        h('button', {
+          type: 'button',
+          className: 'rd-dl',
+          disabled: upload.busy,
+          title: upload.busy ? '正在上传…' : '上传到此处：' + dir,
           'aria-label': '上传到此处',
-          onClick: pick,
+          onClick: () => upload.pick({ connectionId, path: dir }),
         }, h(Icon, { name: 'upload', size: 16 })),
         h('input', {
-          ref: inputRef,
+          ref: upload.inputRef,
           type: 'file',
           multiple: true,
           style: { display: 'none' },
-          onChange: onFiles,
+          onChange: upload.onFiles,
         }),
-        note.length > 0 ? h('span', { className: 'rd-tf-note' }, note) : null,
-        prompt === null ? null : transferDialog(prompt, decide),
+        upload.note.length > 0 ? h('span', { className: 'rd-tf-note' }, upload.note) : null,
+        upload.prompt === null ? null : transferDialog(upload.prompt, upload.decide),
       )
     }
 
