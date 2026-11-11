@@ -11,6 +11,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - v1.1.0: full xterm.js terminal, i18n (zh/en), explicit debug switch, virtualized large folders.
 
+## [1.8.1] - 2026-11-11
+
+### Added
+
+- The header dropdown's footer now pairs 远端终端 with 进入远程开发: it opens the console's terminal tab on
+  that host, which is a real remote PTY — unlike the Web sidebar terminal, which runs a local shell with
+  the remote workspace as its working directory.
+
 ## [1.8.0] - 2026-11-11
 
 ### Added

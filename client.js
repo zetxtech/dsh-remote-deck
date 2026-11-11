@@ -458,6 +458,8 @@ window.__ModuleLoader__.load({
       .rd-hmenu-row .acts .rd-btn { height:22px;padding:0 7px;font-size:10.5px }
       .rd-hmenu-empty { padding:6px;color:var(--dsw-alias-label-tertiary,#8f959e);line-height:1.6 }
       .rd-hmenu-empty .sub { display:block;margin-top:3px;font-size:10.5px }
+      .rd-hmenu-footrow { display:flex;gap:6px;margin-top:7px }
+      .rd-hmenu-footrow .rd-hmenu-foot { width:auto;flex:1;margin-top:0 }
       .rd-hmenu-foot { width:100%;margin-top:7px;height:30px;border:0;border-radius:8px;background:rgba(47,125,221,.1);color:var(--dsw-alias-state-business-primary,#1d6fc4);font:inherit;font-size:11.5px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px }
       .rd-hmenu-foot:hover { background:rgba(47,125,221,.16) }
       .rd-mon { padding:6px 6px 0 }
@@ -3985,8 +3987,15 @@ window.__ModuleLoader__.load({
                   h('button', { className: 'rd-btn sm', disabled: busy === row.id, onClick: () => void stopForward(row.id) }, busy === row.id ? '…' : '停止'),
                 ),
               ))),
-            h('button', { className: 'rd-hmenu-foot', onClick: () => { setMenu(null); openConsole(remote.connectionId) } },
-              h(Icon, { name: 'server', size: 13 }), '进入远程开发'),
+            h('div', { className: 'rd-hmenu-footrow' },
+              h('button', { className: 'rd-hmenu-foot', onClick: () => { setMenu(null); openConsole(remote.connectionId) } },
+                h(Icon, { name: 'server', size: 13 }), '进入远程开发'),
+              h('button', {
+                className: 'rd-hmenu-foot',
+                title: '在这台远端主机上打开终端（远端 PTY）',
+                onClick: () => { setMenu(null); openConsole(remote.connectionId, 'terminal') },
+              }, h(Icon, { name: 'term', size: 13 }), '远端终端'),
+            ),
             h('button', {
               className: 'rd-mon-set',
               onClick: () => setSettingsOpen((value) => !value),
