@@ -11,6 +11,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - v1.1.0: full xterm.js terminal, i18n (zh/en), explicit debug switch, virtualized large folders.
 
+## [1.7.2] - 2026-11-11
+
+### Changed
+
+- The console terminal fills its pane instead of sitting in a fixed 420 px box: the terminal tab's body
+  is a flex column, so the xterm canvas — and the plain-text fallback — grow with the window and the fit
+  addon re-flows the rows on resize.
+- The hint line under the terminal ("完整终端（xterm.js）…" / "点击终端后可直接输入…") is gone, and the
+  session id moved into the terminal's title bar.
+
 ## [1.7.1] - 2026-11-11
 
 ### Changed

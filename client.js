@@ -728,22 +728,25 @@ window.__ModuleLoader__.load({
       .rd-tabs { display:flex;gap:2px;border-bottom:1px solid var(--dsw-alias-border-l1, rgba(15,23,42,.08));margin:-6px 0 16px }
       .rd-tab { border:0;background:transparent;padding:7px 11px;font-size:12px;color:var(--dsw-alias-label-secondary,#8f959e);border-bottom:2px solid transparent;margin-bottom:-1px;cursor:pointer }
       .rd-tab.on { color:var(--dsw-alias-label-primary,#1f2329);font-weight:600;border-bottom-color:var(--dsw-alias-label-primary,#1f2329) }
-      .rd-terminal { display:flex;flex-direction:column;gap:0 }
+      .rd-terminal { display:flex;flex-direction:column;gap:0;flex:1;min-height:0 }
+      .rd-cpane.term { display:flex;flex-direction:column;overflow:hidden }
+      .rd-cpane.term > .rd-tabs, .rd-cpane.term > .rd-status { flex:none }
+      .rd-cpane.term > .rd-terminal { flex:1;min-height:0 }
       .rd-termhead { display:flex;align-items:center;gap:8px;background:#0f1216;border:1px solid #1c232c;border-bottom:0;border-radius:11px 11px 0 0;padding:9px 12px;color:#8b949e;font-size:10.5px }
       .rd-termhead .dotrow { display:flex;gap:4px }
       .rd-termhead .dotrow i { width:8px;height:8px;border-radius:50%;background:#2a313a;display:block }
       .rd-termtab { color:#d7dee6;background:#1a212a;border-radius:5px;padding:2px 8px;font-family:ui-monospace,Consolas,monospace;font-size:10px }
       .rd-termstatus { margin-left:auto;display:flex;align-items:center;gap:5px }
+      .rd-termsid { color:#5b6674;font-family:ui-monospace,Consolas,monospace;font-size:10px;margin-left:2px }
       .rd-termbtn { border:0;background:transparent;color:#8b949e;cursor:pointer;display:grid;place-items:center;width:22px;height:22px;border-radius:5px }
       .rd-termbtn:hover { background:#1a212a;color:#d7dee6 }
-      .rd-termout { background:#0f1216;border:1px solid #1c232c;border-top:0;border-radius:0 0 11px 11px;padding:12px 14px;height:420px;overflow:auto;color:#c9d1d9;font-family:ui-monospace,Consolas,monospace;font-size:11.5px;line-height:1.7;white-space:pre-wrap;word-break:break-all;outline:none;cursor:text }
+      .rd-termout { background:#0f1216;border:1px solid #1c232c;border-top:0;border-radius:0 0 11px 11px;padding:12px 14px;flex:1;min-height:0;overflow:auto;color:#c9d1d9;font-family:ui-monospace,Consolas,monospace;font-size:11.5px;line-height:1.7;white-space:pre-wrap;word-break:break-all;outline:none;cursor:text }
       .rd-termout:focus { box-shadow:inset 0 0 0 1px rgba(99,182,255,.35) }
-      .rd-xterm { height:420px;background:#0f1216;border:1px solid #1c232c;border-top:0;border-radius:0 0 11px 11px;padding:8px 10px;overflow:hidden }
+      .rd-xterm { flex:1;min-height:0;background:#0f1216;border:1px solid #1c232c;border-top:0;border-radius:0 0 11px 11px;padding:8px 10px;overflow:hidden }
       .rd-xterm .xterm { height:100% }
-      .rd-xterm-placeholder { height:420px;display:grid;place-items:center;color:#5b6674;background:#0f1216;border:1px solid #1c232c;border-top:0;border-radius:0 0 11px 11px;font-size:12px }
+      .rd-xterm-placeholder { flex:1;min-height:0;display:grid;place-items:center;color:#5b6674;background:#0f1216;border:1px solid #1c232c;border-top:0;border-radius:0 0 11px 11px;font-size:12px }
       .rd-termplaceholder { color:#5b6674 }
       .rd-termerror { color:#f85149;background:#161b22;border:1px solid #3a1d1d;border-top:0;padding:8px 12px;font-size:11px }
-      .rd-termfoot { display:flex;gap:8px;align-items:center;padding:8px 2px 0;font-size:10px;color:var(--dsw-alias-label-secondary,#8f959e) }
       .rd-ports { display:flex;flex-direction:column }
       .rd-porthead { display:flex;align-items:center;gap:8px }
       .rd-portrow { display:flex;align-items:center;gap:9px;padding:10px 12px;border:1px solid var(--dsw-alias-border-l1, rgba(15,23,42,.1));border-radius:10px;margin-bottom:8px;font-size:11.5px }
@@ -1959,6 +1962,7 @@ window.__ModuleLoader__.load({
         h('div', { className: 'rd-termhead' },
           h('span', { className: 'dotrow' }, h('i'), h('i'), h('i')),
           h('span', { className: 'rd-termtab' }, host.name + ' — bash'),
+          sessionId ? h('span', { className: 'rd-termsid' }, 'session ' + sessionId.slice(0, 8)) : null,
           h('span', { className: 'rd-termstatus' },
             h(Dot, { state: status === 'open' ? 'connected' : status === 'error' ? 'error' : status === 'closed' ? 'disconnected' : 'connecting' }),
             status === 'open' ? '已连接' : status === 'closed' ? '已退出' : status === 'error' ? '失败' : '连接中',
@@ -1967,10 +1971,6 @@ window.__ModuleLoader__.load({
         ),
         h('div', { className: 'rd-xterm', ref: boxRef }),
         error ? h('div', { className: 'rd-termerror' }, friendlyText(error)) : null,
-        h('div', { className: 'rd-termfoot' },
-          h('span', null, '完整终端（xterm.js）· 支持颜色、光标与全屏程序'),
-          h('span', { style: { marginLeft: 'auto' } }, sessionId ? 'session ' + sessionId.slice(0, 8) : ''),
-        ),
       )
     }
 
@@ -2142,6 +2142,7 @@ window.__ModuleLoader__.load({
         h('div', { className: 'rd-termhead' },
           h('span', { className: 'dotrow' }, h('i'), h('i'), h('i')),
           h('span', { className: 'rd-termtab' }, host.name + ' — bash'),
+          sessionId ? h('span', { className: 'rd-termsid' }, 'session ' + sessionId.slice(0, 8)) : null,
           h('span', { className: 'rd-termstatus' },
             h(Dot, { state: status === 'open' ? 'connected' : status === 'error' ? 'error' : status === 'closed' ? 'disconnected' : 'connecting' }),
             status === 'open' ? '已连接' : status === 'closed' ? '已退出' : status === 'error' ? '失败' : '连接中',
@@ -2163,10 +2164,6 @@ window.__ModuleLoader__.load({
           onMouseDown: () => viewRef.current?.focus(),
         }, text.length === 0 ? h('span', { className: 'rd-termplaceholder' }, '正在打开远端 shell…') : text),
         error ? h('div', { className: 'rd-termerror' }, friendlyText(error)) : null,
-        h('div', { className: 'rd-termfoot' },
-          h('span', null, '点击终端后可直接输入 · 支持粘贴 · Ctrl+C 中断'),
-          h('span', { style: { marginLeft: 'auto' } }, sessionId ? 'session ' + sessionId.slice(0, 8) : ''),
-        ),
       )
     }
 
@@ -2729,7 +2726,7 @@ window.__ModuleLoader__.load({
               h('div', null, 'Host ' + (state ? state.build : '')),
             ),
           ),
-          h('section', { className: 'rd-cpane' },
+          h('section', { className: 'rd-cpane' + (tab === 'terminal' ? ' term' : '') },
             h('div', { className: 'rd-tabs' },
               [['overview', '概览'], ['terminal', '终端'], ['files', '文件'], ['ports', '端口转发']].map(([id, label]) => h('button', {
                 key: id,
