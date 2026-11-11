@@ -11,6 +11,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - v1.1.0: full xterm.js terminal, i18n (zh/en), explicit debug switch, virtualized large folders.
 
+## [1.7.0] - 2026-11-11
+
+### Added
+
+- Server status in the Session header dropdown: CPU (load-derived, or the real `/proc/stat` delta once a
+  second sample exists), memory, and the free space of the filesystem behind the top-level directory of
+  the session's remote path — each as a percentage with a bar and absolute figures, refreshed on a timer
+  while the panel is open.
+- Threshold alerts: when a monitored reading reaches its threshold, an alert icon appears in the pill
+  immediately before the port-forward count, with a tooltip naming what crossed it.
+- Monitor settings at the bottom of the dropdown: master switch, refresh interval (10–300 s) and a
+  per-metric switch plus threshold (1–100 %), persisted by the host in
+  `<DSH_HOME>/remote-deck/monitor.json` and served through `GET/POST /monitor`.
+- `GET /connections/:id/metrics?path=` samples a connection with one bounded remote command, cached per
+  connection for a few seconds and keyed by the sampled directory.
+
+### Fixed
+
+- The metrics probe's memory reading used `set -- $fields`, which depends on shell word splitting: with
+  zsh as the remote login shell the second field stayed empty and memory silently disappeared (CPU and
+  disk were unaffected). The fields are now split with POSIX parameter expansion, and a regression test
+  keeps `set --` out of the generated command.
+
 ## [1.6.0] - 2026-11-11
 
 ### Added

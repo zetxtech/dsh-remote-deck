@@ -330,6 +330,7 @@ window.__ModuleLoader__.load({
       dots: '<circle cx="5" cy="12" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="19" cy="12" r="1.4"/>',
       bolt: '<path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z"/>',
       upload: '<path d="M12 17V5"/><path d="M7 9l5-5 5 5"/><path d="M5 21h14"/>',
+      alert: '<path d="M12 4 2.9 19.6h18.2z"/><path d="M12 10v4.4"/><path d="M12 17.1h.01"/>',
     }
 
     function Icon({ name, size = 16, style }) {
@@ -441,6 +442,7 @@ window.__ModuleLoader__.load({
       .rd-hpill { box-sizing:border-box;height:28px;padding:0 8px;border-radius:var(--dsw-radius-sm);border-color:transparent;background:transparent;color:var(--dsw-alias-label-secondary,#5f6672);font-size:12px;line-height:18px }
       .rd-hpill:hover { background:var(--dsw-alias-interactive-bg-hover,rgba(15,23,42,.05));color:var(--dsw-alias-label-primary,#1f2329) }
       .rd-hpill-count { display:inline-flex;align-items:center;gap:3px;height:18px;padding:0 5px;border-radius:999px;background:var(--dsw-alias-state-business-tertiary,rgba(47,125,221,.12));color:var(--dsw-alias-state-business-primary,#1d6fc4);font-size:11px;font-variant-numeric:tabular-nums }
+      .rd-hpill-alert { display:inline-flex;align-items:center;flex:none;color:#e5484d }
       .rd-hmenu { position:fixed;z-index:1200;width:300px;box-sizing:border-box;padding:8px;background:var(--dsw-alias-bg-layer-1,#fff);color:var(--dsw-alias-label-primary,#1f2329);border:1px solid var(--dsw-alias-border-l1,#e8e8ec);border-radius:12px;box-shadow:0 24px 60px rgba(16,24,40,.22),0 2px 6px rgba(16,24,40,.06);font-size:11.5px }
       .rd-hmenu-head { display:flex;align-items:center;gap:7px;padding:3px 6px 8px;font-size:12px }
       .rd-hmenu-head .nm { overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500 }
@@ -457,6 +459,30 @@ window.__ModuleLoader__.load({
       .rd-hmenu-empty .sub { display:block;margin-top:3px;font-size:10.5px }
       .rd-hmenu-foot { width:100%;margin-top:7px;height:30px;border:0;border-radius:8px;background:rgba(47,125,221,.1);color:var(--dsw-alias-state-business-primary,#1d6fc4);font:inherit;font-size:11.5px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px }
       .rd-hmenu-foot:hover { background:rgba(47,125,221,.16) }
+      .rd-mon { padding:6px 6px 0 }
+      .rd-mon-hd { display:flex;align-items:center;gap:6px;padding:0 0 4px;color:var(--dsw-alias-label-tertiary,#8f959e);font-size:10.5px }
+      .rd-mon-hd .r { margin-left:auto;font-variant-numeric:tabular-nums }
+      .rd-mon-row { display:flex;flex-direction:column;gap:2px;padding:3px 0 }
+      .rd-mon-line { display:flex;align-items:center;gap:7px }
+      .rd-mon-name { flex:none;min-width:26px;color:var(--dsw-alias-label-primary,#1f2329);font-size:11.5px }
+      .rd-mon-bar { flex:1;height:4px;border-radius:999px;background:var(--dsw-alias-border-l1,#e8e8ec);overflow:hidden }
+      .rd-mon-bar i { display:block;height:100%;border-radius:999px;background:var(--dsw-alias-state-business-primary,#1d6fc4);transition:width .25s ease }
+      .rd-mon-val { flex:none;min-width:44px;text-align:right;color:var(--dsw-alias-label-secondary,#5f6672);font-family:ui-monospace,Consolas,monospace;font-size:11px;font-variant-numeric:tabular-nums }
+      .rd-mon-row[data-alert="true"] .rd-mon-bar i { background:#e5484d }
+      .rd-mon-row[data-alert="true"] .rd-mon-val { color:#e5484d }
+      .rd-mon-sub { padding-left:33px;color:var(--dsw-alias-label-tertiary,#8f959e);font-size:10.5px;font-variant-numeric:tabular-nums;overflow:hidden;text-overflow:ellipsis;white-space:nowrap }
+      .rd-mon-err { padding:5px 0 0;color:#c0392b;font-size:10.5px;line-height:1.5;overflow-wrap:anywhere }
+      .rd-mon-foot { padding:6px 0 2px;color:var(--dsw-alias-label-tertiary,#8f959e);font-size:10.5px;font-variant-numeric:tabular-nums }
+      .rd-mon-set { width:100%;margin-top:6px;height:28px;border:0;border-radius:8px;background:transparent;color:var(--dsw-alias-label-secondary,#5f6672);font:inherit;font-size:11.5px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px }
+      .rd-mon-set:hover { background:var(--dsw-alias-bg-layer-2,rgba(15,23,42,.04)) }
+      .rd-mon-form { display:flex;flex-direction:column;gap:7px;margin-top:6px;padding-top:7px;border-top:1px solid var(--dsw-alias-border-l1,#e8e8ec) }
+      .rd-mon-frow { display:flex;align-items:center;gap:7px;color:var(--dsw-alias-label-secondary,#5f6672);font-size:11px }
+      .rd-mon-frow .lb { flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap }
+      .rd-mon-frow input[type="number"] { width:60px;height:24px;box-sizing:border-box;padding:0 6px;border:1px solid var(--dsw-alias-border-l1,#e8e8ec);border-radius:6px;background:var(--dsw-alias-bg-layer-1,#fff);color:var(--dsw-alias-label-primary,#1f2329);font:inherit;font-size:11px;font-variant-numeric:tabular-nums }
+      .rd-mon-frow input[type="number"][disabled] { opacity:.5 }
+      .rd-mon-frow input[type="checkbox"] { width:14px;height:14px;flex:none;margin:0;accent-color:#2f7ddd }
+      .rd-mon-acts { display:flex;gap:6px;padding-top:1px }
+      .rd-mon-acts .rd-btn { flex:1 }
 
       .rd-badge { width:15px;height:15px;border-radius:4px;display:grid;place-items:center;color:#fff;flex:none }
       .rd-badge svg { width:9px;height:9px;stroke-width:2.4 }
@@ -743,6 +769,15 @@ window.__ModuleLoader__.load({
       [data-rd-theme="dark"] .rd-hmenu { background:var(--dsw-alias-bg-layer-1,#1b1e23);border-color:var(--dsw-alias-border-l1,#2c3138) }
       [data-rd-theme="dark"] .rd-hmenu-row:hover { background:rgba(255,255,255,.06) }
       [data-rd-theme="dark"] .rd-hmenu-foot { background:rgba(47,125,221,.22);color:#8cc6ff }
+      [data-rd-theme="dark"] .rd-hpill-alert { color:#ff7b72 }
+      [data-rd-theme="dark"] .rd-mon-bar { background:rgba(255,255,255,.12) }
+      [data-rd-theme="dark"] .rd-mon-bar i { background:#4f8fd6 }
+      [data-rd-theme="dark"] .rd-mon-row[data-alert="true"] .rd-mon-bar i { background:#ff7b72 }
+      [data-rd-theme="dark"] .rd-mon-row[data-alert="true"] .rd-mon-val { color:#ff7b72 }
+      [data-rd-theme="dark"] .rd-mon-err { color:#ff9a9a }
+      [data-rd-theme="dark"] .rd-mon-set:hover { background:rgba(255,255,255,.06) }
+      [data-rd-theme="dark"] .rd-mon-form { border-top-color:#2c3138 }
+      [data-rd-theme="dark"] .rd-mon-frow input[type="number"] { background:var(--dsw-alias-bg-layer-1,#1b1e23);border-color:#2c3138 }
       [data-rd-theme="dark"] .rd-err { color:#ff9a9a }
       [data-rd-theme="dark"] .rd-testok { color:#7ee2a0;border-color:rgba(46,160,67,.4) }
       [data-rd-theme="dark"] .rd-testok .mono { color:#9fe3b5 }
@@ -2390,6 +2425,178 @@ window.__ModuleLoader__.load({
       return (size / (1024 * 1024 * 1024)).toFixed(1) + ' GB'
     }
 
+    // ------------------------------------------------------------- monitoring
+    // The host answers /connections/<id>/metrics from one probe. Every field
+    // may be null on a host that cannot answer it, and a collection failure
+    // still arrives as a 200 carrying `error` — neither is an exception, so
+    // both render as "unavailable" instead of a toast.
+
+    const MONITOR_SECTIONS = [
+      { key: 'cpu', label: 'CPU' },
+      { key: 'mem', label: '内存' },
+      { key: 'disk', label: '磁盘' },
+    ]
+
+    const MONITOR_FALLBACK = {
+      enabled: true,
+      intervalMs: 30000,
+      cpu: { enabled: true, threshold: 90 },
+      mem: { enabled: true, threshold: 90 },
+      disk: { enabled: true, threshold: 90 },
+    }
+
+    function clampInt(value, min, max, fallback) {
+      const num = typeof value === 'number' ? value : Number(value)
+      if (!Number.isFinite(num)) return fallback
+      return Math.min(max, Math.max(min, Math.round(num)))
+    }
+
+    function boolOr(value, fallback) {
+      return typeof value === 'boolean' ? value : fallback
+    }
+
+    function monitorSection(value, fallback) {
+      const source = value !== null && typeof value === 'object' ? value : {}
+      return {
+        enabled: boolOr(source.enabled, fallback.enabled),
+        threshold: clampInt(source.threshold, 1, 100, fallback.threshold),
+      }
+    }
+
+    /** The host sends a normalized config; this keeps the UI right if it does not. */
+    function normalizeMonitor(raw) {
+      const source = raw !== null && typeof raw === 'object' ? raw : {}
+      return {
+        enabled: boolOr(source.enabled, MONITOR_FALLBACK.enabled),
+        intervalMs: clampInt(source.intervalMs, 10000, 300000, MONITOR_FALLBACK.intervalMs),
+        cpu: monitorSection(source.cpu, MONITOR_FALLBACK.cpu),
+        mem: monitorSection(source.mem, MONITOR_FALLBACK.mem),
+        disk: monitorSection(source.disk, MONITOR_FALLBACK.disk),
+      }
+    }
+
+    function percentOf(value) {
+      return typeof value === 'number' && Number.isFinite(value) ? Math.min(100, Math.max(0, value)) : null
+    }
+
+    function formatPercent(value) {
+      const percent = percentOf(value)
+      if (percent === null) return '—'
+      return Math.round(percent * 10) / 10 + '%'
+    }
+
+    function formatLoad(value) {
+      return typeof value === 'number' && Number.isFinite(value) ? String(Math.round(value * 100) / 100) : null
+    }
+
+    function formatCount(value) {
+      return typeof value === 'number' && Number.isFinite(value) ? String(Math.round(value)) : null
+    }
+
+    function finiteBytes(value) {
+      return typeof value === 'number' && Number.isFinite(value) && value >= 0 ? value : null
+    }
+
+    /** One line per breached metric; empty means the pill shows nothing at all. */
+    function monitorAlerts(config, sample) {
+      if (config === null || sample === null || config.enabled === false) return []
+      const lines = []
+      for (const section of MONITOR_SECTIONS) {
+        const setting = config[section.key]
+        if (setting === undefined || setting === null || setting.enabled === false) continue
+        const metric = sample[section.key]
+        const percent = percentOf(metric === undefined || metric === null ? null : metric.percent)
+        if (percent === null || percent < setting.threshold) continue
+        lines.push(section.label + ' ' + formatPercent(percent) + ' 超过 ' + setting.threshold + '%')
+      }
+      return lines
+    }
+
+    /** A 200 carrying `error` is a collection failure, never a sample. */
+    function sampleOf(body) {
+      if (body === null || typeof body !== 'object' || body.error) return null
+      const part = (value) => (value !== null && typeof value === 'object' ? value : {})
+      return {
+        cpu: part(body.cpu),
+        mem: part(body.mem),
+        disk: part(body.disk),
+        sampledAt: typeof body.sampledAt === 'string' ? body.sampledAt : '',
+      }
+    }
+
+    function monitorSub(key, metric) {
+      if (key === 'cpu') {
+        const parts = []
+        const cores = formatCount(metric.cores)
+        if (cores !== null) parts.push(cores + ' 核')
+        const load = formatLoad(metric.load1)
+        if (load !== null) parts.push('负载 ' + load)
+        return parts.length > 0 ? parts.join(' · ') : '数据不可用'
+      }
+      const total = finiteBytes(metric.totalBytes)
+      if (key === 'mem') {
+        const used = finiteBytes(metric.usedBytes)
+        if (total === null || used === null) return '数据不可用'
+        return formatBytes(used) + ' / ' + formatBytes(total)
+      }
+      const mount = typeof metric.mount === 'string' && metric.mount.length > 0 ? metric.mount : '—'
+      const available = finiteBytes(metric.availableBytes)
+      if (total === null || available === null) return mount
+      return mount + ' · ' + formatBytes(available) + ' 可用 / ' + formatBytes(total)
+    }
+
+    function clockOf(iso) {
+      if (typeof iso !== 'string' || iso.length === 0) return ''
+      const date = new Date(iso)
+      if (Number.isNaN(date.getTime())) return ''
+      const pad = (value) => (value < 10 ? '0' : '') + value
+      return pad(date.getHours()) + ':' + pad(date.getMinutes()) + ':' + pad(date.getSeconds())
+    }
+
+    function monitorRow(key, label, percent, sub, alert) {
+      const value = percentOf(percent)
+      return h('div', { key, className: 'rd-mon-row', 'data-alert': alert ? 'true' : 'false' },
+        h('div', { className: 'rd-mon-line' },
+          h('span', { className: 'rd-mon-name' }, label),
+          h('span', { className: 'rd-mon-bar' }, h('i', { style: { width: (value === null ? 0 : value) + '%' } })),
+          h('span', { className: 'rd-mon-val' }, formatPercent(percent)),
+        ),
+        h('div', { className: 'rd-mon-sub' }, sub),
+      )
+    }
+
+    function MonitorStatus(props) {
+      const { config, sample, failure, loading } = props
+      if (config !== null && config.enabled === false) {
+        return h('div', { className: 'rd-mon' },
+          h('div', { className: 'rd-mon-hd' }, '服务器状态'),
+          h('div', { className: 'rd-hmenu-empty' }, '监控已关闭',
+            h('span', { className: 'sub' }, '在下方「监控设置」中开启后才会采样。')),
+        )
+      }
+      const rows = MONITOR_SECTIONS.map((section) => {
+        const setting = config === null || config[section.key] === undefined ? MONITOR_FALLBACK[section.key] : config[section.key]
+        const metric = sample === null ? null : sample[section.key]
+        const off = setting.enabled === false
+        const percent = off || metric === null || metric === undefined ? null : metric.percent
+        const value = percentOf(percent)
+        const alert = !off && value !== null && value >= setting.threshold
+        const sub = off
+          ? '已关闭'
+          : metric === null || metric === undefined ? (loading ? '采样中…' : '—') : monitorSub(section.key, metric)
+        return monitorRow(section.key, section.label, percent, sub, alert)
+      })
+      const clock = sample === null ? '' : clockOf(sample.sampledAt)
+      return h('div', { className: 'rd-mon' },
+        h('div', { className: 'rd-mon-hd' }, '服务器状态',
+          config === null ? null : h('span', { className: 'r' }, '每 ' + Math.round(config.intervalMs / 1000) + ' 秒')),
+        rows,
+        failure.length > 0
+          ? h('div', { className: 'rd-mon-err' }, '不可用 · ' + failure)
+          : clock.length > 0 ? h('div', { className: 'rd-mon-foot' }, '更新于 ' + clock) : null,
+      )
+    }
+
     function Console() {
       const state = useStore((s) => s.state)
       const ready = useStore((s) => s.ready)
@@ -2672,6 +2879,99 @@ window.__ModuleLoader__.load({
 
     function useRemote(sessionId) {
       return useStore(() => remoteForSession(sessionId))
+    }
+    /**
+     * Live server status for one header pill.
+     *
+     * Sampling only exists while the dropdown is open: `active` is the panel
+     * state, and once closed the interval is cleared, so a page full of pills
+     * never polls in the background. The config itself is fetched on the first
+     * open and cached for every later one.
+     */
+    function useMonitor(remote, active) {
+      const [config, setConfig] = React.useState(null)
+      const [sample, setSample] = React.useState(null)
+      const [failure, setFailure] = React.useState('')
+      const [loading, setLoading] = React.useState(false)
+      const [token, setToken] = React.useState(0)
+      const configRef = React.useRef(null)
+      const connectionId = remote ? String(remote.connectionId || '') : ''
+      const dir = remote ? String(remote.path || '') : ''
+
+      React.useEffect(() => {
+        if (!active || connectionId === '' || configRef.current !== null) return undefined
+        let closed = false
+        void (async () => {
+          let next
+          try {
+            const body = await call('/monitor', { timeoutMs: 10000 })
+            next = normalizeMonitor(body ? body.config : null)
+          } catch {
+            next = normalizeMonitor(null)
+          }
+          if (closed) return
+          configRef.current = next
+          setConfig(next)
+        })()
+        return () => { closed = true }
+      }, [active, connectionId])
+
+      // Another session may sit on another connection, or another folder whose
+      // disk is a different storage body.
+      React.useEffect(() => {
+        setSample(null)
+        setFailure('')
+      }, [connectionId, dir])
+
+      const live = config !== null && config.enabled !== false
+      const intervalMs = config === null ? 0 : config.intervalMs
+
+      React.useEffect(() => {
+        if (!active || connectionId === '' || !live) return undefined
+        let closed = false
+        let seq = 0
+        const tick = async () => {
+          seq += 1
+          const mine = seq
+          setLoading(true)
+          try {
+            const query = dir.length > 0 ? '?path=' + encodeURIComponent(dir) : ''
+            const body = await call('/connections/' + encodeURIComponent(connectionId) + '/metrics' + query, { timeoutMs: 10000 })
+            if (closed || mine !== seq) return
+            const next = sampleOf(body)
+            if (next === null) {
+              setSample(null)
+              setFailure(String(body && body.error ? body.error : '采集失败'))
+            } else {
+              setSample(next)
+              setFailure('')
+            }
+          } catch (error) {
+            if (closed || mine !== seq) return
+            setSample(null)
+            setFailure(error instanceof Error ? error.message : String(error))
+          }
+          if (!closed && mine === seq) setLoading(false)
+        }
+        void tick()
+        const timer = setInterval(() => { void tick() }, intervalMs)
+        return () => {
+          closed = true
+          seq += 1
+          clearInterval(timer)
+        }
+      }, [active, connectionId, dir, live, intervalMs, token])
+
+      // Called after a successful save: the new thresholds apply to the sample
+      // already on screen, and the token re-runs the effect for a fresh one.
+      const applyConfig = React.useCallback((raw) => {
+        const next = normalizeMonitor(raw)
+        configRef.current = next
+        setConfig(next)
+        setToken((value) => value + 1)
+      }, [])
+
+      return { config, sample, failure, loading, applyConfig }
     }
 
     function SessionBadge({ sessionId }) {
@@ -3240,6 +3540,108 @@ window.__ModuleLoader__.load({
       )
     }
 
+    function monitorDraft(config) {
+      const source = config === null ? MONITOR_FALLBACK : config
+      const part = (key) => {
+        const setting = source[key] === undefined || source[key] === null ? MONITOR_FALLBACK[key] : source[key]
+        return { enabled: setting.enabled !== false, threshold: setting.threshold }
+      }
+      return {
+        enabled: source.enabled !== false,
+        intervalSec: Math.round(source.intervalMs / 1000),
+        cpu: part('cpu'),
+        mem: part('mem'),
+        disk: part('disk'),
+      }
+    }
+
+    function MonitorSettings(props) {
+      const { config, onApply } = props
+      const [draft, setDraft] = React.useState(() => monitorDraft(config))
+      const [saving, setSaving] = React.useState(false)
+      const [hint, setHint] = React.useState('')
+
+      // The form follows the cached config until a save replaces it; a failed
+      // save keeps the edited values.
+      React.useEffect(() => { setDraft(monitorDraft(config)) }, [config])
+
+      const patch = (key, value) => {
+        setDraft((current) => ({ ...current, [key]: value }))
+      }
+      const patchSection = (key, value) => {
+        setDraft((current) => ({ ...current, [key]: { ...current[key], ...value } }))
+      }
+      const save = async () => {
+        const payload = {
+          enabled: draft.enabled !== false,
+          intervalMs: clampInt(draft.intervalSec, 10, 300, 30) * 1000,
+          cpu: { enabled: draft.cpu.enabled !== false, threshold: clampInt(draft.cpu.threshold, 1, 100, MONITOR_FALLBACK.cpu.threshold) },
+          mem: { enabled: draft.mem.enabled !== false, threshold: clampInt(draft.mem.threshold, 1, 100, MONITOR_FALLBACK.mem.threshold) },
+          disk: { enabled: draft.disk.enabled !== false, threshold: clampInt(draft.disk.threshold, 1, 100, MONITOR_FALLBACK.disk.threshold) },
+        }
+        setSaving(true)
+        setHint('')
+        try {
+          const body = await call('/monitor', { method: 'POST', body: payload, timeoutMs: 10000 })
+          onApply(body && body.config ? body.config : payload)
+          pushNotice('监控设置已保存')
+        } catch (error) {
+          pushToast(error)
+          setHint('保存失败，已保留原值')
+        }
+        setSaving(false)
+      }
+      const numberField = (field, value, min, max, step, disabled, onChange) => h('input', {
+        type: 'number',
+        min,
+        max,
+        step,
+        'data-field': field,
+        value: String(value),
+        disabled,
+        onChange: (event) => onChange(event.target.value),
+      })
+      return h('div', { className: 'rd-mon-form' },
+        h('div', { className: 'rd-mon-frow' },
+          h('input', {
+            type: 'checkbox',
+            'data-field': 'enabled',
+            checked: draft.enabled !== false,
+            onChange: (event) => patch('enabled', event.target.checked),
+          }),
+          h('span', { className: 'lb' }, '启用服务器状态监控'),
+        ),
+        h('div', { className: 'rd-mon-frow' },
+          h('span', { className: 'lb' }, '刷新间隔（秒，10–300）'),
+          numberField('intervalSec', draft.intervalSec, 10, 300, 10, draft.enabled === false, (value) => patch('intervalSec', value)),
+        ),
+        MONITOR_SECTIONS.map((section) => h('div', { key: section.key, className: 'rd-mon-frow' },
+          h('input', {
+            type: 'checkbox',
+            'data-field': section.key + '.enabled',
+            checked: draft[section.key].enabled !== false,
+            disabled: draft.enabled === false,
+            onChange: (event) => patchSection(section.key, { enabled: event.target.checked }),
+          }),
+          h('span', { className: 'lb' }, section.label + ' 告警阈值'),
+          numberField(
+            section.key + '.threshold',
+            draft[section.key].threshold,
+            1,
+            100,
+            1,
+            draft.enabled === false || draft[section.key].enabled === false,
+            (value) => patchSection(section.key, { threshold: value }),
+          ),
+        )),
+        hint.length > 0 ? h('div', { className: 'rd-mon-err' }, hint) : null,
+        h('div', { className: 'rd-mon-acts' },
+          h('button', { className: 'rd-btn', disabled: saving, onClick: () => { void save() } }, saving ? '保存中…' : '保存'),
+          h('button', { className: 'rd-btn', disabled: saving, onClick: () => setDraft(monitorDraft(config)) }, '重置'),
+        ),
+      )
+    }
+
     function HeaderPill(props) {
       const { sessionId } = props
       const remote = useRemote(sessionId)
@@ -3247,6 +3649,10 @@ window.__ModuleLoader__.load({
       const [menu, setMenu] = React.useState(null)
       const [busy, setBusy] = React.useState('')
       const anchor = React.useRef(null)
+      const [settingsOpen, setSettingsOpen] = React.useState(false)
+      const monitor = useMonitor(remote, menu !== null)
+      const alerts = monitorAlerts(monitor.config, monitor.sample)
+
       const place = React.useCallback(() => {
         const node = anchor.current
         if (node === null) return
@@ -3285,6 +3691,7 @@ window.__ModuleLoader__.load({
       const toggle = () => {
         if (menu !== null) {
           setMenu(null)
+          setSettingsOpen(false)
           return
         }
         void refresh()
@@ -3309,6 +3716,9 @@ window.__ModuleLoader__.load({
         h(Dot, { state: status }),
         h(Icon, { name: 'server', size: 14 }),
         h('span', null, remote.host + ' · ' + (remote.folder || remote.title)),
+        alerts.length > 0
+          ? h('span', { className: 'rd-hpill-alert', title: alerts.join('；') }, h(Icon, { name: 'alert', size: 11 }))
+          : null,
         forwards.length > 0
           ? h('span', { className: 'rd-hpill-count', title: forwards.length + ' 个端口转发，点开查看' },
             h(Icon, { name: 'link', size: 11 }), String(forwards.length))
@@ -3330,6 +3740,12 @@ window.__ModuleLoader__.load({
               h('span', { className: 'nm' }, remote.host + ' · ' + (remote.folder || remote.title)),
               host ? h('span', { className: 'path' }, host.username) : null,
             ),
+            h(MonitorStatus, {
+              config: monitor.config,
+              sample: monitor.sample,
+              failure: monitor.failure,
+              loading: monitor.loading,
+            }),
             h('div', { className: 'rd-hmenu-sect' }, '端口转发' + (forwards.length > 0 ? ' · ' + forwards.length : '')),
             forwards.length === 0
               ? h('div', { className: 'rd-hmenu-empty' }, '还没有端口转发',
@@ -3349,6 +3765,13 @@ window.__ModuleLoader__.load({
               ))),
             h('button', { className: 'rd-hmenu-foot', onClick: () => { setMenu(null); openConsole(remote.connectionId) } },
               h(Icon, { name: 'server', size: 13 }), '进入远程开发'),
+            h('button', {
+              className: 'rd-mon-set',
+              onClick: () => setSettingsOpen((value) => !value),
+            }, h(Icon, { name: 'edit', size: 12 }), settingsOpen ? '收起监控设置' : '监控设置'),
+            settingsOpen
+              ? h(MonitorSettings, { config: monitor.config, onApply: monitor.applyConfig })
+              : null,
           ),
       )
     }
