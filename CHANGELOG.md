@@ -11,6 +11,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - v1.1.0: full xterm.js terminal, i18n (zh/en), explicit debug switch, virtualized large folders.
 
+## [1.4.0] - 2026-11-11
+
+### Added
+
+- ProxyJump: a connection can name jump hosts (`[user@]host[:port]`, comma-separated for a chain) that
+  DSH reaches through before the target. Each hop authenticates with the configured connection it names
+  when one matches — by alias, or by host/port/user — and otherwise falls back to the target's own
+  credentials, so a bastion does not need a second copy of its key. The spec is stored on the record and
+  is returned by the connection view. Verified on real hosts: a target reachable only from the jump
+  (its own `127.0.0.1:22`) answers a full session through the chain.
+
+### Fixed
+
+- A job command that calls `exit` (`exit 0` at the end of a submission script, say) no longer loses its
+  exit code: the command runs in a subshell, so an inner `exit` ends the subshell instead of the wrapper
+  that publishes the status. Previously such a job was reported as `failed` with an unknown code.
+
 ## [1.3.0] - 2026-11-11
 
 ### Added

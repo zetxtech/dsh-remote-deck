@@ -33,7 +33,7 @@ const DATA_DIR = join(DSH_HOME, 'remote-deck')
 const LEGACY_DIR = join(DSH_HOME, 'remote-ssh')
 const WORKSPACE_ROOT = join(DATA_DIR, 'workspaces')
 const LEGACY_WORKSPACE_ROOT = join(LEGACY_DIR, 'workspaces')
-const BUILD = '1.3.0'
+const BUILD = '1.4.0'
 const diagnostics = { pid: process.pid, ssh2: 'pending', ssh2Error: '', checkedAt: 0 }
 void ssh2SelfTest().then((result) => {
   diagnostics.ssh2 = result.ok ? 'ok' : 'failed'
@@ -68,6 +68,15 @@ export function apply(ctx) {
         onConnected: (connected) => {
           void forwards.restoreFor(connected.record.id)
         },
+        // A ProxyJump hop reuses the credentials of the configured connection it
+        // names (by alias, or by host/port/user), so a bastion does not need a
+        // second copy of its key in the store.
+        resolveHop: (hop) => store.list().find((row) => {
+          if (row.name === hop.host) return true
+          if (row.host !== hop.host) return false
+          if (hop.user.length > 0 && row.username !== hop.user) return false
+          return row.port === hop.port
+        }),
       })
       hosts.set(id, host)
     } else {
