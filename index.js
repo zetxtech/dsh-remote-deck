@@ -19,6 +19,7 @@ import { createApi } from './lib/api.js'
 import { ConnectionStore, RemoteHost, Secrets, ssh2SelfTest } from './lib/connection.js'
 import { ForwardManager } from './lib/forwards.js'
 import { installWorkspacePromptGuide } from './lib/guide.js'
+import { installTerminalRedirect, resolveSshPath } from './lib/remote-terminal.js'
 import { Routing } from './lib/routing.js'
 import { readSshConfig } from './lib/ssh-config.js'
 import { TerminalManager } from './lib/terminal.js'
@@ -33,7 +34,7 @@ const DATA_DIR = join(DSH_HOME, 'remote-deck')
 const LEGACY_DIR = join(DSH_HOME, 'remote-ssh')
 const WORKSPACE_ROOT = join(DATA_DIR, 'workspaces')
 const LEGACY_WORKSPACE_ROOT = join(LEGACY_DIR, 'workspaces')
-const BUILD = '1.9.0'
+const BUILD = '1.10.0'
 const diagnostics = { pid: process.pid, ssh2: 'pending', ssh2Error: '', checkedAt: 0 }
 void ssh2SelfTest().then((result) => {
   diagnostics.ssh2 = result.ok ? 'ok' : 'failed'
@@ -437,11 +438,12 @@ export function apply(ctx) {
     hostNameFor: (connectionId) => store.get(connectionId)?.name,
   }))
 
-  // --- ripgrep on the connected host ---------------------------------------
+  // --- subprocess patch: remote ripgrep and the remote sidebar terminal -----
   const subprocessService = ctx.get('subprocess')
-  let originalSpawn = null
-  if (subprocessService !== undefined && typeof subprocessService.spawn === 'function') {
-    originalSpawn = subprocessService.spawn
+  const originalSpawn = subprocessService !== undefined && typeof subprocessService.spawn === 'function'
+    ? subprocessService.spawn
+    : null
+  if (originalSpawn !== null) {
     subprocessService.spawn = function (spec) {
       try {
         const argv = spec !== null && typeof spec === 'object' && Array.isArray(spec.argv) ? spec.argv : null
@@ -457,10 +459,43 @@ export function apply(ctx) {
       }
       return originalSpawn.call(this, spec)
     }
-    ctx.effect(() => () => {
-      if (originalSpawn !== null) subprocessService.spawn = originalSpawn
-    }, 'remote-deck: subprocess patch')
   }
+
+  // The built-in Web sidebar terminal opens its PTY through `spawnTerminal`,
+  // not through `ctx.terminals`. In a remote workspace the local shell cannot
+  // start at all (its `cwd` is a POSIX path), so that single request becomes an
+  // `ssh -tt` client under the provider's own ConPTY; every other terminal
+  // request keeps the local shell untouched.
+  // `DSH_REMOTE_DECK_REMOTE_TERMINAL=0` turns the redirect off entirely and
+  // leaves the provider's local terminal, for a deployment that wants the
+  // stock behaviour back without uninstalling the plugin.
+  const terminalRedirectOff = process.env.DSH_REMOTE_DECK_REMOTE_TERMINAL === '0'
+  let sshClient = null
+  const localSsh = () => {
+    if (sshClient === null) {
+      sshClient = resolveSshPath({
+        resolveExecutable: subprocessService !== undefined && typeof subprocessService.resolveExecutable === 'function'
+          ? (command) => subprocessService.resolveExecutable(command)
+          : undefined,
+      }).catch(() => null)
+    }
+    return sshClient
+  }
+  const terminalRedirect = terminalRedirectOff
+    ? { restore: () => {} }
+    : installTerminalRedirect(subprocessService, {
+      resolveTarget: (cwd) => routing.resolveTarget(cwd, undefined),
+      connectionFor: (connectionId) => store.get(connectionId),
+      sshPath: localSsh,
+      localCwd: homedir(),
+      keyExists: (path) => existsSync(path),
+      onRemote: (plan) => debug('remote sidebar terminal on', plan.connectionId, plan.remotePath),
+    })
+  ctx.effect(() => () => {
+    if (subprocessService === undefined) return
+    if (originalSpawn !== null) subprocessService.spawn = originalSpawn
+    terminalRedirect.restore()
+  }, 'remote-deck: subprocess patch')
 
   // --- loopback API ---------------------------------------------------------
   const token = randomBytes(24).toString('hex')

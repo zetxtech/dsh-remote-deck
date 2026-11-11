@@ -11,6 +11,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - v1.1.0: full xterm.js terminal, i18n (zh/en), explicit debug switch, virtualized large folders.
 
+## [1.10.0] - 2026-11-12
+
+### Added
+
+- The Web sidebar terminal now runs on the remote host inside a Remote Deck workspace. The terminal
+  controller spawns through `subprocess.spawnTerminal()` (it bypasses `ctx.terminals` and `spawn`), so
+  the plugin wraps that entry: when the request carries the sidebar's signature (`terminalType:
+  xterm-256color` plus `shellActivity`), its working directory resolves into a remote workspace and the
+  record has a usable key, the spawn becomes the local OpenSSH client in `-tt` mode — a real remote PTY
+  running `bash -l` (falling back to `sh`) in the session's remote directory, with the working directory
+  set to the local home because a POSIX path is not a valid Windows cwd.
+
+### Notes
+
+- Valves: only the sidebar signature is rewritten (the model-facing terminal tool passes `dumb` and is
+  untouched), a rewrite needs a key-authenticated record with an existing key file and a local OpenSSH
+  client, and `DSH_REMOTE_DECK_REMOTE_TERMINAL=0` disables the feature entirely; anything unexpected
+  falls through to the original spawn.
+- Known limits: the sidebar's shell menu still lists locally discovered shells — `terminalEnvironment()`
+  takes no agent, so it cannot answer per session — whichever entry is picked, the PTY is the remote
+  bash. ProxyJump is forwarded as `-J` but was not exercised, and host keys follow OpenSSH's own
+  known_hosts.
+
 ## [1.9.0] - 2026-11-11
 
 ### Changed
