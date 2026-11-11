@@ -1,6 +1,6 @@
 {
   "name": "dsh-remote-deck",
-  "version": "1.4.1",
+  "version": "1.5.0",
   "private": false,
   "type": "module",
   "description": "Remote Deck: SSH workspaces for DeepSeek Harness. Connect any number of machines, browse remote folders, and run DSH sessions with the remote filesystem, shell, search, terminal and port forwarding.",

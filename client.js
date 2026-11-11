@@ -167,6 +167,9 @@ window.__ModuleLoader__.load({
       if (/timeout|超时/.test(lower)) {
         return make('请求超时', '服务暂时无响应，请重试。')
       }
+      if (/transfer_too_large|too large|超过.*上限|512mb/.test(lower)) {
+        return make('文件超过上限', '单个文件最大 512MB；请压缩或分卷后再试。')
+      }
       return make('操作失败', '请重试；如果持续失败，展开详情查看原因。')
     }
 
@@ -201,6 +204,19 @@ window.__ModuleLoader__.load({
       toastTimers.delete(id)
       store.toasts = store.toasts.filter((toast) => toast.id !== id)
       emit()
+    }
+
+    function pushNotice(title, hint) {
+      toastSeq += 1
+      const item = { id: toastSeq, at: Date.now(), level: 'ok', title, hint: hint || '', detail: '' }
+      store.toasts = [item, ...store.toasts].slice(0, 2)
+      emit()
+      const timer = setTimeout(() => {
+        store.toasts = store.toasts.filter((toast) => toast.id !== item.id)
+        toastTimers.delete(item.id)
+        emit()
+      }, 5000)
+      toastTimers.set(item.id, timer)
     }
 
     async function refresh() {
@@ -313,6 +329,7 @@ window.__ModuleLoader__.load({
       link: '<path d="M10 14a4 4 0 0 0 6 0l2-2a4 4 0 0 0-6-6l-1 1"/><path d="M14 10a4 4 0 0 0-6 0l-2 2a4 4 0 0 0 6 6l1-1"/>',
       dots: '<circle cx="5" cy="12" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="19" cy="12" r="1.4"/>',
       bolt: '<path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z"/>',
+      upload: '<path d="M12 17V5"/><path d="M7 9l5-5 5 5"/><path d="M5 21h14"/>',
     }
 
     function Icon({ name, size = 16, style }) {
@@ -540,6 +557,14 @@ window.__ModuleLoader__.load({
       .rd-dl:hover { background:var(--dsw-alias-bg-l2, rgba(15,23,42,.06));color:var(--dsw-alias-label-primary,#1f2329) }
       [data-rd-theme="dark"] .rd-dl { color:var(--dsw-alias-label-secondary,#a8b0bb) }
       [data-rd-theme="dark"] .rd-dl:hover { background:rgba(255,255,255,.08);color:#e6e8eb }
+      .rd-dl:disabled { cursor:default;opacity:.5 }
+      .rd-dl:disabled:hover { background:transparent;color:var(--dsw-alias-label-secondary,#5f6672) }
+      .rd-tf-wrap { align-items:center }
+      .rd-tf-note { margin-left:6px;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;align-self:center;font-size:11px;line-height:16px;color:var(--dsw-alias-label-secondary,#8f959e) }
+      .rd-toast.ok { border-left-color:#2ea043 }
+      [data-rd-theme="dark"] .rd-dl:disabled { opacity:.45 }
+      [data-rd-theme="dark"] .rd-dl:disabled:hover { background:transparent;color:#a8b0bb }
+      [data-rd-theme="dark"] .rd-tf-note { color:var(--dsw-alias-label-secondary,#a8b0bb) }
 
       .rd-newfolder { display: inline-flex; align-items: center; gap: 6px; }
       .rd-newfolder .rd-input { width: 150px; }
@@ -1676,6 +1701,38 @@ window.__ModuleLoader__.load({
       return ''
     }
 
+    // Maps a sidebar "files" path (local stub style, e.g.
+    // C:\Users\...\workspaces\<id>\<name>, or an already remote POSIX path)
+    // onto the remote POSIX path of the owning workspace row.
+    function remoteTargetFor(remote, value, loosePosix) {
+      if (!remote) return ''
+      const raw = typeof value === 'string' ? value.trim() : ''
+      if (raw.length === 0) return ''
+      const path = raw.replace(/\\/g, '/').replace(/\/+$/, '')
+      if (path.length === 0) return ''
+      const root = String(remote.path || '').replace(/\/+$/, '')
+      const stub = String(remote.stub || '').replace(/\\/g, '/').replace(/\/+$/, '')
+      if (stub.length > 0 && (path === stub || path.toLowerCase().startsWith(stub.toLowerCase() + '/'))) {
+        return root.length > 0 ? root + path.slice(stub.length) : ''
+      }
+      const underRoot = root.length === 0 || path === root || path.startsWith(root + '/')
+      if (isRemotePosix(path) && (loosePosix === true || underRoot)) return path
+      return ''
+    }
+
+    function resolveRemoteDir(rows, value) {
+      const list = Array.isArray(rows) ? rows : []
+      let best = null
+      for (const row of list) {
+        if (!row || typeof row !== 'object') continue
+        const target = remoteTargetFor(row, value, false)
+        if (target.length === 0) continue
+        const score = String(row.stub || '').replace(/\\/g, '/').length + String(row.path || '').length
+        if (best === null || score > best.score) best = { row, target, score }
+      }
+      return best
+    }
+
     function assetUrl(name) {
       const info = boot()
       return info === null ? '' : apiBase() + '/assets/' + name + '?token=' + encodeURIComponent(info.token)
@@ -2655,6 +2712,31 @@ window.__ModuleLoader__.load({
       }, h(Icon, { name: 'download', size: 16 }))
     }
 
+    function PreviewStreamDownloadAction(props) {
+      const remote = useRemote(props.sessionId)
+      if (!remote || !props.absolutePath) return null
+      const target = remoteTargetFor(remote, String(props.absolutePath), true)
+      if (target.length === 0) return null
+      const info = boot()
+      if (info === null) return null
+      const download = () => {
+        const href = apiBase() + '/connections/' + encodeURIComponent(remote.connectionId) + '/download?path=' + encodeURIComponent(target) + '&token=' + encodeURIComponent(info.token)
+        const anchor = document.createElement('a')
+        anchor.href = href
+        anchor.download = target.split('/').filter(Boolean).pop() || 'download'
+        document.body.appendChild(anchor)
+        anchor.click()
+        anchor.remove()
+      }
+      return h('button', {
+        type: 'button',
+        className: 'rd-dl',
+        title: '直接下载（直链）：' + target,
+        'aria-label': '直接下载（直链）',
+        onClick: download,
+      }, h(Icon, { name: 'link', size: 16 }))
+    }
+
     function DeliverableDownloadAction(props) {
       const remote = useRemote(props.sessionId)
       const wrapRef = React.useRef(null)
@@ -2697,6 +2779,137 @@ window.__ModuleLoader__.load({
           'aria-label': '下载到本机',
           onClick: download,
         }, h(Icon, { name: 'download', size: 16 })),
+      )
+    }
+
+    // ---------------------------------------------------------------- files tab transfer
+
+    const UPLOAD_LIMIT_BYTES = 512 * 1024 * 1024
+    const UPLOAD_LIMIT_LABEL = '512MB'
+
+    const NO_WORKSPACE_ROWS = []
+
+    function useFilesTarget(props) {
+      const rows = useStore(() => (store.state && store.state.workspaces) || NO_WORKSPACE_ROWS)
+      const sessionRemote = useRemote(props && props.sessionId)
+      const raw = props && typeof props.absolutePath === 'string' ? props.absolutePath : ''
+      if (sessionRemote) {
+        const target = remoteTargetFor(sessionRemote, raw, true)
+        if (target.length > 0) return { remote: sessionRemote, target }
+      }
+      const found = resolveRemoteDir(rows, raw)
+      if (found === null) return null
+      return { remote: found.row, target: found.target }
+    }
+
+    function DirDownloadAction(props) {
+      const found = useFilesTarget(props)
+      if (found === null) return null
+      const info = boot()
+      if (info === null) return null
+      const dir = found.target
+      const connectionId = found.remote.connectionId
+      const base = dir.split('/').filter(Boolean).pop() || 'download'
+      const download = () => {
+        const href = apiBase() + '/connections/' + encodeURIComponent(connectionId) + '/archive?path=' + encodeURIComponent(dir) + '&token=' + encodeURIComponent(info.token)
+        const anchor = document.createElement('a')
+        anchor.href = href
+        anchor.download = base + '.tar.gz'
+        document.body.appendChild(anchor)
+        anchor.click()
+        anchor.remove()
+      }
+      return h('button', {
+        type: 'button',
+        className: 'rd-dl',
+        title: '下载此目录（tar.gz）：' + dir,
+        'aria-label': '下载此目录（tar.gz）',
+        onClick: download,
+      }, h(Icon, { name: 'download', size: 16 }))
+    }
+
+    function DirUploadAction(props) {
+      const found = useFilesTarget(props)
+      const inputRef = React.useRef(null)
+      const [busy, setBusy] = React.useState(false)
+      const [note, setNote] = React.useState('')
+      React.useEffect(() => {
+        if (note.length === 0) return undefined
+        const timer = setTimeout(() => setNote(''), 6000)
+        return () => clearTimeout(timer)
+      }, [note])
+      if (found === null) return null
+      const info = boot()
+      if (info === null) return null
+      const dir = found.target
+      const connectionId = found.remote.connectionId
+      const pick = () => {
+        if (busy) return
+        const node = inputRef.current
+        if (node !== null) node.click()
+      }
+      const send = async (file) => {
+        const name = file && typeof file.name === 'string' && file.name.trim().length > 0 ? file.name : 'upload.bin'
+        if (file && typeof file.size === 'number' && file.size > UPLOAD_LIMIT_BYTES) {
+          pushToast(new Error('「' + name + '」超过 ' + UPLOAD_LIMIT_LABEL + ' 上限，已跳过'))
+          return false
+        }
+        const url = apiBase() + '/connections/' + encodeURIComponent(connectionId) + '/upload?path=' + encodeURIComponent(dir) + '&name=' + encodeURIComponent(name)
+        try {
+          const response = await fetch(url, {
+            method: 'POST',
+            headers: { 'x-dsh-remote-token': info.token, 'content-type': 'application/octet-stream' },
+            body: file,
+          })
+          const payload = await response.json().catch(() => null)
+          if (response.ok && payload !== null && payload.ok !== false) return true
+          const code = payload && payload.code ? payload.code : ''
+          const message = payload && payload.message ? payload.message : 'HTTP ' + response.status
+          if (code === 'TRANSFER_TOO_LARGE') pushToast(new Error('「' + name + '」超过远端 ' + UPLOAD_LIMIT_LABEL + ' 上限'))
+          else pushToast(new Error(code ? code + '：' + message : message))
+          return false
+        } catch (failure) {
+          pushToast(failure)
+          return false
+        }
+      }
+      const onFiles = async (event) => {
+        const node = event.currentTarget
+        const list = node && node.files ? Array.prototype.slice.call(node.files) : []
+        if (list.length === 0) return
+        if (node) node.value = ''
+        setBusy(true)
+        setNote('上传中 0/' + list.length)
+        let done = 0
+        let failed = 0
+        for (let index = 0; index < list.length; index += 1) {
+          const ok = await send(list[index])
+          if (ok) done += 1
+          else failed += 1
+          setNote('上传中 ' + (done + failed) + '/' + list.length)
+        }
+        setBusy(false)
+        setNote(failed === 0 ? '已上传 ' + done + ' 个文件' : '已上传 ' + done + '，失败 ' + failed)
+        if (done > 0) pushNotice('已上传 ' + done + ' 个文件', dir)
+        void refresh()
+      }
+      return h('span', { className: 'rd-dl-wrap rd-tf-wrap' },
+        h('button', {
+          type: 'button',
+          className: 'rd-dl',
+          disabled: busy,
+          title: busy ? '正在上传…' : '上传到此处：' + dir,
+          'aria-label': '上传到此处',
+          onClick: pick,
+        }, h(Icon, { name: 'upload', size: 16 })),
+        h('input', {
+          ref: inputRef,
+          type: 'file',
+          multiple: true,
+          style: { display: 'none' },
+          onChange: onFiles,
+        }),
+        note.length > 0 ? h('span', { className: 'rd-tf-note' }, note) : null,
       )
     }
 
@@ -3037,6 +3250,15 @@ window.__ModuleLoader__.load({
       ))
       offs.push(ctx.slots.inject('sidebar.right.tab.document.unpreviewable', () =>
         ctx.slots.register({ name: 'sidebar.right.tab.document.unpreviewable', id: 'remote-deck-download', order: 20 }, PreviewDownloadAction),
+      ))
+      offs.push(ctx.slots.inject('sidebar.right.tab.document.actions', () =>
+        ctx.slots.register({ name: 'sidebar.right.tab.document.actions', id: 'remote-deck-download-stream', order: 19 }, PreviewStreamDownloadAction),
+      ))
+      offs.push(ctx.slots.inject('sidebar.right.tab.files.actions', () =>
+        ctx.slots.register({ name: 'sidebar.right.tab.files.actions', id: 'remote-deck-dir-download', order: 20 }, DirDownloadAction),
+      ))
+      offs.push(ctx.slots.inject('sidebar.right.tab.files.actions', () =>
+        ctx.slots.register({ name: 'sidebar.right.tab.files.actions', id: 'remote-deck-dir-upload', order: 21 }, DirUploadAction),
       ))
       offs.push(ctx.slots.inject('main', () =>
         ctx.slots.register({ name: 'main', key: 'remote-deck' }, Console),

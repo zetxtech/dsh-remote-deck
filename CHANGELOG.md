@@ -11,6 +11,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - v1.1.0: full xterm.js terminal, i18n (zh/en), explicit debug switch, virtualized large folders.
 
+## [1.5.0] - 2026-11-11
+
+### Added
+
+- Folder download: the file panel's title row offers 下载此目录, which streams a `tar czf -` archive of the
+  displayed remote folder straight to the browser. Single files keep the existing direct download.
+- Upload: 上传到此处 writes picked files into the displayed remote folder over SFTP, one request per file,
+  toasting each result and refreshing the panel afterwards.
+- Transfer guard: uploads and archives are capped at 512 MB (`MAX_TRANSFER_BYTES`, overridable with the
+  API's `transferLimitBytes`). An oversized upload is refused with `TRANSFER_TOO_LARGE` before a byte is
+  written; an archive that grows past the cap is cut off mid-stream.
+
+### Fixed
+
+- The loopback API parsed every POST body as JSON before routing, which consumed the raw bytes an upload
+  needs; the upload route now bypasses that reader.
+
 ## [1.4.1] - 2026-11-11
 
 ### Changed
