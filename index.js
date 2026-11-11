@@ -18,6 +18,7 @@ import { fileURLToPath } from 'node:url'
 import { createApi } from './lib/api.js'
 import { ConnectionStore, RemoteHost, Secrets, ssh2SelfTest } from './lib/connection.js'
 import { ForwardManager } from './lib/forwards.js'
+import { installWorkspacePromptGuide } from './lib/guide.js'
 import { Routing } from './lib/routing.js'
 import { readSshConfig } from './lib/ssh-config.js'
 import { TerminalManager } from './lib/terminal.js'
@@ -32,7 +33,7 @@ const DATA_DIR = join(DSH_HOME, 'remote-deck')
 const LEGACY_DIR = join(DSH_HOME, 'remote-ssh')
 const WORKSPACE_ROOT = join(DATA_DIR, 'workspaces')
 const LEGACY_WORKSPACE_ROOT = join(LEGACY_DIR, 'workspaces')
-const BUILD = '1.8.1'
+const BUILD = '1.9.0'
 const diagnostics = { pid: process.pid, ssh2: 'pending', ssh2Error: '', checkedAt: 0 }
 void ssh2SelfTest().then((result) => {
   diagnostics.ssh2 = result.ok ? 'ok' : 'failed'
@@ -134,6 +135,21 @@ export function apply(ctx) {
   // --- ctx.fs routing -------------------------------------------------------
   const restoreFs = routing.installFs(ctx.fs)
   ctx.effect(() => () => restoreFs(), 'remote-deck: fs patch')
+
+  // --- remote workspace prompt guidance -------------------------------------
+  // Adding a remote workspace used to write an `AGENTS.md` into the user's own
+  // project directory. Nothing is written now: the model learns that the
+  // workspace is remote from a system-prompt section plus one runtime-context
+  // line. Both are registered once and resolved per model step, so a local
+  // Session contributes empty text and never sees them; `ctx.inject` keeps this
+  // plugin loadable on a profile that exposes no `systemPrompt` service.
+  ctx.inject(['systemPrompt'], (scope) => {
+    installWorkspacePromptGuide(scope, {
+      directoryOf: (agent) => ctx.workingDirectory.get(agent.session),
+      resolveTarget: (cwd) => routing.resolveTarget(cwd, undefined),
+      hostNameFor: (connectionId) => store.get(connectionId)?.name,
+    })
+  })
 
   // --- bash tool ------------------------------------------------------------
   /**

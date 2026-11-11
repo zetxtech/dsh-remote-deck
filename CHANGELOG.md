@@ -11,6 +11,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - v1.1.0: full xterm.js terminal, i18n (zh/en), explicit debug switch, virtualized large folders.
 
+## [1.9.0] - 2026-11-11
+
+### Changed
+
+- Adding a remote workspace no longer writes an `AGENTS.md` into the user's project. The guidance now
+  reaches the model through the harness: `ctx.systemPrompt.section()` carries a paragraph and
+  `ctx.systemPrompt.context()` a runtime line naming the host and the remote path. Both are produced per
+  agent and are empty for Sessions whose working directory is not inside a remote workspace — the
+  assembler drops empty text, so local Sessions see nothing at all.
+- The workspace dialog loses its "写入 AGENTS.md" switch, and the `writeGuide` option is retired (a caller
+  that still passes it is ignored rather than an error).
+
+### Notes
+
+- Only the write path is removed: files an older build already created stay where they are; delete them
+  by hand if you do not want them. Nothing in the plugin reads `AGENTS.md` itself.
+
 ## [1.8.1] - 2026-11-11
 
 ### Added

@@ -1388,7 +1388,6 @@ window.__ModuleLoader__.load({
       const [selected, setSelected] = React.useState('')
       const [title, setTitle] = React.useState('')
       const [titleEdited, setTitleEdited] = React.useState(false)
-      const [writeGuide, setWriteGuide] = React.useState(true)
       const [openAfter, setOpenAfter] = React.useState(true)
       const [busy, setBusy] = React.useState('')
       const [error, setError] = React.useState('')
@@ -1467,7 +1466,7 @@ window.__ModuleLoader__.load({
           setBusy('add')
           setError('')
           try {
-            const result = await addRemoteWorkspace(host.id, targetPath, { title: titleEdited ? title : undefined, writeGuide })
+            const result = await addRemoteWorkspace(host.id, targetPath, { title: titleEdited ? title : undefined })
             if (openAfter) {
               const item = (store.workspaces.items || []).find((entry) => samePath(entry.path, result.stub))
               const ui = ctxRef ? ctxRef.get('uiWorkspace') : undefined
@@ -1510,7 +1509,6 @@ window.__ModuleLoader__.load({
         })),
         field('远程路径', h('div', { className: 'rd-wspath mono' }, targetPath || '—')),
         h('div', { style: { marginTop: 10 } },
-          toggleSwitch('写入 AGENTS.md', '告诉模型这里在远程机器上，路径用 POSIX', writeGuide, setWriteGuide),
           toggleSwitch('创建后打开新会话', '直接进入该工作区的对话', openAfter, setOpenAfter),
         ),
         h('button', { className: 'rd-btn primary rd-wsadd', disabled: busy !== '' || !host || targetPath.length === 0, onClick: add },
@@ -3354,7 +3352,7 @@ window.__ModuleLoader__.load({
       const opt = options || {}
       const result = await call('/connections/' + encodeURIComponent(connectionId) + '/workspaces', {
         method: 'POST',
-        body: { path: dir, title: opt.title, writeGuide: opt.writeGuide },
+        body: { path: dir, title: opt.title },
       })
       await refresh()
       if (opt.notice === true) pushNotice('已添加工作区', result && result.stub ? result.stub : dir)
