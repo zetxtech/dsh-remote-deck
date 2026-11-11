@@ -252,8 +252,10 @@ test('buildRunScript quotes cwd, dir and keeps the command verbatim', () => {
     [
       '#!/bin/bash',
       `cd '/srv/my app/it'\\''s' 2>/dev/null || cd ~`,
+      '(',
       'echo "hi"',
       'exit 3',
+      ')',
       'status=$?',
       `printf '%s\\n' "$status" > '/tmp/dsh-remote-deck-jobs/abc'/exit.tmp && mv -f '/tmp/dsh-remote-deck-jobs/abc'/exit.tmp '/tmp/dsh-remote-deck-jobs/abc'/exit`,
       'exit "$status"',
@@ -264,10 +266,23 @@ test('buildRunScript quotes cwd, dir and keeps the command verbatim', () => {
 
 test('buildRunScript falls back to the home directory without a cwd', () => {
   const script = buildRunScript({ command: 'make', cwd: '', dir: '/tmp/jobs/1' })
-  assert.match(script, /^#!\/bin\/bash\ncd '~' 2>\/dev\/null \|\| cd ~\nmake\n/)
+  assert.match(script, /^#!\/bin\/bash\ncd '~' 2>\/dev\/null \|\| cd ~\n\(\nmake\n\)\n/)
   // The code is published atomically: never a plain redirect into exit.
   assert.ok(script.includes(`printf '%s\\n' "$status" > '/tmp/jobs/1'/exit.tmp && mv -f '/tmp/jobs/1'/exit.tmp '/tmp/jobs/1'/exit`))
   assert.ok(!script.includes('echo "$status" >'))
+})
+
+test('buildRunScript keeps an inner exit from skipping the exit code', () => {
+  const script = buildRunScript({ command: 'echo bye; exit 7', cwd: '/srv', dir: '/tmp/jobs/9' })
+  const lines = script.split('\n')
+  const open = lines.indexOf('(')
+  const close = lines.indexOf(')')
+  const body = lines.indexOf('echo bye; exit 7')
+  const status = lines.indexOf('status=$?')
+  assert.ok(open >= 0, 'the command must be wrapped in a subshell')
+  assert.ok(close > open && body > open && body < close, 'the command must sit inside the subshell')
+  assert.ok(status > close, 'the status capture must run after the subshell')
+  assert.ok(script.includes(`mv -f '/tmp/jobs/9'/exit.tmp '/tmp/jobs/9'/exit`))
 })
 
 test('buildLaunchCommand detaches with setsid and echoes pid and grouped', () => {
