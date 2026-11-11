@@ -11,6 +11,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - v1.1.0: full xterm.js terminal, i18n (zh/en), explicit debug switch, virtualized large folders.
 
+## [1.12.0] - 2026-11-12
+
+### Added
+
+- The sidebar terminal's shell menu now lists the remote shells inside a Remote Deck workspace. That menu
+  is served by `terminal/shells`, and the only layer that knows the Session is the controller's
+  `shells(agent, signal)` — the `terminalEnvironment`/`resolveExecutable` calls beneath it take no agent —
+  so the plugin wraps that method: one bounded probe per connection (cached a minute, fifteen seconds
+  after a failure) lists the installed shells (bash, zsh, fish, dash, ksh, sh), while a local Session
+  keeps the original list untouched.
+- The chosen shell is actually the one that runs: the remote command execs that path with a login flag,
+  guarded by `[ -x ]` with the previous bash/sh fallback, so a shell that disappears between the menu and
+  the open cannot leave a dead tab.
+
+### Notes
+
+- A failed or timed-out probe (10 s), an unreadable workspace or a local Session all fall back to the
+  original provider's answer — never an empty menu. `DSH_REMOTE_DECK_REMOTE_TERMINAL=0` still disables the
+  whole remote-terminal feature (menu and PTY together) and `DSH_REMOTE_DECK_DEBUG=1` logs what was
+  detected and whether the wrap was installed.
+
 ## [1.11.0] - 2026-11-12
 
 ### Changed

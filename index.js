@@ -19,6 +19,7 @@ import { createApi } from './lib/api.js'
 import { ConnectionStore, RemoteHost, Secrets, ssh2SelfTest } from './lib/connection.js'
 import { ForwardManager } from './lib/forwards.js'
 import { installWorkspacePromptGuide } from './lib/guide.js'
+import { installRemoteShells, shellProbeCommand } from './lib/remote-shells.js'
 import { createSshTerminalHandle, installTerminalRedirect } from './lib/remote-terminal.js'
 import { Routing } from './lib/routing.js'
 import { readSshConfig } from './lib/ssh-config.js'
@@ -34,7 +35,7 @@ const DATA_DIR = join(DSH_HOME, 'remote-deck')
 const LEGACY_DIR = join(DSH_HOME, 'remote-ssh')
 const WORKSPACE_ROOT = join(DATA_DIR, 'workspaces')
 const LEGACY_WORKSPACE_ROOT = join(LEGACY_DIR, 'workspaces')
-const BUILD = '1.11.0'
+const BUILD = '1.12.0'
 const diagnostics = { pid: process.pid, ssh2: 'pending', ssh2Error: '', checkedAt: 0 }
 void ssh2SelfTest().then((result) => {
   diagnostics.ssh2 = result.ok ? 'ok' : 'failed'
@@ -45,6 +46,9 @@ void ssh2SelfTest().then((result) => {
   }
 })
 const SHELL_TIMEOUT_MS = 120000
+/** Shell discovery only fills a menu: bounded hard, and never worth a long wait. */
+const SHELL_PROBE_MAX_BYTES = 4096
+const SHELL_PROBE_TIMEOUT_MS = 8000
 
 /** Clamp an integer environment override; invalid values fall back to the default. */
 function readIntEnv(name, fallback, min, max) {
@@ -471,9 +475,9 @@ export function apply(ctx) {
   // `DSH_REMOTE_DECK_REMOTE_TERMINAL=0` turns the redirect off entirely and
   // leaves the provider's local terminal, for a deployment that wants the
   // stock behaviour back without uninstalling the plugin.
-  const terminalRedirect = process.env.DSH_REMOTE_DECK_REMOTE_TERMINAL === '0'
-    ? { restore: () => {} }
-    : installTerminalRedirect(subprocessService, {
+  const remoteTerminalEnabled = process.env.DSH_REMOTE_DECK_REMOTE_TERMINAL !== '0'
+  const terminalRedirect = remoteTerminalEnabled
+    ? installTerminalRedirect(subprocessService, {
       resolveTarget: (cwd) => routing.resolveTarget(cwd, undefined),
       connectionFor: (connectionId) => store.get(connectionId),
       onRemote: (plan) => debug('remote sidebar terminal on', plan.connectionId, plan.remotePath),
@@ -484,11 +488,63 @@ export function apply(ctx) {
         return createSshTerminalHandle({ host, secrets, plan, signal })
       },
     })
+    : { restore: () => {} }
   ctx.effect(() => () => {
     if (subprocessService === undefined) return
     if (originalSpawn !== null) subprocessService.spawn = originalSpawn
     terminalRedirect.restore()
   }, 'remote-deck: subprocess patch')
+
+  // --- remote shell menu ----------------------------------------------------
+  // The sidebar's shell dropdown asks `terminalController.shells(agent, signal)`
+  // for the shells of the Session's execution environment. That method is the
+  // only one on the path that receives the agent, and the gateway resolves it on
+  // every call, so a remote Session can answer with its own shells while every
+  // local Session keeps the stock list. `DSH_REMOTE_DECK_REMOTE_TERMINAL=0`
+  // turns this off with the terminal it belongs to: with the local shell back in
+  // place, offering remote shells would be a lie.
+  if (remoteTerminalEnabled) {
+    ctx.inject(['terminalController'], (scope) => {
+      const remoteShells = installRemoteShells(scope.get('terminalController'), {
+        // The controller reads the committed directory through the agent's own
+        // context (`this.execution(agent).workingDirectory.get(agent.session)`,
+        // dsh-api-terminal-controller/lib/index.js:785-790); the provider this
+        // plugin injects is the same service, and is the fallback here.
+        cwdFor: (agent) => {
+          if (agent === null || typeof agent !== 'object') return undefined
+          let workingDirectory = ctx.workingDirectory
+          try {
+            const scoped = agent.ctx !== undefined && typeof agent.ctx.get === 'function' ? agent.ctx.get('workingDirectory') : undefined
+            if (scoped !== undefined) workingDirectory = scoped
+          } catch {
+            /* the agent context is gone; the plugin's provider still answers */
+          }
+          if (workingDirectory === undefined || typeof workingDirectory.get !== 'function') return undefined
+          try {
+            const cwd = workingDirectory.get(agent.session)
+            return typeof cwd === 'string' && cwd.length > 0 ? cwd : undefined
+          } catch {
+            return undefined
+          }
+        },
+        resolveTarget: (cwd) => routing.resolveTarget(cwd, undefined),
+        probe: async (connectionId) => {
+          const host = hostFor(connectionId)
+          if (host === undefined) throw new Error(`remote-deck: connection ${connectionId} is no longer configured`)
+          await host.ensure(secrets)
+          const result = await host.runCommand(shellProbeCommand(), null, {
+            maxBytes: SHELL_PROBE_MAX_BYTES,
+            timeoutMs: SHELL_PROBE_TIMEOUT_MS,
+          })
+          if (typeof result.transportError === 'string' && result.transportError.length > 0) throw new Error(result.transportError)
+          return result.stdout
+        },
+        onRemote: (target, list) => debug('remote shells on', target.connectionId, list.map((shell) => shell.name).join(',')),
+      })
+      debug('remote shell menu:', remoteShells.installed ? 'installed' : remoteShells.reason)
+      scope.effect(() => () => remoteShells.restore(), 'remote-deck: remote shells')
+    })
+  }
 
   // --- loopback API ---------------------------------------------------------
   const token = randomBytes(24).toString('hex')
