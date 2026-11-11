@@ -565,6 +565,24 @@ window.__ModuleLoader__.load({
       [data-rd-theme="dark"] .rd-dl:disabled { opacity:.45 }
       [data-rd-theme="dark"] .rd-dl:disabled:hover { background:transparent;color:#a8b0bb }
       [data-rd-theme="dark"] .rd-tf-note { color:var(--dsw-alias-label-secondary,#a8b0bb) }
+      .rd-tf-mask { position:fixed;top:0;right:0;bottom:0;left:0;z-index:1200;display:grid;place-items:center;background:rgba(16,24,40,.42) }
+      .rd-tf-dlg { width:min(340px,calc(100vw - 32px));box-sizing:border-box;background:var(--dsw-alias-bg-layer-1,#fff);color:var(--dsw-alias-label-primary,#1f2329);border:1px solid var(--dsw-alias-border-l1,#e8e8ec);border-radius:12px;box-shadow:0 20px 50px rgba(16,24,40,.28);padding:14px 14px 12px;font-size:13px }
+      .rd-tf-dlg .dt { font-weight:600;font-size:13px;line-height:1.45;word-break:break-all }
+      .rd-tf-dlg .ds { margin-top:4px;font-size:11.5px;line-height:1.55;color:var(--dsw-alias-label-secondary,#8f959e);word-break:break-word }
+      .rd-tf-dlg .db { margin-top:8px;font-size:12px;line-height:1.65 }
+      .rd-tf-dlg .da { display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8px;margin-top:14px }
+      .rd-tf-btn { appearance:none;border:1px solid var(--dsw-alias-border-l1,#e8e8ec);background:transparent;color:inherit;border-radius:8px;padding:5px 10px;font-size:12px;line-height:16px;cursor:pointer }
+      .rd-tf-btn:hover { background:rgba(15,23,42,.06) }
+      .rd-tf-btn.primary { background:#2f7ddd;border-color:#2f7ddd;color:#fff }
+      .rd-tf-btn.primary:hover { background:#2a6fc4 }
+      .rd-tf-btn.danger { color:#b42318;border-color:rgba(180,35,24,.4) }
+      .rd-tf-btn.danger:hover { background:rgba(180,35,24,.08) }
+      [data-rd-theme="dark"] .rd-tf-dlg { background:#161a20;color:#e6e8eb;border-color:rgba(255,255,255,.14) }
+      [data-rd-theme="dark"] .rd-tf-dlg .ds { color:#a8b0bb }
+      [data-rd-theme="dark"] .rd-tf-btn { border-color:rgba(255,255,255,.16) }
+      [data-rd-theme="dark"] .rd-tf-btn:hover { background:rgba(255,255,255,.08) }
+      [data-rd-theme="dark"] .rd-tf-btn.danger { color:#ff8f82;border-color:rgba(255,107,92,.42) }
+      [data-rd-theme="dark"] .rd-tf-btn.danger:hover { background:rgba(255,107,92,.14) }
 
       .rd-newfolder { display: inline-flex; align-items: center; gap: 6px; }
       .rd-newfolder .rd-input { width: 150px; }
@@ -2802,15 +2820,89 @@ window.__ModuleLoader__.load({
       return { remote: found.row, target: found.target }
     }
 
+    function countOf(value) {
+      return typeof value === 'number' && Number.isFinite(value) && value > 0 ? Math.round(value) : 0
+    }
+
+    function scanSummary(scan) {
+      const size = countOf(scan.bytes) > 0 ? formatBytes(scan.bytes) : ''
+      let text = '将打包 ' + countOf(scan.files) + ' 个文件' + (size.length > 0 ? '（约 ' + size + '）' : '') + '。'
+      const skipped = []
+      if (countOf(scan.unreadable) > 0) skipped.push(countOf(scan.unreadable) + ' 项不可读')
+      if (countOf(scan.links) > 0) skipped.push(countOf(scan.links) + ' 个软链接')
+      if (skipped.length > 0) text += '其中 ' + skipped.join('、') + '将被跳过。'
+      if (scan.complete === false) text += '目录较大，扫描未完成，实际内容可能更多。'
+      return text
+    }
+
+    function scanNeedsConfirm(scan) {
+      return countOf(scan.unreadable) > 0 || countOf(scan.links) > 0 || scan.complete === false
+    }
+
+    function transferDialog(prompt, decide) {
+      return h('div', { className: 'rd-tf-mask' },
+        h('div', { className: 'rd-tf-dlg', role: 'dialog', 'aria-label': prompt.title },
+          h('div', { className: 'dt' }, prompt.title),
+          prompt.subtitle ? h('div', { className: 'ds' }, prompt.subtitle) : null,
+          h('div', { className: 'db' }, prompt.body),
+          h('div', { className: 'da' }, (prompt.actions || []).map((action) =>
+            h('button', {
+              key: action.value,
+              type: 'button',
+              className: 'rd-tf-btn' + (action.tone ? ' ' + action.tone : ''),
+              onClick: () => decide(action.value),
+            }, action.label))),
+        ))
+    }
+
     function DirDownloadAction(props) {
       const found = useFilesTarget(props)
+      const [busy, setBusy] = React.useState(false)
+      const [note, setNote] = React.useState('')
+      const [prompt, setPrompt] = React.useState(null)
+      const decisionRef = React.useRef(null)
+      const timerRef = React.useRef(null)
+      const runRef = React.useRef(false)
+      React.useEffect(() => () => {
+        if (timerRef.current !== null) clearTimeout(timerRef.current)
+      }, [])
+      React.useEffect(() => {
+        if (prompt === null) return undefined
+        const onKey = (event) => {
+          if (event.key !== 'Escape') return
+          const resolve = decisionRef.current
+          decisionRef.current = null
+          setPrompt(null)
+          if (resolve !== null) resolve(prompt.kind === 'download' ? 'cancel' : 'skip')
+        }
+        document.addEventListener('keydown', onKey)
+        return () => document.removeEventListener('keydown', onKey)
+      }, [prompt])
       if (found === null) return null
       const info = boot()
       if (info === null) return null
       const dir = found.target
       const connectionId = found.remote.connectionId
       const base = dir.split('/').filter(Boolean).pop() || 'download'
-      const download = () => {
+      const flash = (text, ms) => {
+        setNote(text)
+        if (timerRef.current !== null) clearTimeout(timerRef.current)
+        timerRef.current = setTimeout(() => {
+          timerRef.current = null
+          setNote('')
+        }, ms)
+      }
+      const ask = (payload) => new Promise((resolve) => {
+        decisionRef.current = resolve
+        setPrompt(payload)
+      })
+      const decide = (choice) => {
+        const resolve = decisionRef.current
+        decisionRef.current = null
+        setPrompt(null)
+        if (resolve !== null) resolve(choice)
+      }
+      const startArchive = () => {
         const href = apiBase() + '/connections/' + encodeURIComponent(connectionId) + '/archive?path=' + encodeURIComponent(dir) + '&token=' + encodeURIComponent(info.token)
         const anchor = document.createElement('a')
         anchor.href = href
@@ -2819,13 +2911,62 @@ window.__ModuleLoader__.load({
         anchor.click()
         anchor.remove()
       }
-      return h('button', {
-        type: 'button',
-        className: 'rd-dl',
-        title: '下载此目录（tar.gz）：' + dir,
-        'aria-label': '下载此目录（tar.gz）',
-        onClick: download,
-      }, h(Icon, { name: 'download', size: 16 }))
+      const runOnce = async () => {
+        setBusy(true)
+        setNote('正在扫描目录…')
+        let scan = null
+        try {
+          scan = await call('/connections/' + encodeURIComponent(connectionId) + '/scan?path=' + encodeURIComponent(dir), { timeoutMs: 120000 })
+        } catch {
+          scan = null
+        }
+        setBusy(false)
+        if (scan === null || typeof scan !== 'object' || scan.ok === false) {
+          flash('预检失败，已直接开始打包', 2500)
+          startArchive()
+          return
+        }
+        if (scanNeedsConfirm(scan)) {
+          setNote('')
+          const choice = await ask({
+            kind: 'download',
+            title: '打包确认',
+            subtitle: dir,
+            body: scanSummary(scan),
+            actions: [
+              { value: 'continue', label: '继续', tone: 'primary' },
+              { value: 'cancel', label: '取消', tone: 'ghost' },
+            ],
+          })
+          if (choice !== 'continue') {
+            flash('已取消打包', 2000)
+            return
+          }
+        }
+        flash('已开始打包', 1500)
+        startArchive()
+      }
+      const run = async () => {
+        if (busy || runRef.current) return
+        runRef.current = true
+        try {
+          await runOnce()
+        } finally {
+          runRef.current = false
+        }
+      }
+      return h('span', { className: 'rd-dl-wrap rd-tf-wrap' },
+        h('button', {
+          type: 'button',
+          className: 'rd-dl',
+          disabled: busy,
+          title: busy ? '正在扫描目录…' : '下载此目录（tar.gz）：' + dir,
+          'aria-label': '下载此目录（tar.gz）',
+          onClick: run,
+        }, h(Icon, { name: 'download', size: 16 })),
+        note.length > 0 ? h('span', { className: 'rd-tf-note' }, note) : null,
+        prompt === null ? null : transferDialog(prompt, decide),
+      )
     }
 
     function DirUploadAction(props) {
@@ -2833,11 +2974,26 @@ window.__ModuleLoader__.load({
       const inputRef = React.useRef(null)
       const [busy, setBusy] = React.useState(false)
       const [note, setNote] = React.useState('')
+      const [prompt, setPrompt] = React.useState(null)
+      const decisionRef = React.useRef(null)
+      const batchRef = React.useRef(false)
       React.useEffect(() => {
         if (note.length === 0) return undefined
         const timer = setTimeout(() => setNote(''), 6000)
         return () => clearTimeout(timer)
       }, [note])
+      React.useEffect(() => {
+        if (prompt === null) return undefined
+        const onKey = (event) => {
+          if (event.key !== 'Escape') return
+          const resolve = decisionRef.current
+          decisionRef.current = null
+          setPrompt(null)
+          if (resolve !== null) resolve('skip')
+        }
+        document.addEventListener('keydown', onKey)
+        return () => document.removeEventListener('keydown', onKey)
+      }, [prompt])
       if (found === null) return null
       const info = boot()
       if (info === null) return null
@@ -2848,12 +3004,17 @@ window.__ModuleLoader__.load({
         const node = inputRef.current
         if (node !== null) node.click()
       }
-      const send = async (file) => {
-        const name = file && typeof file.name === 'string' && file.name.trim().length > 0 ? file.name : 'upload.bin'
-        if (file && typeof file.size === 'number' && file.size > UPLOAD_LIMIT_BYTES) {
-          pushToast(new Error('「' + name + '」超过 ' + UPLOAD_LIMIT_LABEL + ' 上限，已跳过'))
-          return false
-        }
+      const ask = (payload) => new Promise((resolve) => {
+        decisionRef.current = resolve
+        setPrompt(payload)
+      })
+      const decide = (choice) => {
+        const resolve = decisionRef.current
+        decisionRef.current = null
+        setPrompt(null)
+        if (resolve !== null) resolve(choice)
+      }
+      const send = async (file, name) => {
         const url = apiBase() + '/connections/' + encodeURIComponent(connectionId) + '/upload?path=' + encodeURIComponent(dir) + '&name=' + encodeURIComponent(name)
         try {
           const response = await fetch(url, {
@@ -2862,36 +3023,78 @@ window.__ModuleLoader__.load({
             body: file,
           })
           const payload = await response.json().catch(() => null)
-          if (response.ok && payload !== null && payload.ok !== false) return true
+          if (response.ok && payload !== null && payload.ok !== false) return { ok: true, message: '' }
           const code = payload && payload.code ? payload.code : ''
           const message = payload && payload.message ? payload.message : 'HTTP ' + response.status
-          if (code === 'TRANSFER_TOO_LARGE') pushToast(new Error('「' + name + '」超过远端 ' + UPLOAD_LIMIT_LABEL + ' 上限'))
-          else pushToast(new Error(code ? code + '：' + message : message))
-          return false
+          if (code === 'TRANSFER_TOO_LARGE') return { ok: false, message: '「' + name + '」超过远端 ' + UPLOAD_LIMIT_LABEL + ' 上限，未上传。' }
+          return { ok: false, message: code.length > 0 ? code + '：' + message : message }
         } catch (failure) {
-          pushToast(failure)
-          return false
+          const message = failure instanceof Error ? failure.message : String(failure || '')
+          return { ok: false, message: message.length > 0 ? message : '网络中断，上传失败。' }
         }
       }
-      const onFiles = async (event) => {
+      const runBatch = async (event) => {
         const node = event.currentTarget
         const list = node && node.files ? Array.prototype.slice.call(node.files) : []
         if (list.length === 0) return
         if (node) node.value = ''
         setBusy(true)
         setNote('上传中 0/' + list.length)
+        const skipDirs = new Set()
         let done = 0
         let failed = 0
+        let skipped = 0
+        let stopped = false
         for (let index = 0; index < list.length; index += 1) {
-          const ok = await send(list[index])
-          if (ok) done += 1
-          else failed += 1
-          setNote('上传中 ' + (done + failed) + '/' + list.length)
+          const file = list[index]
+          const name = file && typeof file.name === 'string' && file.name.trim().length > 0 ? file.name : 'upload.bin'
+          if (skipDirs.has(dir)) {
+            skipped += 1
+            setNote('上传中 ' + (done + failed + skipped) + '/' + list.length)
+            continue
+          }
+          const result = file && typeof file.size === 'number' && file.size > UPLOAD_LIMIT_BYTES
+            ? { ok: false, message: '「' + name + '」超过 ' + UPLOAD_LIMIT_LABEL + ' 上限，未上传。' }
+            : await send(file, name)
+          if (result.ok) {
+            done += 1
+            setNote('上传中 ' + (done + failed + skipped) + '/' + list.length)
+            continue
+          }
+          failed += 1
+          const choice = await ask({
+            kind: 'upload',
+            title: name + ' 上传失败',
+            subtitle: result.message,
+            body: '第 ' + (index + 1) + '/' + list.length + ' 个文件。可跳过此文件、跳过该目录，或停止本次上传。',
+            actions: [
+              { value: 'skip', label: '跳过', tone: 'primary' },
+              { value: 'dir', label: '跳过该目录', tone: 'ghost' },
+              { value: 'stop', label: '停止', tone: 'danger' },
+            ],
+          })
+          if (choice === 'stop') {
+            stopped = true
+            break
+          }
+          if (choice === 'dir') skipDirs.add(dir)
         }
         setBusy(false)
-        setNote(failed === 0 ? '已上传 ' + done + ' 个文件' : '已上传 ' + done + '，失败 ' + failed)
+        const parts = ['已上传 ' + done]
+        if (failed > 0) parts.push('失败 ' + failed)
+        if (skipped > 0) parts.push('跳过 ' + skipped)
+        setNote(parts.join('，') + (stopped ? '（已停止）' : ''))
         if (done > 0) pushNotice('已上传 ' + done + ' 个文件', dir)
         void refresh()
+      }
+      const onFiles = async (event) => {
+        if (batchRef.current) return
+        batchRef.current = true
+        try {
+          await runBatch(event)
+        } finally {
+          batchRef.current = false
+        }
       }
       return h('span', { className: 'rd-dl-wrap rd-tf-wrap' },
         h('button', {
@@ -2910,6 +3113,7 @@ window.__ModuleLoader__.load({
           onChange: onFiles,
         }),
         note.length > 0 ? h('span', { className: 'rd-tf-note' }, note) : null,
+        prompt === null ? null : transferDialog(prompt, decide),
       )
     }
 

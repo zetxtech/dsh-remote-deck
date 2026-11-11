@@ -11,6 +11,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - v1.1.0: full xterm.js terminal, i18n (zh/en), explicit debug switch, virtualized large folders.
 
+## [1.6.0] - 2026-11-11
+
+### Added
+
+- `GET /connections/:id/scan?path=` — one time-boxed traversal reporting `files`, `dirs`, `links`,
+  `unreadable`, `others`, `bytes` and whether the scan completed. Only counts leave the host.
+- Folder downloads are pre-flighted: when a tree has unreadable entries, symlinks, or a scan that hit
+  its time box, the panel asks before packaging (继续 / 取消). A failed scan never blocks the download.
+- Upload failures ask what to do — 跳过 / 跳过该目录 / 停止 — instead of failing the whole batch; an
+  oversized file (413) takes the same path.
+
+### Changed
+
+- The archive is built from an explicit `find` list, so symlinks, sockets, FIFOs and device files are
+  never packed, a symlink loop cannot spin the walk, and `-xdev` keeps it on one filesystem.
+  `--no-recursion` stops tar from re-walking the listed directories and re-adding the very symlinks the
+  list left out. GNU tar gets `--ignore-failed-read`, so one unreadable file is skipped instead of
+  failing the download; a tar without `--null`/`-T` support (BusyBox) falls back to the plain recursive
+  form rather than producing an empty archive.
+- Unreadable directories count as `unreadable` (they need both `r` and `x`), so a denied subtree shows
+  up in the pre-flight check.
+
+### Notes
+
+- The scan is bounded (20 s through `timeout` where available, plus a route-side abort) and folds its
+  output through `sort | uniq -c`, so it stays a handful of lines however large the tree is.
+
 ## [1.5.0] - 2026-11-11
 
 ### Added
