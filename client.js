@@ -918,6 +918,8 @@ window.__ModuleLoader__.load({
       .rd-edit-area { flex:1;min-height:0;margin:0 12px;padding:10px 12px;box-sizing:border-box;border:.5px solid var(--dsw-alias-border-l2,#e8e8ec);border-radius:var(--dsw-radius-sm,8px);background:var(--dsw-alias-bg-layer-1,#fff);color:var(--dsw-alias-label-primary,#1f2329);font-family:var(--rd-term-font,var(--rd-term-font,ui-monospace,Consolas,monospace));font-size:12px;line-height:1.5;resize:none;outline:none;tab-size:2 }
       .rd-edit-area:focus { border-color:var(--dsw-alias-state-business-primary,#1d6fc4) }
       .rd-edit-status { flex:none;padding:6px 12px 10px;color:var(--dsw-alias-label-tertiary,#8f959e);font-size:10.5px;font-variant-numeric:tabular-nums }
+      .rd-edit-ro { flex:none;padding:1px 7px;border-radius:var(--dsw-radius-sm,8px);background:var(--dsw-alias-bg-module-platform,rgba(15,23,42,.05));color:var(--dsw-alias-label-secondary,#5f6672);font-size:10.5px }
+      .rd-edit-area.readonly { opacity:.85;cursor:default }
       .rd-edit-tabtitle { overflow:hidden;text-overflow:ellipsis;white-space:nowrap }
       .rd-edit-cm { flex:1;min-height:0;margin:0 12px;border:.5px solid var(--dsw-alias-border-l2,#e8e8ec);border-radius:var(--dsw-radius-sm,8px);overflow:hidden }
       .rd-edit-pending { display:block;padding:10px 12px;color:var(--dsw-alias-label-tertiary,#8f959e);font-size:11.5px }
@@ -5002,10 +5004,15 @@ window.__ModuleLoader__.load({
     }
 
     /** The one place a remote file is written back. 409 carries STALE. */
-    async function writeRemoteFile(connectionId, filePath, content, expectedMtime) {
+    async function writeRemoteFile(connectionId, filePath, content, expectedMtime, encoding, eol) {
       const info = boot()
       if (info === null) throw new Error('remote-deck is not active yet; restart DSH')
+      // The encoding and line ending the read reported are sent back verbatim:
+      // the host re-encodes with them, so a GBK file stays GBK and a CRLF file
+      // keeps its CRLFs.
       const body = { path: filePath, content }
+      if (typeof encoding === 'string' && encoding.length > 0) body.encoding = encoding
+      if (eol === 'crlf' || eol === 'lf') body.eol = eol
       if (expectedMtime !== undefined && expectedMtime !== null && expectedMtime !== '') body.expectedMtime = expectedMtime
       const response = await fetch(apiBase() + '/connections/' + encodeURIComponent(connectionId) + '/write', {
         method: 'POST',
@@ -5094,7 +5101,19 @@ window.__ModuleLoader__.load({
         editorDraftRegistry.set(live.path, { connectionId: live.connectionId, baseMtime: live.meta === null ? undefined : live.meta.mtime })
         void postEditorDraft(live.connectionId, live.path, live.text, live.meta === null ? undefined : live.meta.mtime)
       }
+      // A file whose bytes cannot be reproduced byte for byte stays read-only:
+      // Big5 and Shift_JIS have no encoder here, and a truncated or inexact
+      // decode is a guess. Editing one would save mojibake over the original.
+      const readonly = meta !== null && meta !== undefined && meta.writable === false
+      // A non-UTF-8 file is shown read-only until the reader confirms its
+      // encoding: writing the gb18030 guess over a Big5 file would corrupt it.
+      const guessedEncoding = meta === null || meta === undefined ? '' : (() => {
+        const name = typeof meta.encoding === 'string' ? meta.encoding : ''
+        if (name.length === 0 || name === 'utf-8') return ''
+        return name
+      })()
       const editText = (value) => {
+        if (readonly) return
         setText(value)
         liveRef.current.text = value
         const live = liveRef.current
@@ -5112,13 +5131,16 @@ window.__ModuleLoader__.load({
           }, delay)
         }
       }
-      const load = React.useCallback(async () => {
+      const load = React.useCallback(async (encodingChoice) => {
         if (connectionId === '' || filePath === '') return
         setState('loading')
         setFailure('')
         setConflict(false)
         try {
-          const body = await call('/connections/' + encodeURIComponent(connectionId) + '/read?path=' + encodeURIComponent(filePath) + '&maxBytes=' + String(EDIT_MAX_BYTES))
+          const chosen = typeof encodingChoice === 'string' ? encodingChoice : ''
+          const body = await call('/connections/' + encodeURIComponent(connectionId) + '/read?path=' + encodeURIComponent(filePath)
+            + '&maxBytes=' + String(EDIT_MAX_BYTES)
+            + (chosen.length > 0 ? '&encoding=' + encodeURIComponent(chosen) : ''))
           if (body.binary === true) {
             setState('binary')
             return
@@ -5132,7 +5154,16 @@ window.__ModuleLoader__.load({
           setSavedText(content)
           liveRef.current.text = content
           liveRef.current.savedText = content
-          setMeta({ size: countOf(body.size), mtime: body.mtime })
+          setMeta({
+            size: countOf(body.size),
+            mtime: body.mtime,
+            // A file whose bytes cannot be reproduced is shown read-only rather
+            // than risked: writing it back as UTF-8 is what corrupts GBK files.
+            encoding: typeof body.encoding === 'string' ? body.encoding : 'utf-8',
+            eol: body.eol === 'crlf' ? 'crlf' : 'lf',
+            mixedEol: body.mixedEol === true,
+            writable: body.writable !== false,
+          })
           setState('ready')
           const draft = await fetchEditorDraft(connectionId, filePath)
           if (draft !== null && typeof draft.content === 'string') {
@@ -5188,13 +5219,21 @@ window.__ModuleLoader__.load({
         }
         // The timer closes over the render that armed it, so the live buffer
         // (not the captured `text`) is what gets written.
+        if (meta !== null && meta !== undefined && meta.writable === false) return
         const live = liveRef.current
         const content = live.text
         setSaving(true)
         setSavingNow(true)
         try {
           const expected = force === true ? undefined : (live.meta === null || live.meta === undefined ? undefined : live.meta.mtime)
-          const result = await writeRemoteFile(connectionId, filePath, content, expected)
+          const result = await writeRemoteFile(
+            connectionId,
+            filePath,
+            content,
+            expected,
+            live.meta === null || live.meta === undefined ? undefined : live.meta.encoding,
+            live.meta === null || live.meta === undefined ? undefined : live.meta.eol,
+          )
           const payload = result.payload
           if (result.status === 409 || (payload !== null && payload !== undefined && payload.code === 'STALE')) {
             // Stop writing until the user picks reload or force.
@@ -5245,8 +5284,17 @@ window.__ModuleLoader__.load({
           : dirty
             ? '未保存'
             : savedAt.length > 0 ? (saveKind === 'auto' ? '已自动保存' : '已保存') : '未修改'
+      // The encoding and the line ending are shown because a save preserves
+      // both, and a user editing a legacy file deserves to see which one it is.
+      const fileMeta = meta === null || meta === undefined ? null : meta
+      const encodingLabel = fileMeta === null || typeof fileMeta.encoding !== 'string' ? ''
+        : fileMeta.encoding.toUpperCase().replace('UTF8', 'UTF-8')
+      const eolLabel = fileMeta === null ? '' : (fileMeta.eol === 'crlf' ? 'CRLF' : 'LF')
       const statusLine = lines + ' 行 · ' + formatBytes(bytes) + ' · ' + statusText
+        + (encodingLabel.length > 0 ? ' · ' + encodingLabel : '')
+        + (eolLabel.length > 0 ? ' ' + eolLabel : '')
         + (savedAt.length > 0 ? ' ' + clockOf(savedAt) : '')
+        + (readonly ? ' · 只读（编码无法无损写回）' : '')
         + (engine === 'fallback' ? ' · ' + CM_MODE_FALLBACK_TEXT : '')
 
       if (remote === null || filePath === '') {
@@ -5279,7 +5327,16 @@ window.__ModuleLoader__.load({
           h('span', { className: 'rd-edit-name', title: filePath }, editorBaseName(filePath)),
           dirty ? h('span', { className: 'rd-edit-flag' }, '未保存') : null,
           h('div', { className: 'rd-edit-acts' },
-            dirty ? h('button', { className: 'rd-edit-btn primary', type: 'button', disabled: saving, onClick: () => void save(false, 'manual') }, saving ? '保存中…' : '保存') : null,
+            readonly ? h('span', { className: 'rd-edit-ro' }, '只读') : null,
+            readonly && guessedEncoding.length > 0
+              ? h('button', {
+                className: 'rd-edit-btn',
+                type: 'button',
+                title: '文件不是 UTF-8。确认编码后即可编辑并原样写回。',
+                onClick: () => void load(guessedEncoding),
+              }, '按 ' + guessedEncoding.toUpperCase() + ' 打开')
+              : null,
+            !readonly && dirty ? h('button', { className: 'rd-edit-btn primary', type: 'button', disabled: saving, onClick: () => void save(false, 'manual') }, saving ? '保存中…' : '保存') : null,
             h('button', { className: 'rd-edit-btn', type: 'button', onClick: () => void load() }, '重新读取'),
             dirty ? h('button', { className: 'rd-edit-btn', type: 'button', onClick: closeTab }, '放弃修改并关闭') : null,
           ),
@@ -5320,11 +5377,12 @@ window.__ModuleLoader__.load({
             : h('textarea', {
               // Also the pre-upgrade surface: the file is editable at once and
               // swaps to CodeMirror when the lazy engine reports in.
-              className: 'rd-edit-area',
+              className: 'rd-edit-area' + (readonly ? ' readonly' : ''),
               value: text,
+              readOnly: readonly,
               spellCheck: false,
               onChange: (event) => editText(event.target.value),
-              onKeyDown,
+              onKeyDown: readonly ? undefined : onKeyDown,
             }),
         h('div', { className: 'rd-edit-status' }, statusLine),
       )

@@ -11,6 +11,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - v1.1.0: full xterm.js terminal, i18n (zh/en), explicit debug switch, virtualized large folders.
 
+## [1.20.0] - 2026-11-13
+
+### Fixed
+
+- **Saving a non-UTF-8 file destroyed it.** The editor decoded every file as UTF-8 and wrote it back as UTF-8, so a
+  GBK/GB18030 file opened as mojibake and a save replaced the original with a UTF-8 rewrite — an atomic replace, so
+  nothing was recoverable. Encoding is now detected on read: only strict UTF-8 (or a BOM) counts as trustworthy and
+  writable, anything else comes back with the guessed encoding, a readable preview and **read-only**, and the reader
+  confirms with 按 GB18030 打开 before editing. A save re-encodes with that encoding — GB18030 through a reverse table
+  built at runtime (24k characters, no bundled codec) — and **refuses** a character that encoding cannot express
+  instead of silently falling back to UTF-8.
+- **Saving a CRLF file rewrote every line ending to LF.** Line endings are detected on read (with mixed files
+  flagged) and restored on save, and the status bar names the encoding and the line ending it will write.
+- Big5 and Shift_JIS read correctly and stay read-only, because no encoder for them is bundled; UTF-16LE/BE round-trip.
+
+### Notes
+
+- Verified on the real host: a GBK+CRLF file read, edited and saved comes back byte-for-byte identical (md5 match), a
+  Big5 save is refused with the file untouched, and a truncated read is never writable.
+- `GET /read` gained an optional `encoding` parameter; `POST /write` accepts `encoding` and `eol` and still defaults
+  to UTF-8/LF for callers that do not send them.
+
 ## [1.19.0] - 2026-11-13
 
 ### Added

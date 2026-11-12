@@ -32,6 +32,14 @@ const RECORD = { id: 'c1', name: 'ws', host: 'example.test', port: 22, username:
 
 const MODES = { dir: 0o040755, file: 0o100644, link: 0o120777, fifo: 0o010644, socket: 0o140755, char: 0o020666, block: 0o060660 }
 
+/** 中文测试\n第二行\n in GBK, the bytes a Windows editor writes. */
+const GBK_LINES = Buffer.from([
+  0xd6, 0xd0, 0xce, 0xc4, 0xb2, 0xe2, 0xca, 0xd4, 0x0a,
+  0xb5, 0xda, 0xb6, 0xfe, 0xd0, 0xd0, 0x0a,
+])
+/** 中文 in Big5. */
+const BIG5_CN = Buffer.from([0xa4, 0xa4, 0xa4, 0xe5])
+
 function attrsOf(node) {
   return {
     mode: MODES[node.type] ?? MODES.file,
@@ -60,6 +68,9 @@ function notFound(path) {
 function makeSftp(initial, options = {}) {
   const nodes = new Map(Object.entries(initial ?? {}))
   const calls = []
+  // The exact bytes of every writeFile, so an encoded save can be checked
+  // against the bytes the file already had.
+  const writes = []
   let clock = 1700000000
   const record = (op, path) => {
     calls.push([op, path])
@@ -87,6 +98,7 @@ function makeSftp(initial, options = {}) {
     },
     writeFile(path, buffer, callback) {
       record('writeFile', path)
+      writes.push({ path, buffer: Buffer.from(buffer) })
       const failure = options.fail?.('writeFile', path)
       if (failure) {
         callback(failure)
@@ -129,7 +141,7 @@ function makeSftp(initial, options = {}) {
       callback(null)
     },
   }
-  return { sftp, nodes, calls }
+  return { sftp, nodes, calls, writes }
 }
 
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
@@ -162,6 +174,15 @@ test('path, window and body validation', () => {
   assert.equal(parseWriteRequest({ path: '/d/a.txt' }).code, 'NOT_REMOTE_PATH')
   assert.equal(parseWriteRequest({ path: '/d/a.txt', content: 'x', expectedMtime: 'nope' }).expectedMtime, undefined)
   assert.equal(parseWriteRequest({ path: '/d/a.txt', content: 'x', expectedMtime: 5.4 }).expectedMtime, 5)
+  const encoded = parseWriteRequest({ path: '/d/a.txt', content: 'x', encoding: 'GB18030', eol: 'crlf' })
+  assert.equal(encoded.encoding, 'gb18030')
+  assert.equal(encoded.eol, 'crlf')
+  // Older callers omit both and keep the UTF-8/LF behaviour.
+  const legacy = parseWriteRequest({ path: '/d/a.txt', content: 'x' })
+  assert.equal(legacy.encoding, undefined)
+  assert.equal(legacy.eol, undefined)
+  assert.equal(parseWriteRequest({ path: '/d/a.txt', content: 'x', encoding: 42 }).encoding, undefined)
+  assert.equal(parseWriteRequest({ path: '/d/a.txt', content: 'x', eol: 'weird' }).eol, undefined)
   const big = 'x'.repeat(WRITE_MAX_BYTES + 1)
   assert.equal(parseWriteRequest({ path: '/d/a.txt', content: big }).code, EDIT_TOO_LARGE_CODE)
 })
@@ -188,6 +209,7 @@ async function startApi(nodes = {}, options = {}) {
     base: `http://127.0.0.1:${server.address().port}`,
     nodes: fake.nodes,
     calls: fake.calls,
+    writes: fake.writes,
     close: () => {
       server.closeAllConnections?.()
       return new Promise((resolve) => server.close(resolve))
@@ -232,6 +254,11 @@ test('a text file comes back with its size, mtime and text', async () => {
       text: 'hello\nworld',
       truncated: false,
       binary: false,
+      encoding: 'utf-8',
+      exact: true,
+      writable: true,
+      eol: 'lf',
+      mixedEol: false,
     })
   } finally {
     await api.close()
@@ -296,7 +323,7 @@ test('a NUL byte marks the file binary and no text is sent', async () => {
   }
 })
 
-test('invalid UTF-8 is replaced, never an error', async () => {
+test('invalid UTF-8 is decoded as a read-only guess, never an error', async () => {
   const api = await startApi({ '/d/latin1.txt': { type: 'file', content: 'a\u00ffb', mtime: 1 } })
   try {
     // Raw bytes that are not valid UTF-8: the node holds a Buffer directly.
@@ -305,7 +332,103 @@ test('invalid UTF-8 is replaced, never an error', async () => {
     assert.equal(response.status, 200)
     const body = await response.json()
     assert.equal(body.binary, false)
+    // Not UTF-8: the answer is GB18030's lenient reading, flagged as a guess.
+    assert.equal(body.encoding, 'gb18030')
+    assert.equal(body.exact, false)
+    assert.equal(body.writable, false)
     assert.equal(body.text, 'a\uFFFDb')
+  } finally {
+    await api.close()
+  }
+})
+
+test('a GBK file read without a chosen encoding is a read-only GB18030 guess', async () => {
+  const api = await startApi({ '/d/gbk.txt': { type: 'file', content: GBK_LINES, mtime: 1700000000 } })
+  try {
+    const body = await (await readRequest(readUrl(api.base, '/d/gbk.txt'))).json()
+    // GB18030 accepts nearly any byte pair, so a successful decode is not
+    // evidence of the encoding: the file is shown, but never writable.
+    assert.equal(body.encoding, 'gb18030')
+    assert.equal(body.exact, false)
+    assert.equal(body.writable, false)
+    assert.equal(body.text, '中文测试\n第二行\n')
+    assert.equal(body.size, GBK_LINES.length)
+    assert.equal(body.eol, 'lf')
+    assert.equal(body.mixedEol, false)
+  } finally {
+    await api.close()
+  }
+})
+
+test('a reader who names the encoding gets an exact, writable decode', async () => {
+  const api = await startApi({ '/d/gbk.txt': { type: 'file', content: GBK_LINES, mtime: 1700000000 } })
+  try {
+    const body = await (await readRequest(readUrl(api.base, '/d/gbk.txt', '&encoding=GB18030'))).json()
+    assert.equal(body.encoding, 'gb18030')
+    assert.equal(body.exact, true)
+    assert.equal(body.writable, true)
+    assert.equal(body.text, '中文测试\n第二行\n')
+
+    // Nonsense in the query never becomes writable, and never a 500 either.
+    const bogus = await (await readRequest(readUrl(api.base, '/d/gbk.txt', '&encoding=bogus'))).json()
+    assert.equal(bogus.exact, false)
+    assert.equal(bogus.writable, false)
+  } finally {
+    await api.close()
+  }
+})
+
+test('CRLF and mixed line endings are reported on the file', async () => {
+  const api = await startApi({
+    '/d/crlf.txt': { type: 'file', content: 'one\r\ntwo\r\n', mtime: 1 },
+    '/d/mixed.txt': { type: 'file', content: 'one\r\ntwo\nthree\r\n', mtime: 1 },
+  })
+  try {
+    const crlf = await (await readRequest(readUrl(api.base, '/d/crlf.txt'))).json()
+    assert.equal(crlf.eol, 'crlf')
+    assert.equal(crlf.mixedEol, false)
+    assert.equal(crlf.text, 'one\r\ntwo\r\n')
+
+    const mixed = await (await readRequest(readUrl(api.base, '/d/mixed.txt'))).json()
+    assert.equal(mixed.eol, 'crlf')
+    assert.equal(mixed.mixedEol, true)
+  } finally {
+    await api.close()
+  }
+})
+
+test('a truncated read is never writable', async () => {
+  const api = await startApi({ '/d/a.txt': { type: 'file', content: '0123456789', mtime: 1 } })
+  try {
+    const body = await (await readRequest(readUrl(api.base, '/d/a.txt', '&maxBytes=4'))).json()
+    assert.equal(body.truncated, true)
+    assert.equal(body.text, '0123')
+    // The window decoded cleanly, yet half a file must not be saved.
+    assert.equal(body.exact, true)
+    assert.equal(body.writable, false)
+  } finally {
+    await api.close()
+  }
+})
+
+test('an empty file reads as an editable, empty UTF-8 file', async () => {
+  const api = await startApi({ '/d/empty.txt': { type: 'file', content: '', mtime: 1 } })
+  try {
+    const body = await (await readRequest(readUrl(api.base, '/d/empty.txt'))).json()
+    assert.deepEqual(body, {
+      ok: true,
+      path: '/d/empty.txt',
+      size: 0,
+      mtime: 1000,
+      text: '',
+      truncated: false,
+      binary: false,
+      encoding: 'utf-8',
+      exact: true,
+      writable: true,
+      eol: 'lf',
+      mixedEol: false,
+    })
   } finally {
     await api.close()
   }
@@ -536,6 +659,101 @@ test('aborting the request stops the save and writes no response', async () => {
     assert.equal(api.nodes.get('/d/a.txt').content, 'original')
     assert.deepEqual([...api.nodes.keys()].filter((key) => key.includes('.dsh-tmp-')), [], 'the temp file is cleaned up')
     assert.ok(!api.calls.some((call) => call[0] === 'ext_openssh_rename'))
+  } finally {
+    await api.close()
+  }
+})
+
+test('a GBK file read with an explicit encoding saves back the same bytes', async () => {
+  const api = await startApi({ '/d/gbk.txt': { type: 'file', content: GBK_LINES, mtime: 1700000000 } })
+  try {
+    const read = await (await readRequest(readUrl(api.base, '/d/gbk.txt', '&encoding=gb18030'))).json()
+    assert.equal(read.encoding, 'gb18030')
+    assert.equal(read.writable, true)
+
+    const response = await writeRequest(api.base, {
+      path: '/d/gbk.txt',
+      content: read.text,
+      encoding: read.encoding,
+      eol: read.eol,
+      expectedMtime: read.mtime,
+    })
+    assert.equal(response.status, 200)
+    assert.equal((await response.json()).ok, true)
+    // The temp file got exactly the bytes the file already had: the save is a
+    // no-op on disk, not a UTF-8 rewrite of GBK text.
+    assert.equal(api.writes.length, 1)
+    assert.deepEqual(api.writes[0].buffer, GBK_LINES)
+    assert.deepEqual([...api.nodes.keys()].filter((key) => key.includes('.dsh-tmp-')), [])
+  } finally {
+    await api.close()
+  }
+})
+
+test('a CRLF file is written back with CRLFs, not the LF text the editor holds', async () => {
+  const api = await startApi({ '/d/crlf.txt': { type: 'file', content: 'one\r\ntwo\r\n', mtime: 1700000000 } })
+  try {
+    const read = await (await readRequest(readUrl(api.base, '/d/crlf.txt'))).json()
+    assert.equal(read.eol, 'crlf')
+    // The editor hands back LF text; the file's own convention is restored.
+    const response = await writeRequest(api.base, {
+      path: '/d/crlf.txt',
+      content: read.text.replace(/\r\n/g, '\n'),
+      encoding: read.encoding,
+      eol: read.eol,
+      expectedMtime: read.mtime,
+    })
+    assert.equal(response.status, 200)
+    assert.equal(api.writes.length, 1)
+    assert.deepEqual(api.writes[0].buffer, Buffer.from('one\r\ntwo\r\n', 'utf8'))
+  } finally {
+    await api.close()
+  }
+})
+
+test('a Big5 save is refused before the host is asked to write anything', async () => {
+  const api = await startApi({ '/d/big5.txt': { type: 'file', content: BIG5_CN, mtime: 1700000000 } })
+  try {
+    const guessed = await (await readRequest(readUrl(api.base, '/d/big5.txt'))).json()
+    assert.equal(guessed.encoding, 'gb18030')
+    assert.equal(guessed.exact, false)
+    assert.equal(guessed.writable, false)
+
+    const explicit = await (await readRequest(readUrl(api.base, '/d/big5.txt', '&encoding=big5'))).json()
+    assert.equal(explicit.encoding, 'big5')
+    assert.equal(explicit.text, '中文')
+    assert.equal(explicit.exact, true)
+    // Big5 has no encoder here, so even an exact read stays read-only.
+    assert.equal(explicit.writable, false)
+
+    const response = await writeRequest(api.base, {
+      path: '/d/big5.txt',
+      content: explicit.text,
+      encoding: explicit.encoding,
+      eol: explicit.eol,
+      expectedMtime: explicit.mtime,
+    })
+    assert.equal(response.status, 400)
+    const body = await response.json()
+    assert.equal(body.ok, false)
+    assert.equal(body.code, 'UNSUPPORTED_ENCODING')
+    // No writeFile ever reached the host and the original bytes stand.
+    assert.equal(api.writes.length, 0)
+    assert.equal(api.calls.filter((call) => call[0] === 'writeFile').length, 0)
+    assert.deepEqual(api.nodes.get('/d/big5.txt').content, BIG5_CN)
+  } finally {
+    await api.close()
+  }
+})
+
+test('a save that names no encoding still writes UTF-8 and LF, as before', async () => {
+  const api = await startApi({ '/d/a.txt': { type: 'file', content: 'old', mtime: 5 } })
+  try {
+    const content = 'héllo\n世界'
+    const response = await writeRequest(api.base, { path: '/d/a.txt', content })
+    assert.equal(response.status, 200)
+    assert.equal(api.writes.length, 1)
+    assert.deepEqual(api.writes[0].buffer, Buffer.from(content, 'utf8'))
   } finally {
     await api.close()
   }
