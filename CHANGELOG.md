@@ -11,6 +11,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - v1.1.0: full xterm.js terminal, i18n (zh/en), explicit debug switch, virtualized large folders.
 
+## [1.24.0] - 2026-11-13
+
+### Added
+
+- **An English interface.** The 443 message catalogue in `locale/en-ui.json` is inlined and looked up by the Chinese
+  source string, so a non-Chinese browser sees English (429 static strings and 117 parameterised templates went
+  through it) while a Chinese one gets the original text byte for byte. Matching the system language is the default;
+  Settings → 远端工作台 gained a 界面语言 row (跟随系统 / 中文 / English) that applies immediately.
+- Separators follow the language too (`、`/`，`/`；` become `, ` and `; ` in English).
+
+### Notes
+
+- Host-provided error text stays in the host's language: the client cannot translate a message it did not author.
+- English copy is longer; a narrow sidebar can wrap where Chinese did not (not visually verified).
+- The catalogue is a snapshot — a new Chinese string without an entry falls back to Chinese rather than breaking.
+
 ## [1.23.0] - 2026-11-13
 
 ### Added

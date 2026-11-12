@@ -23,6 +23,526 @@ window.__ModuleLoader__.load({
         return value
       })
 
+    // ---------------------------------------------------------------- i18n
+    // English copy for every user-visible Chinese string in this client. The
+    // Chinese text is the lookup key, so the Chinese UI renders exactly the
+    // characters it always has; a browser whose language is not Chinese (and
+    // that has not explicitly chosen a language) gets the translation instead.
+    // Generated from locale/en-ui.json — keep the keys byte-for-byte.
+    const UI_EN = {
+      " · 只读（编码无法无损写回）": " · Read-only (encoding can't be written back losslessly)",
+      " 等": " and more",
+      "Agent 可以用 remote_forward 创建，也能在控制台的端口页手动添加。": "Agents can create them with remote_forward, or you can add them manually on the console's Ports page.",
+      "DSH 启动后自动拨通": "Connects when DSH starts",
+      "DSH 需要重启一次才能加载 Remote Deck 的 host 部分。重启后这里会显示连接列表。": "DSH needs a restart to load Remote Deck's host part. The connection list appears here after that.",
+      "Remote Deck 服务未连接": "Remote Deck service not connected",
+      "SSH · {n} 台": "SSH · {n} hosts",
+      "SSH 工作区": "SSH workspaces",
+      "SSH 端口未开放": "SSH port not open",
+      "SSH 认证失败": "SSH authentication failed",
+      "SSH 连接已断开": "SSH connection closed",
+      "SSH 连接超时": "SSH connection timed out",
+      "{connected} 台在线 · {workspaces} 个工作区": "{connected} online · {workspaces} workspaces",
+      "{connected} 台已连接 · {workspaces} 个工作区": "{connected} connected · {workspaces} workspaces",
+      "{files} 个文件、{dirs} 个目录": "{files} files and {dirs} folders",
+      "{lines} 行 · {size} · {status}": "{lines} lines · {size} · {status}",
+      "{message}（可点「重新扫描」重试）": "{message} (click Rescan to retry)",
+      "{mount} · {available} 可用 / {total}": "{mount} · {available} free / {total}",
+      "{name} 上传失败": "{name} failed to upload",
+      "{name} 收尾失败 {count} 次：{reason}": "{name} failed to finish the upload after {count} attempts: {reason}",
+      "{name} 连续 {count} 次上传失败：{reason}": "{name} failed to upload {count} times in a row: {reason}",
+      "{name}（已传 {percent}%，请重新选择该文件继续）": "{name} ({percent}% uploaded; choose the same file to continue)",
+      "{n} 个": "{n}",
+      "{n} 个 · 按更新时间": "{n} · by last update",
+      "{n} 个 · 自动刷新": "{n} · auto-refresh",
+      "{n} 个 · 连接恢复后自动重建": "{n} · rebuilt automatically when the connection returns",
+      "{n} 个会话": "{n} sessions",
+      "{n} 个由 Agent 创建": "{n} created by Agent",
+      "{n} 个端口转发": "{n} port forwards",
+      "{n} 个端口转发，点开查看": "{n} port forwards; click to view",
+      "{n} 个软链接": "{n} symlinks",
+      "{n} 分钟前": "{n} min ago",
+      "{n} 天前": "{n} d ago",
+      "{n} 小时前": "{n} h ago",
+      "{n} 核": "{n} cores",
+      "{n} 项": "{n} items",
+      "{n} 项不可读": "{n} unreadable",
+      "{section} {value} 超过 {threshold}%": "{section} {value} above {threshold}%",
+      "{section} 告警阈值": "{section} alert threshold",
+      "{section} 告警阈值（1–100）": "{section} alert threshold (1–100)",
+      "⚠ 上一条消息发送失败": "⚠ Previous message failed to send",
+      "「{name}」超过 {limit} 上限，未上传。": "{name} exceeds the {limit} limit; not uploaded.",
+      "「{name}」超过远端 {limit} 上限，未上传。": "{name} exceeds the remote {limit} limit; not uploaded.",
+      "一次最多打包 {n} 项": "Archive at most {n} items at a time",
+      "上传": "Upload",
+      "上传与目录打包都受此限制": "Applies to both uploads and folder archiving",
+      "上传中 0/{total}": "Uploading 0/{total}",
+      "上传中 {current}/{total}": "Uploading {current}/{total}",
+      "上传中…": "Uploading…",
+      "上传到当前目录": "Upload to current folder",
+      "上传到当前目录：{dirname}": "Upload to current folder: {dirname}",
+      "上传到此处": "Upload here",
+      "上传到目录": "Upload to folder",
+      "上传文件到 {dirname}": "Upload files to {dirname}",
+      "上传文件后它们会出现在这里。": "Uploaded files will show up here.",
+      "上传文件夹": "Upload folder",
+      "上级目录：{path}": "Parent folder: {path}",
+      "下载": "Download",
+      "下载 {n} 项（打包）": "Download {n} items (tar.gz)",
+      "下载到本地并显示": "Download and show in folder",
+      "下载到本机": "Download to this computer",
+      "下载到本机：{path}": "Download to this computer: {path}",
+      "下载此文件：{path}": "Download this file: {path}",
+      "下载此目录": "Download folder",
+      "不可用 · {reason}": "Unavailable · {reason}",
+      "丢弃": "Discard",
+      "主机": "Host",
+      "主机不能为空": "Host can't be empty",
+      "主机可能已关机、IP/端口不对，或被防火墙拦截。": "The host may be off, the IP or port may be wrong, or a firewall is blocking the connection.",
+      "主机名无法解析": "Can't resolve host name",
+      "主机指纹不匹配": "Host key mismatch",
+      "从 SSH 配置导入": "Import from SSH config",
+      "从 ~/.ssh/config 导入，或手动填写一台 SSH 主机": "Import from ~/.ssh/config, or enter an SSH host manually",
+      "从远程目录新建工作区": "New workspace from remote folder",
+      "代理": "Proxy",
+      "会一并恢复": "Also restored",
+      "会话": "Sessions",
+      "传输": "Transfers",
+      "使用第一个": "Use the first one",
+      "侧栏显示名称": "Sidebar name",
+      "保存": "Save",
+      "保存中…": "Saving…",
+      "保存到本机下载目录并在文件夹中显示：{path}": "Save to the local Downloads folder and show it there: {path}",
+      "保存后立即连接": "Connect right after saving",
+      "保存失败": "Save failed",
+      "保存并连接": "Save and connect",
+      "修改时间": "Modified",
+      "停止": "Stop",
+      "停止输入后自动写回远端；关闭后仍可用 Ctrl/Cmd+S 手动保存": "Writes back to the remote after you stop typing; Ctrl/Cmd+S still saves manually when off",
+      "关": "Off",
+      "关闭": "Close",
+      "关闭后头部胶囊只保留最后一次采样，不再轮询": "When off, the header pill keeps only the last sample and stops polling",
+      "其中 {items} 将被跳过。": "{items} will be skipped.",
+      "内存": "Memory",
+      "再测一次": "Test again",
+      "刚刚": "Just now",
+      "创建": "Create",
+      "创建后打开新会话": "Open a new session after creating",
+      "创建目录失败：{message}": "Couldn't create folder: {message}",
+      "创建输入框中的目录（包含缺失的父目录）": "Create the folder in the box (including missing parents)",
+      "删除": "Delete",
+      "删除 {n} 项": "Delete {n} items",
+      "删除完成：成功 {done} / 失败 {failed}": "Delete finished: {done} succeeded / {failed} failed",
+      "刷新": "Refresh",
+      "刷新间隔（秒，10–300）": "Refresh interval (seconds, 10–300)",
+      "刷新页面；仍失败则完全重启 DSH。": "Refresh the page; if that still fails, restart DSH completely.",
+      "前往": "Go",
+      "加载终端…": "Loading terminal…",
+      "单个文件最大 512MB；请压缩或分卷后再试。": "Single files are limited to 512MB. Compress or split the file and try again.",
+      "单次上限（MiB，1–8192）": "Per-transfer limit (MiB, 1–8192)",
+      "双击进入目录 · ↑↓ 选择 · Enter 进入 · Backspace 上级": "Double-click to enter · ↑↓ to select · Enter to open · Backspace to go up",
+      "取消": "Cancel",
+      "取消固定到快捷面板": "Unpin from quick panel",
+      "只在当前会话显示；恢复后文档引用可能需重新 @ 添加": "Shown only in this session; after restoring, document references may need to be @-mentioned again",
+      "只显示目录": "Folders only",
+      "只有目录可以添加为工作区": "Only folders can be added as workspaces",
+      "只读": "Read-only",
+      "右键可对整组操作": "Right-click to act on the whole selection",
+      "名字": "Name",
+      "名字不能为空": "A name can't be empty",
+      "名字不能包含 /": "A name can't contain /",
+      "名字不能包含空字符": "A name can't contain null characters",
+      "名字不能是 . 或 ..": "A name can't be . or ..",
+      "名称": "Name",
+      "启动 DSH 时自动连接（点击关闭）": "Auto-connect when DSH starts (click to turn off)",
+      "启动 DSH 时自动连接：已关闭": "Auto-connect when DSH starts: off",
+      "启动 DSH 时自动连接：已开启": "Auto-connect when DSH starts: on",
+      "启动时自动连接": "Auto-connect on startup",
+      "启用服务器状态监控": "Enable server status monitoring",
+      "命名管道": "Named pipe",
+      "固定到快捷面板（最多 3 台）": "Pin to quick panel (up to 3 hosts)",
+      "在 {dirname} 下新建文件夹": "New folder in {dirname}",
+      "在 {dirname} 下新建空文件": "New empty file in {dirname}",
+      "在 {host} 上选择一个目录，它就会成为 DSH 的一个工作区": "Pick a folder on {host}; it becomes a DSH workspace.",
+      "在下方「监控设置」中开启后才会采样。": "Enable it under Monitoring settings below to start sampling.",
+      "在当前目录刷新": "Refresh the current folder",
+      "在当前目录新建文件夹": "New folder in the current folder",
+      "在这台远端主机上打开终端（远端 PTY）": "Open a terminal on this remote host (remote PTY)",
+      "在远程目录中新建": "New in remote folder",
+      "在远端文件中打开": "Open in remote files",
+      "在远端文件中打开 {path}": "Open in remote files: {path}",
+      "在远端文件页双击一个文本文件即可在这里打开。": "Double-click a text file on the Remote files page to open it here.",
+      "块设备": "Block device",
+      "复制": "Copy",
+      "复制/移动": "Copy/Move",
+      "失败": "Failed",
+      "失败 {n}": "Failed {n}",
+      "套接字": "Socket",
+      "字体族": "Font family",
+      "字体预览：以下文本按当前设置渲染，不是真实终端输出": "Font preview: this text uses the current settings; it isn't real terminal output",
+      "字号（9–24）": "Font size (9–24)",
+      "字符设备": "Character device",
+      "字距（−0.5–2）": "Letter spacing (−0.5–2)",
+      "密码": "Password",
+      "密码认证": "Password auth",
+      "密钥": "Key",
+      "密钥 {name}": "Key {name}",
+      "导入中…": "Importing…",
+      "导入后不会自动连接；可在机器卡上点连接，或打开「启动时自动连接」。": "Imported hosts don't connect automatically. Click Connect on a host card, or turn on Auto-connect on startup.",
+      "导入选中 {n} 台": "Import {n} selected",
+      "将打包 {files} 个文件。": "Archive {files} files.",
+      "将打包 {files} 个文件（约 {size}）。": "Archive {files} files (about {size}).",
+      "将永久删除 {n} 项（含目录递归），不可恢复。": "This permanently deletes {n} items, including folders and everything inside them. It can't be undone.",
+      "将添加为工作区": "Will be added as a workspace",
+      "将递归删除其下全部内容，永久删除、不可恢复。": "Everything inside it will be deleted recursively. This can't be undone.",
+      "工作区": "Workspaces",
+      "已上传 {n}": "Uploaded {n}",
+      "已上传 {n} 个文件": "Uploaded {n} files",
+      "已传 {sent} / {total}": "{sent} of {total} uploaded",
+      "已保存": "Saved",
+      "已保存到 {path}": "Saved to {path}",
+      "已保存，留空不修改": "Saved; leave blank to keep",
+      "已关闭": "Off",
+      "已取消": "Cancelled",
+      "已取消打包": "Archive cancelled",
+      "已在 {host} 的工作区 · {n}": "In {host}'s workspaces · {n}",
+      "已复制 {n} 项": "Copied {n} items",
+      "已完成": "Done",
+      "已开始下载 {name}": "Downloading {name}",
+      "已开始打包": "Archive started",
+      "已新建文件 {name}": "Created file {name}",
+      "已新建文件夹 {name}": "Created folder {name}",
+      "已检测到 {n} 个密钥：{keys} · ": "Found {n} keys: {keys} · ",
+      "已永久删除 {name}": "Deleted {name} permanently",
+      "已永久删除 {n} 项": "Deleted {n} items permanently",
+      "已添加工作区": "Workspace added",
+      "已移动 {n} 项": "Moved {n} items",
+      "已经在根目录": "Already at the root",
+      "已自动保存": "Auto-saved",
+      "已转发": "Active forwards",
+      "已转发到 {port}": "Forwarded to {port}",
+      "已连接": "Connected",
+      "已退出": "Exited",
+      "已选 {n} 项": "{n} selected",
+      "已重命名为 {name}": "Renamed to {name}",
+      "开": "On",
+      "开启": "Start",
+      "强制覆盖": "Overwrite anyway",
+      "当前机器": "this machine",
+      "往返延迟": "Round-trip latency",
+      "快捷操作": "Quick actions",
+      "快捷面板最多固定 3 台，请先取消一台": "The quick panel holds at most 3 hosts; unpin one first",
+      "快速跳转：": "Quick jump:",
+      "忽略": "Ignore",
+      "忽略并删除远端临时文件": "Ignore and delete the remote temp file",
+      "恢复": "Restore",
+      "恢复上一条发送失败的消息": "Restore the previous failed message",
+      "恢复消息": "Restore message",
+      "恢复默认": "Reset to defaults",
+      "成功 {done} / 失败 {failed}（{reason}）": "{done} succeeded / {failed} failed ({reason})",
+      "手动": "Manual",
+      "手动创建": "Created manually",
+      "手动添加": "Add manually",
+      "手动配置": "Manual setup",
+      "打包下载 {dirname}（tar.gz）": "Download {dirname} (tar.gz)",
+      "打包下载此目录（tar.gz）：{path}": "Download this folder (tar.gz): {path}",
+      "打包确认": "Confirm archive",
+      "打开": "Open",
+      "打开 {host} 的端口转发": "Open port forwarding for {host}",
+      "打开 ›": "Open ›",
+      "打开为工作区": "Open as workspace",
+      "把 {path} 添加为 DSH 工作区": "Add {path} as a DSH workspace",
+      "把整个文件夹上传到 {dirname}": "Upload the whole folder to {dirname}",
+      "把选中的 {n} 项打包成一个 tar.gz": "Archive the {n} selected items into one tar.gz",
+      "按 {encoding} 打开": "Open as {encoding}",
+      "按文件名筛选当前目录": "Filter this folder by file name",
+      "控制台": "Console",
+      "插件服务令牌已过期": "Plugin service token expired",
+      "插件还没激活": "Plugin not active yet",
+      "搜索机器、工作区…": "Search hosts and workspaces…",
+      "操作": "Actions",
+      "操作失败": "Operation failed",
+      "放弃修改并关闭": "Discard changes and close",
+      "数据不可用": "No data",
+      "文件": "Files",
+      "文件不存在": "File not found",
+      "文件不是 UTF-8。确认编码后即可编辑并原样写回。": "This file isn't UTF-8. Confirm the encoding to edit it and write it back unchanged.",
+      "文件夹": "Folder",
+      "文件夹名": "Folder name",
+      "文件已被外部修改，保存会覆盖对方的改动。": "The file was changed outside the editor; saving overwrites those changes.",
+      "文件超过上限": "File exceeds the size limit",
+      "文件过大，未完整载入": "File too large to load fully",
+      "文件面板出错：{message}": "File panel error: {message}",
+      "断开": "Disconnect",
+      "新名字": "New name",
+      "新建工作区": "New workspace",
+      "新建文件": "New file",
+      "新建文件夹": "New folder",
+      "新建远程工作区": "New remote workspace",
+      "显示隐藏文件（以 . 开头）": "Show hidden files (starting with .)",
+      "更新于 {time}": "Updated {time}",
+      "最近会话": "Recent sessions",
+      "有未完成的上传": "Unfinished uploads",
+      "服务器状态": "Server status",
+      "服务暂时无响应，请重试。": "The service isn't responding. Try again.",
+      "未使用": "Unused",
+      "未保存": "Unsaved",
+      "未修改": "Unchanged",
+      "未加载到编辑器组件": "Editor component not loaded",
+      "未命名": "Untitled",
+      "未命名会话": "Untitled session",
+      "未注册": "Not registered",
+      "未连接": "Disconnected",
+      "未连接机器": "No connected hosts",
+      "未配置": "Not configured",
+      "本地显示": "Show in folder",
+      "本地端口（自动）": "Local port (auto)",
+      "查看": "View",
+      "检查主机地址、DNS 或 /etc/hosts。": "Check the host address, DNS or /etc/hosts.",
+      "检查用户名、密钥或密码；新机器需要先在控制台配置密钥。": "Check the username, key or password. A new machine needs its key set up in the console first.",
+      "检查远端用户对该目录的权限。": "Check the remote user's permissions on that folder.",
+      "检测到 {n} 台可用机器": "Found {n} available hosts",
+      "检测到未保存的草稿（{time}）": "Found an unsaved draft ({time})",
+      "概览": "Overview",
+      "正在保存…": "Saving…",
+      "正在加载 host…": "Loading hosts…",
+      "正在加载完整终端…": "Loading full terminal…",
+      "正在加载远程连接…": "Loading remote connections…",
+      "正在打包 {n} 项…": "Archiving {n} items…",
+      "正在打开远端 shell…": "Opening remote shell…",
+      "正在扫描目录…": "Scanning folder…",
+      "正在监听的端口": "Listening ports",
+      "正在读取 SSH 配置…": "Reading SSH config…",
+      "正在读取目录…": "Reading folder…",
+      "正在读取远程目录…": "Reading remote folder…",
+      "正在读取远端文件…": "Reading remote file…",
+      "正在读取远端目录…": "Reading remote folder…",
+      "此会话不在远端工作区": "This session isn't in a remote workspace",
+      "每 {seconds} 秒": "Every {seconds}s",
+      "永久删除": "Delete permanently",
+      "永久删除 {n} 项？": "Permanently delete {n} items?",
+      "永久删除 {path}": "Permanently delete {path}",
+      "永久删除、不可恢复。": "Permanent deletion; this can't be undone.",
+      "永久删除这个文件？": "Delete this file permanently?",
+      "永久删除这个目录？": "Delete this folder permanently?",
+      "永久删除选中的 {n} 项": "Permanently delete the {n} selected items",
+      "没有匹配的目录": "No matching folders",
+      "没有可编辑的远端文件": "No editable remote file",
+      "没有找到 ~/.ssh/config，可以直接在右侧手动填写。": "No ~/.ssh/config found; you can fill in a host manually on the right.",
+      "没有权限": "Permission denied",
+      "没有读到监听端口（ss/netstat 不可用或无服务）。": "No listening ports found (ss/netstat unavailable or no services running).",
+      "测试中…": "Testing…",
+      "测试连接": "Test connection",
+      "浏览、上传、下载与删除远端文件": "Browse, upload, download and delete remote files",
+      "浏览器未能切分该文件，无法分片上传。": "The browser couldn't slice this file, so chunked upload isn't possible.",
+      "添加一台 SSH 主机后，它的目录就能作为工作区在这里打开。": "Add an SSH host and its folders can open here as workspaces.",
+      "添加中…": "Adding…",
+      "添加工作区": "Add workspace",
+      "添加机器": "Add host",
+      "点击空白处输入路径": "Click empty space to type a path",
+      "点击重连后再试。": "Reconnect and try again.",
+      "状态": "Status",
+      "用 DSH 预览打开": "Open in DSH preview",
+      "用户名": "Username",
+      "由 Agent 创建": "Created by Agent",
+      "留空即使用 DSH 内置等宽字体": "Leave blank to use DSH's built-in monospace font",
+      "登录密码": "Login password",
+      "监听中": "Listening",
+      "监控": "Monitoring",
+      "监控已关闭": "Monitoring is off",
+      "目录": "Folder",
+      "目录较大，扫描未完成，实际内容可能更多。": "The folder is large and the scan didn't finish; there may be more content.",
+      "直接下载（直链）": "Direct download (link)",
+      "直接下载（直链）：{path}": "Direct download (link): {path}",
+      "直接进入该工作区的对话": "Go straight into that workspace's conversation",
+      "省一次点击": "Saves a click",
+      "确定": "OK",
+      "确认 sshd 已启动，端口号正确。": "Make sure sshd is running and the port number is correct.",
+      "确认移除": "Remove",
+      "确认这台机器可信后，更新 known_hosts。": "Once you trust this machine, update known_hosts.",
+      "磁盘": "Disk",
+      "私钥口令（可选）": "Key passphrase (optional)",
+      "私钥路径": "Private key path",
+      "移动": "Move",
+      "移除": "Remove",
+      "移除只从 DSH 侧栏摘除，机器上的目录不会被删除。": "Removing only takes it out of the DSH sidebar; the folder on the machine is kept.",
+      "移除工作区（保留远端目录）": "Remove workspace (keep remote folder)",
+      "端口": "Port",
+      "端口转发": "Port forwarding",
+      "第 {index}/{total} 个文件。可跳过此文件、跳过该目录，或停止本次上传。": "File {index}/{total}. Skip this file, skip its folder, or stop the upload.",
+      "筛选…": "Filter…",
+      "筛选当前目录": "Filter this folder",
+      "筛选文件…": "Filter files…",
+      "类型": "Type",
+      "系统默认（内置字体）": "System default (built-in font)",
+      "终端": "Terminal",
+      "终端外观": "Terminal appearance",
+      "终端外观、服务器状态监控与传输上限；改动即时生效。": "Terminal appearance, server status monitoring and transfer limits; changes apply immediately.",
+      "终端字体预览": "Terminal font preview",
+      "继续": "Continue",
+      "续传中": "Resuming",
+      "编辑": "Edit",
+      "编辑器": "Editor",
+      "编辑器只处理文本；可以用 DSH 的预览查看它。": "The editor only handles text; use DSH's preview to view it.",
+      "编辑机器": "Edit host",
+      "网络中断，上传失败。": "Network interrupted; upload failed.",
+      "自动保存": "Auto-save",
+      "自动保存延迟（毫秒，300–10000）": "Auto-save delay (ms, 300–10000)",
+      "自动识别主机、端口、用户与私钥，已有的连接会跳过。": "Detects hosts, ports, users and keys automatically; existing connections are skipped.",
+      "自动连接：{state}": "Auto-connect: {state}",
+      "自定义…": "Custom…",
+      "行高（1.0–2.0）": "Line height (1.0–2.0)",
+      "认证方式": "Authentication",
+      "该目录已经是工作区": "This folder is already a workspace",
+      "请减少选择后重试": "Select fewer items and try again",
+      "请完全退出 DSH 后重新打开；如果刚更新插件，这一步会重新注入服务地址。": "Quit DSH completely and reopen it. If you just updated the plugin, this reinjects the service address.",
+      "请求超时": "Request timed out",
+      "请求超时（{seconds} 秒），请重试": "Request timed out after {seconds}s; try again.",
+      "请输入绝对路径（以 / 开头），或用 ~ 回到远端根目录": "Enter an absolute path starting with /, or use ~ for the remote root",
+      "请重试；如果持续失败，展开详情查看原因。": "Try again; if it keeps failing, expand the details for the reason.",
+      "读取中…": "Reading…",
+      "读取失败": "Couldn't read file",
+      "读取远端监听端口…": "Reading remote listening ports…",
+      "负载 {value}": "Load {value}",
+      "超过 {size} 的文件不在编辑器里打开：只载入一部分会让保存截断原文件。": "Files larger than {size} don't open in the editor: loading only part of one would truncate it on save.",
+      "路径不能包含 ..": "A path can't contain ..",
+      "路径可能已变更，刷新目录后再试。": "The path may have changed. Refresh the folder and try again.",
+      "跳板": "Jump host",
+      "跳过": "Skip",
+      "跳过 {n}": "Skipped {n}",
+      "跳过该目录": "Skip this folder",
+      "转发": "Forward",
+      "转发中…": "Forwarding…",
+      "软链接": "Symlink",
+      "运行中": "Running",
+      "还没有工作区。": "No workspaces yet.",
+      "还没有端口转发": "No port forwards yet",
+      "还没有端口转发。下面可以从监听端口里选一个，或手动填写。": "No port forwards yet. Pick a listening port below, or add one manually.",
+      "还没有连接。添加一台 SSH 主机后，它的目录就能作为工作区。": "No connections yet. Add an SSH host and its folders can become workspaces.",
+      "还没有连接任何机器": "No machines connected yet",
+      "这个名字已经存在": "That name already exists",
+      "这个工作区不在 DSH 注册表里": "This workspace isn't in DSH's registry",
+      "这个文件是二进制内容": "This file is binary",
+      "这个目录是空的": "This folder is empty",
+      "这个目录是空的。": "This folder is empty.",
+      "这个页面只浏览远端文件；在远程工作区的会话里打开它。": "This page only browses remote files; open it in a session that's in a remote workspace.",
+      "这台机器上还没有会话。": "No sessions on this machine yet.",
+      "这台机器还没有工作区。": "No workspaces on this machine yet.",
+      "进入远程开发": "Open Remote Development",
+      "进行中": "In progress",
+      "远程开发": "Remote Development",
+      "远程控制台": "Remote console",
+      "远程端口": "Remote port",
+      "远程终端": "Remote terminal",
+      "远程路径": "Remote path",
+      "远端临时文件已不存在，请重新上传：{name}": "The remote temp file is gone; upload the file again: {name}",
+      "远端工作台": "Remote Deck",
+      "远端已存在同名文件，未覆盖：{name}": "A file with this name already exists on the remote; not overwritten: {name}",
+      "远端文件": "Remote files",
+      "远端没有接受这一分片，重试。": "The remote didn't accept this chunk; retry.",
+      "远端终端": "Remote terminal",
+      "远端编辑": "Remote editor",
+      "连接": "Connect",
+      "连接中": "Connecting",
+      "连接中…": "Connecting…",
+      "连接失败": "Connection failed",
+      "连接成功": "Connection succeeded",
+      "连接正常": "Connected",
+      "连接正常 · {n} 台在线": "Connected · {n} online",
+      "适用于没有写入 SSH 配置的主机，或需要密码认证时。": "For hosts that aren't in your SSH config, or when you need password auth.",
+      "选择一台机器": "Choose a machine",
+      "配置里没有可导入的主机（通配符和 Match 会被跳过）。": "No importable hosts in the config (wildcards and Match blocks are skipped).",
+      "采样中…": "Sampling…",
+      "采集失败": "Sampling failed",
+      "重命名": "Rename",
+      "重命名 {path}（F2）": "Rename {path} (F2)",
+      "重命名为": "Rename to",
+      "重开终端": "Restart terminal",
+      "重新加载（丢弃我的修改）": "Reload (discard my changes)",
+      "重新扫描": "Rescan",
+      "重新读取": "Reload",
+      "重新读取 {dirname}": "Reload {dirname}",
+      "重新选择": "Choose file again",
+      "重试": "Retry",
+      "重连": "Reconnect",
+      "附件 {n} 个": "{n} attachments",
+      "隐藏以 . 开头的文件": "Hide files starting with .",
+      "预检失败，已直接开始打包": "Pre-check failed; archiving directly",
+      "默认密钥": "Default key",
+      "（{n} 个由 Agent 创建）": "({n} created by Agent)",
+      "（已停止）": "(stopped)",
+      "（已删除 {files} 个文件、{dirs} 个目录）": "({files} files and {dirs} folders deleted)",
+      "（空目录）": "(empty folder)"
+    }
+
+    const UI_LANG_STORAGE_KEY = 'rd-ui-lang'
+
+    /** localStorage may be missing or throw (SSR, privacy modes); never fatal. */
+    const storedUiLanguage = () => {
+      try {
+        const storage = globalThis.localStorage
+        const value = storage === undefined || storage === null ? null : storage.getItem(UI_LANG_STORAGE_KEY)
+        return value === 'zh' || value === 'en' ? value : null
+      } catch {
+        return null
+      }
+    }
+
+    /** The picker's value: 'zh', 'en', or 'auto' = follow the browser. */
+    const uiLanguagePreference = () => storedUiLanguage() ?? 'auto'
+
+    const setUiLanguagePreference = (value) => {
+      try {
+        const storage = globalThis.localStorage
+        if (storage === undefined || storage === null) return
+        if (value === 'zh' || value === 'en') storage.setItem(UI_LANG_STORAGE_KEY, value)
+        else storage.removeItem(UI_LANG_STORAGE_KEY)
+      } catch {
+        /* The choice is a nicety: without storage the UI keeps its default. */
+      }
+    }
+
+    /**
+     * 'zh' or 'en'. A missing navigator (tests, SSR) means "no opinion" and
+     * keeps Chinese, which is what every surface shipped before. A navigator
+     * without any language tag is treated the same way.
+     */
+    const uiLanguage = () => {
+      const override = storedUiLanguage()
+      if (override !== null) return override
+      const navigatorLike = globalThis.navigator
+      if (navigatorLike === undefined || navigatorLike === null) return 'zh'
+      const languages = Array.isArray(navigatorLike.languages) ? navigatorLike.languages : []
+      const preferred = typeof languages[0] === 'string' ? languages[0] : ''
+      const tag = typeof navigatorLike.language === 'string' && navigatorLike.language.length > 0 ? navigatorLike.language : preferred
+      if (tag.length === 0) return 'zh'
+      return /^zh/i.test(tag) ? 'zh' : 'en'
+    }
+
+    /**
+     * Look `text` up in the English table when the UI language is English and
+     * fill `{placeholders}` from `values`; return the input untouched otherwise.
+     */
+    const t = (text, values) => {
+      const table = uiLanguage() === 'en' ? UI_EN : null
+      const template = table !== null && typeof table[text] === 'string' ? table[text] : text
+      if (values === undefined || values === null) return template
+      return template.replace(/\{(\w+)\}/g, (whole, name) => (values[name] === undefined ? whole : String(values[name])))
+    }
+
+    /** Chinese lists use '、' and clauses '，'; English uses ASCII separators. */
+    const uiSeparator = (zh) => (uiLanguage() === 'en' ? (zh === '；' ? '; ' : ', ') : zh)
+
+    // The language picker is the one control whose copy cannot live in UI_EN:
+    // its label has to read correctly in both languages, while the table only
+    // maps Chinese to English.
+    const UI_LANG_COPY = {
+      label: ['界面语言', 'UI language'],
+      hint: ['只影响界面语言，不改动其它设置', 'Affects the interface language only; other settings save as usual'],
+      auto: ['跟随系统', 'Follow system'],
+    }
+    const uiLangCopy = (key) => (uiLanguage() === 'en' ? UI_LANG_COPY[key][1] : UI_LANG_COPY[key][0])
+
     // ---------------------------------------------------------------- api
 
     function boot() {
@@ -46,7 +566,7 @@ window.__ModuleLoader__.load({
       try {
         response = await fetch('http://127.0.0.1:' + info.port + path, init)
       } catch (failure) {
-        if (controller.signal.aborted) throw new Error('请求超时（' + Math.round(timeoutMs / 1000) + ' 秒），请重试')
+        if (controller.signal.aborted) throw new Error(t("请求超时（{seconds} 秒），请重试", { seconds: (Math.round(timeoutMs / 1000)) }))
         throw failure
       } finally {
         clearTimeout(timer)
@@ -77,6 +597,7 @@ window.__ModuleLoader__.load({
       selectedHost: '',
       quickPins: [],
       toasts: [],
+      languageRevision: 0,
       listeners: new Set(),
       workspaces: { items: [] },
       sessions: { ids: [], byId: {} },
@@ -92,6 +613,9 @@ window.__ModuleLoader__.load({
     }
 
     function useStore(selector) {
+      // The language picker re-labels every surface: watch the revision too, so
+      // a switch re-renders even when the selected value itself did not change.
+      useSyncExternalStore(subscribe, () => store.languageRevision)
       return useSyncExternalStore(subscribe, () => selector(store))
     }
 
@@ -141,42 +665,42 @@ window.__ModuleLoader__.load({
       const lower = message.toLowerCase()
       const make = (title, hint) => ({ level: 'error', title, hint, detail: message })
       if (/failed to fetch|networkerror|load failed/.test(lower)) {
-        return make('Remote Deck 服务未连接', '请完全退出 DSH 后重新打开；如果刚更新插件，这一步会重新注入服务地址。')
+        return make(t('Remote Deck 服务未连接'), t('请完全退出 DSH 后重新打开；如果刚更新插件，这一步会重新注入服务地址。'))
       }
       if (/http 403|forbidden|token/.test(lower)) {
-        return make('插件服务令牌已过期', '刷新页面；仍失败则完全重启 DSH。')
+        return make(t('插件服务令牌已过期'), t('刷新页面；仍失败则完全重启 DSH。'))
       }
       if (/timed out while waiting for handshake|handshake.*timeout/.test(lower)) {
-        return make('SSH 连接超时', '主机可能已关机、IP/端口不对，或被防火墙拦截。')
+        return make(t('SSH 连接超时'), t('主机可能已关机、IP/端口不对，或被防火墙拦截。'))
       }
       if (/all configured authentication methods failed|permission denied|authentication failed/.test(lower)) {
-        return make('SSH 认证失败', '检查用户名、密钥或密码；新机器需要先在控制台配置密钥。')
+        return make(t('SSH 认证失败'), t('检查用户名、密钥或密码；新机器需要先在控制台配置密钥。'))
       }
       if (/econnrefused|connection refused/.test(lower)) {
-        return make('SSH 端口未开放', '确认 sshd 已启动，端口号正确。')
+        return make(t('SSH 端口未开放'), t('确认 sshd 已启动，端口号正确。'))
       }
       if (/enotfound|getaddrinfo/.test(lower)) {
-        return make('主机名无法解析', '检查主机地址、DNS 或 /etc/hosts。')
+        return make(t('主机名无法解析'), t('检查主机地址、DNS 或 /etc/hosts。'))
       }
       if (/host key verification failed|host key mismatch/.test(lower)) {
-        return make('主机指纹不匹配', '确认这台机器可信后，更新 known_hosts。')
+        return make(t('主机指纹不匹配'), t('确认这台机器可信后，更新 known_hosts。'))
       }
       if (/connection closed|client is not connected|not connected/.test(lower)) {
-        return make('SSH 连接已断开', '点击重连后再试。')
+        return make(t('SSH 连接已断开'), t('点击重连后再试。'))
       }
       if (/fs_not_found|no such file/.test(lower)) {
-        return make('文件不存在', '路径可能已变更，刷新目录后再试。')
+        return make(t('文件不存在'), t('路径可能已变更，刷新目录后再试。'))
       }
       if (/fs_access_denied|access denied/.test(lower)) {
-        return make('没有权限', '检查远端用户对该目录的权限。')
+        return make(t('没有权限'), t('检查远端用户对该目录的权限。'))
       }
       if (/timeout|超时/.test(lower)) {
-        return make('请求超时', '服务暂时无响应，请重试。')
+        return make(t('请求超时'), t('服务暂时无响应，请重试。'))
       }
       if (/transfer_too_large|too large|超过.*上限|512mb/.test(lower)) {
-        return make('文件超过上限', '单个文件最大 512MB；请压缩或分卷后再试。')
+        return make(t('文件超过上限'), t('单个文件最大 512MB；请压缩或分卷后再试。'))
       }
-      return make('操作失败', '请重试；如果持续失败，展开详情查看原因。')
+      return make(t('操作失败'), t('请重试；如果持续失败，展开详情查看原因。'))
     }
 
     function friendlyText(raw) {
@@ -1093,10 +1617,10 @@ window.__ModuleLoader__.load({
       const value = typeof ms === 'string' ? Date.parse(ms) : Number(ms)
       if (!Number.isFinite(value)) return ''
       const diff = Date.now() - value
-      if (diff < 60_000) return '刚刚'
-      if (diff < 3_600_000) return Math.round(diff / 60_000) + ' 分钟前'
-      if (diff < 86_400_000) return Math.round(diff / 3_600_000) + ' 小时前'
-      return Math.round(diff / 86_400_000) + ' 天前'
+      if (diff < 60_000) return t('刚刚')
+      if (diff < 3_600_000) return t("{n} 分钟前", { n: (Math.round(diff / 60_000)) })
+      if (diff < 86_400_000) return t("{n} 小时前", { n: (Math.round(diff / 3_600_000)) })
+      return t("{n} 天前", { n: (Math.round(diff / 86_400_000)) })
     }
 
     // ---------------------------------------------------------------- chip + panel
@@ -1107,7 +1631,7 @@ window.__ModuleLoader__.load({
       const open = useStore((s) => s.open)
       const connections = (state && state.connections) || []
       const connected = connections.filter((row) => row.status === 'connected')
-      const label = connected.length === 0 ? 'SSH' : connected.length === 1 ? 'SSH · ' + connected[0].name : 'SSH · ' + connected.length + ' 台'
+      const label = connected.length === 0 ? 'SSH' : connected.length === 1 ? 'SSH · ' + connected[0].name : t("SSH · {n} 台", { n: (connected.length) })
       const latency = connected.length === 1 && connected[0].latencyMs ? connected[0].latencyMs + 'ms' : ''
       return h(React.Fragment, null,
         h('button', {
@@ -1116,7 +1640,7 @@ window.__ModuleLoader__.load({
           'data-open': String(open),
           title: connected.length > 0
             ? connected.map((row) => row.name).join(', ') + (latency ? ' · ' + latency : '')
-            : '远程开发',
+            : t('远程开发'),
           onClick: () => {
             store.open = !store.open
             if (store.open) void refresh()
@@ -1141,7 +1665,7 @@ window.__ModuleLoader__.load({
             h('div', { className: 'tt' }, toast.title),
             toast.hint ? h('div', { className: 'th' }, toast.hint) : null,
           ),
-          h('button', { className: 'x', title: '关闭', onClick: () => dismissToast(toast.id) }, '✕'),
+          h('button', { className: 'x', title: t('关闭'), onClick: () => dismissToast(toast.id) }, '✕'),
         )),
       )
     }
@@ -1227,7 +1751,7 @@ window.__ModuleLoader__.load({
 
       const openWorkspace = (row) => {
         const item = (store.workspaces.items || []).find((entry) => samePath(entry.path, row.stub))
-        if (item === undefined) { store.notice = '这个工作区不在 DSH 注册表里'; emit(); return }
+        if (item === undefined) { store.notice = t('这个工作区不在 DSH 注册表里'); emit(); return }
         store.open = false
         emit()
         const ui = ctxRef ? ctxRef.get('uiWorkspace') : undefined
@@ -1238,31 +1762,31 @@ window.__ModuleLoader__.load({
       return h('div', { className: 'rd-panel', ref: panelRef },
         h('div', { className: 'rd-head' },
           h('div', null,
-            h('div', { className: 't' }, '远程开发'),
+            h('div', { className: 't' }, t('远程开发')),
             h('div', { className: 's' }, ready
-              ? connected.length + ' 台已连接 · ' + workspaces.length + ' 个工作区'
-              : '正在加载 host…'),
+              ? t("{connected} 台已连接 · {workspaces} 个工作区", { connected: (connected.length), workspaces: (workspaces.length) })
+              : t('正在加载 host…')),
           ),
           h('div', { className: 'r' },
-            h('button', { className: 'rd-ibtn', title: '远程控制台', onClick: () => openConsole(first ? first.id : undefined) }, h(Icon, { name: 'server', size: 14 })),
-            h('button', { className: 'rd-ibtn', title: '刷新', onClick: () => void refresh() }, h(Icon, { name: 'refresh', size: 14 })),
-            h('button', { className: 'rd-ibtn', title: '关闭', onClick: () => { store.open = false; emit() } }, h(Icon, { name: 'x', size: 14 })),
+            h('button', { className: 'rd-ibtn', title: t('远程控制台'), onClick: () => openConsole(first ? first.id : undefined) }, h(Icon, { name: 'server', size: 14 })),
+            h('button', { className: 'rd-ibtn', title: t('刷新'), onClick: () => void refresh() }, h(Icon, { name: 'refresh', size: 14 })),
+            h('button', { className: 'rd-ibtn', title: t('关闭'), onClick: () => { store.open = false; emit() } }, h(Icon, { name: 'x', size: 14 })),
           ),
         ),
         h('div', { className: 'rd-status' + (status ? ' bad' : '') },
           h(Dot, { state: status ? 'error' : connected.length > 0 ? 'connected' : 'disconnected' }),
           h('span', { className: 't', title: status ? (status.title + ' — ' + status.hint) : '' },
-            status ? status.title : (connected.length > 0 ? '连接正常 · ' + connected.length + ' 台在线' : '未连接机器')),
-          status ? h('span', { className: 'retry', onClick: () => void refresh() }, '重试') : null,
+            status ? status.title : (connected.length > 0 ? t("连接正常 · {n} 台在线", { n: (connected.length) }) : t('未连接机器'))),
+          status ? h('span', { className: 'retry', onClick: () => void refresh() }, t('重试')) : null,
         ),
         h('div', { className: 'rd-body' },
           !ready
             ? h('div', { className: 'rd-notice' },
-              h('b', { style: { display: 'block', marginBottom: 2 } }, '插件还没激活'),
-              'DSH 需要重启一次才能加载 Remote Deck 的 host 部分。重启后这里会显示连接列表。')
+              h('b', { style: { display: 'block', marginBottom: 2 } }, t('插件还没激活')),
+              t('DSH 需要重启一次才能加载 Remote Deck 的 host 部分。重启后这里会显示连接列表。'))
             : null,
           connections.length === 0 && ready
-            ? h('div', { className: 'rd-hint' }, '还没有连接。添加一台 SSH 主机后，它的目录就能作为工作区。')
+            ? h('div', { className: 'rd-hint' }, t('还没有连接。添加一台 SSH 主机后，它的目录就能作为工作区。'))
             : null,
           h('div', { className: 'rd-hosts' },
             shownHosts.map((row) => h('div', {
@@ -1273,7 +1797,7 @@ window.__ModuleLoader__.load({
             },
               h('button', {
                 className: 'pw',
-                title: row.status === 'connected' ? '断开' : '连接',
+                title: row.status === 'connected' ? t('断开') : t('连接'),
                 onClick: (event) => { event.stopPropagation(); void toggle(row) },
               }, h(Icon, { name: 'power', size: 12 })),
               h('div', { className: 'r1' },
@@ -1283,50 +1807,50 @@ window.__ModuleLoader__.load({
                 row.autoConnect
                   ? h('span', {
                     className: 'rd-auto',
-                    title: '启动 DSH 时自动连接（点击关闭）',
+                    title: t('启动 DSH 时自动连接（点击关闭）'),
                     onClick: (event) => { event.stopPropagation(); void setAutoConnect(row.id, false) },
                   }, h(Icon, { name: 'bolt', size: 10 }))
                   : null,
               ),
               h('div', { className: 'st' },
-                row.status === 'connected' ? '已连接' : row.status === 'connecting' ? '连接中…' : row.status === 'error' ? '连接失败' : '未连接',
+                row.status === 'connected' ? t('已连接') : row.status === 'connecting' ? t('连接中…') : row.status === 'error' ? t('连接失败') : t('未连接'),
                 row.status === 'connected' && row.latencyMs ? h('span', { className: 'lat' }, row.latencyMs + 'ms') : null,
               ),
             )),
             hasPins && shownHosts.length >= 3
               ? null
               : h('div', { className: 'rd-host add', onClick: () => openHostDialog() },
-                h(Icon, { name: 'plus', size: 13 }), '添加机器'),
+                h(Icon, { name: 'plus', size: 13 }), t('添加机器')),
           ),
 
-          h('div', { className: 'rd-sect' }, '快捷操作'),
+          h('div', { className: 'rd-sect' }, t('快捷操作')),
           h('div', { className: 'rd-quick' },
             h('button', { className: 'rd-qa', onClick: () => openWorkspaceDialog(first ? first.id : undefined) },
-              h(Icon, { name: 'plus', size: 14 }), '新建工作区'),
+              h(Icon, { name: 'plus', size: 14 }), t('新建工作区')),
             h('button', { className: 'rd-qa', onClick: () => openConsole(first ? first.id : undefined, 'terminal') },
-              h(Icon, { name: 'term', size: 14 }), '远程终端'),
+              h(Icon, { name: 'term', size: 14 }), t('远程终端')),
             h('button', { className: 'rd-qa', onClick: () => openConsole(first ? first.id : undefined, 'ports') },
-              h(Icon, { name: 'link', size: 14 }), '端口转发'),
+              h(Icon, { name: 'link', size: 14 }), t('端口转发')),
             h('button', { className: 'rd-qa', onClick: () => openConsole(first ? first.id : undefined) },
-              h(Icon, { name: 'server', size: 14 }), '控制台'),
+              h(Icon, { name: 'server', size: 14 }), t('控制台')),
           ),
           fwdRows.length > 0
             ? h('div', {
               className: 'rd-fwdsum',
-              title: '打开 ' + (fwdHost.name || '当前机器') + ' 的端口转发',
+              title: t("打开 {host} 的端口转发", { host: ((fwdHost.name || t('当前机器'))) }),
               onClick: () => openConsole(fwdHost.id, 'ports'),
             },
               h(Icon, { name: 'link', size: 12 }),
-              h('span', null, fwdRows.length + ' 个端口转发'),
-              fwdAgent > 0 ? h('span', { className: 'sub' }, '（' + fwdAgent + ' 个由 Agent 创建）') : null,
-              h('span', { className: 'go' }, '查看'),
+              h('span', null, t("{n} 个端口转发", { n: (fwdRows.length) })),
+              fwdAgent > 0 ? h('span', { className: 'sub' }, t("（{n} 个由 Agent 创建）", { n: (fwdAgent) })) : null,
+              h('span', { className: 'go' }, t('查看')),
             )
             : null,
         ),
         h(ToastStack),
         h('div', { className: 'rd-foot' },
           h(Dot, { state: first ? first.status : 'disconnected' }),
-          h('span', null, first ? first.name : '未配置'),
+          h('span', null, first ? first.name : t('未配置')),
           first && first.sys ? h('span', { className: 'mono' }, '· ' + first.sys.os + ' ' + shortKernel(first.sys.kernel)) : null,
           h('span', { style: { marginLeft: 'auto' } }, state ? 'host ' + state.build : ''),
         ),
@@ -1477,7 +2001,7 @@ window.__ModuleLoader__.load({
 
       const save = () => {
         void (async () => {
-          if (!form.host.trim()) { setError('主机不能为空'); return }
+          if (!form.host.trim()) { setError(t('主机不能为空')); return }
           setBusy('save')
           setError('')
           try {
@@ -1522,56 +2046,56 @@ window.__ModuleLoader__.load({
       }
 
       const editor = h('div', { className: 'rd-mright3' },
-        h('div', { className: 'rd-formtitle' }, '手动配置'),
-        h('div', { className: 'rd-formsub' }, '适用于没有写入 SSH 配置的主机，或需要密码认证时。'),
+        h('div', { className: 'rd-formtitle' }, t('手动配置')),
+        h('div', { className: 'rd-formsub' }, t('适用于没有写入 SSH 配置的主机，或需要密码认证时。')),
         h('div', { className: 'rd-grid2', style: { marginTop: 12 } },
-          field('名称', h('input', { className: 'rd-input', value: form.name, placeholder: 'build-box', onChange: (e) => set({ name: e.target.value }) })),
-          field('主机', h('input', { className: 'rd-input mono', value: form.host, placeholder: '192.168.1.10', onChange: (e) => set({ host: e.target.value }) })),
+          field(t('名称'), h('input', { className: 'rd-input', value: form.name, placeholder: 'build-box', onChange: (e) => set({ name: e.target.value }) })),
+          field(t('主机'), h('input', { className: 'rd-input mono', value: form.host, placeholder: '192.168.1.10', onChange: (e) => set({ host: e.target.value }) })),
         ),
         h('div', { className: 'rd-grid3' },
-          field('端口', h('input', { className: 'rd-input mono', value: form.port, onChange: (e) => set({ port: e.target.value }) })),
-          field('用户名', h('input', { className: 'rd-input', value: form.username, onChange: (e) => set({ username: e.target.value }) })),
-          field('认证方式', h('div', { className: 'rd-seg' },
-            h('button', { type: 'button', className: form.authType === 'key' ? 'on' : '', onClick: () => set({ authType: 'key' }) }, '密钥'),
-            h('button', { type: 'button', className: form.authType === 'password' ? 'on' : '', onClick: () => set({ authType: 'password' }) }, '密码'),
+          field(t('端口'), h('input', { className: 'rd-input mono', value: form.port, onChange: (e) => set({ port: e.target.value }) })),
+          field(t('用户名'), h('input', { className: 'rd-input', value: form.username, onChange: (e) => set({ username: e.target.value }) })),
+          field(t('认证方式'), h('div', { className: 'rd-seg' },
+            h('button', { type: 'button', className: form.authType === 'key' ? 'on' : '', onClick: () => set({ authType: 'key' }) }, t('密钥')),
+            h('button', { type: 'button', className: form.authType === 'password' ? 'on' : '', onClick: () => set({ authType: 'password' }) }, t('密码')),
           )),
         ),
         form.authType === 'key'
           ? h('div', { className: 'rd-field' },
-            h('label', null, '私钥路径'),
+            h('label', null, t('私钥路径')),
             h('div', { style: { display: 'flex', gap: 6 } },
               h('input', { className: 'rd-input mono', style: { flex: 1 }, value: form.privateKeyPath, placeholder: 'C:\\Users\\me\\.ssh\\id_ed25519', onChange: (e) => set({ privateKeyPath: e.target.value }) }),
             ),
             config && config.keys && config.keys.length > 0
-              ? h('div', { className: 'rd-formhint' }, '已检测到 ' + config.keys.length + ' 个密钥：' + config.keys.map((key) => key.split(/[\\/]/).pop()).join('、') + ' · ',
-                h('span', { className: 'rd-link', onClick: () => set({ privateKeyPath: config.keys[0] }) }, '使用第一个'))
+              ? h('div', { className: 'rd-formhint' }, t("已检测到 {n} 个密钥：{keys} · ", { n: (config.keys.length), keys: (config.keys.map((key) => key.split(/[\\/]/).pop()).join(uiSeparator('、'))) }),
+                h('span', { className: 'rd-link', onClick: () => set({ privateKeyPath: config.keys[0] }) }, t('使用第一个')))
               : null,
           )
           : h('div', { className: 'rd-field' },
-            h('label', null, '密码'),
-            h('input', { className: 'rd-input', type: 'password', value: form.password, placeholder: form.hasPassword ? '已保存，留空不修改' : '登录密码', onChange: (e) => set({ password: e.target.value }) }),
+            h('label', null, t('密码')),
+            h('input', { className: 'rd-input', type: 'password', value: form.password, placeholder: form.hasPassword ? t('已保存，留空不修改') : t('登录密码'), onChange: (e) => set({ password: e.target.value }) }),
           ),
         form.authType === 'key'
-          ? field('私钥口令（可选）', h('input', { className: 'rd-input', type: 'password', value: form.passphrase, placeholder: form.hasPassword ? '已保存，留空不修改' : '', onChange: (e) => set({ passphrase: e.target.value }) }))
+          ? field(t('私钥口令（可选）'), h('input', { className: 'rd-input', type: 'password', value: form.passphrase, placeholder: form.hasPassword ? t('已保存，留空不修改') : '', onChange: (e) => set({ passphrase: e.target.value }) }))
           : null,
         h('div', { className: 'rd-toggles' },
-          toggleSwitch('启动时自动连接', 'DSH 启动后自动拨通', form.autoConnect, (value) => set({ autoConnect: value })),
-          toggleSwitch('保存后立即连接', '省一次点击', form.connectAfter, (value) => set({ connectAfter: value })),
+          toggleSwitch(t('启动时自动连接'), t('DSH 启动后自动拨通'), form.autoConnect, (value) => set({ autoConnect: value })),
+          toggleSwitch(t('保存后立即连接'), t('省一次点击'), form.connectAfter, (value) => set({ connectAfter: value })),
         ),
         tested
           ? h('div', { className: 'rd-testok' },
             h(Icon, { name: 'check', size: 13 }),
-            h('b', null, '连接成功'),
+            h('b', null, t('连接成功')),
             h('span', { className: 'mono' }, (tested.sys ? tested.sys.os + ' ' + shortKernel(tested.sys.kernel) + ' · ' : '') + (tested.latencyMs ? tested.latencyMs + 'ms' : '') + (tested.sys && tested.sys.shell ? ' · ' + tested.sys.shell : '')),
-            h('span', { className: 'rd-link', style: { marginLeft: 'auto' }, onClick: test }, '再测一次'))
+            h('span', { className: 'rd-link', style: { marginLeft: 'auto' }, onClick: test }, t('再测一次')))
           : null,
         error ? h('div', { className: 'rd-err' }, friendlyText(error)) : null,
         h('div', { className: 'rd-mfoot3' },
-          h('button', { className: 'rd-btn', disabled: busy !== '', onClick: test }, busy === 'test' ? '测试中…' : '测试连接'),
+          h('button', { className: 'rd-btn', disabled: busy !== '', onClick: test }, busy === 'test' ? t('测试中…') : t('测试连接')),
           h('div', { style: { marginLeft: 'auto', display: 'flex', gap: 8 } },
-            form.id ? h('button', { className: 'rd-btn danger', disabled: busy !== '', onClick: remove }, '删除') : null,
-            h('button', { className: 'rd-btn', onClick: closeDialog }, '取消'),
-            h('button', { className: 'rd-btn primary', disabled: busy !== '', onClick: save }, busy === 'save' ? '保存中…' : '保存并连接'),
+            form.id ? h('button', { className: 'rd-btn danger', disabled: busy !== '', onClick: remove }, t('删除')) : null,
+            h('button', { className: 'rd-btn', onClick: closeDialog }, t('取消')),
+            h('button', { className: 'rd-btn primary', disabled: busy !== '', onClick: save }, busy === 'save' ? t('保存中…') : t('保存并连接')),
           ),
         ),
       )
@@ -1579,28 +2103,28 @@ window.__ModuleLoader__.load({
       return h(React.Fragment, null,
         h('div', { className: 'rd-mhead3' },
           h('div', null,
-            h('div', { className: 'rd-mtitle' }, record ? '编辑机器' : '添加机器'),
-            h('div', { className: 'rd-msub' }, '从 ~/.ssh/config 导入，或手动填写一台 SSH 主机'),
+            h('div', { className: 'rd-mtitle' }, record ? t('编辑机器') : t('添加机器')),
+            h('div', { className: 'rd-msub' }, t('从 ~/.ssh/config 导入，或手动填写一台 SSH 主机')),
           ),
           h('button', { className: 'rd-mclose', onClick: closeDialog }, h(Icon, { name: 'x', size: 14 })),
         ),
         h('div', { className: 'rd-mbody3' },
           h('div', { className: 'rd-mleft3' },
-            h('div', { className: 'rd-formtitle' }, '从 SSH 配置导入'),
-            h('div', { className: 'rd-formsub' }, '自动识别主机、端口、用户与私钥，已有的连接会跳过。'),
+            h('div', { className: 'rd-formtitle' }, t('从 SSH 配置导入')),
+            h('div', { className: 'rd-formsub' }, t('自动识别主机、端口、用户与私钥，已有的连接会跳过。')),
             h('div', { className: 'rd-cfg' },
               h(Icon, { name: 'key', size: 12 }),
-              h('span', { className: 'mono' }, config ? config.path || '~/.ssh/config' : '读取中…'),
-              h('span', { className: 'rd-link', style: { marginLeft: 'auto' }, onClick: () => { void loadConfig() } }, '重新扫描'),
+              h('span', { className: 'mono' }, config ? config.path || '~/.ssh/config' : t('读取中…')),
+              h('span', { className: 'rd-link', style: { marginLeft: 'auto' }, onClick: () => { void loadConfig() } }, t('重新扫描')),
             ),
             config === null
               ? (error
-                ? h('div', { className: 'rd-err' }, friendlyText(error) + '（可点「重新扫描」重试）')
-                : h('div', { className: 'rd-hint' }, '正在读取 SSH 配置…'))
+                ? h('div', { className: 'rd-err' }, t("{message}（可点「重新扫描」重试）", { message: (friendlyText(error)) }))
+                : h('div', { className: 'rd-hint' }, t('正在读取 SSH 配置…')))
               : config.hosts.length === 0
-                ? h('div', { className: 'rd-hint' }, config.exists ? '配置里没有可导入的主机（通配符和 Match 会被跳过）。' : '没有找到 ~/.ssh/config，可以直接在右侧手动填写。')
+                ? h('div', { className: 'rd-hint' }, config.exists ? t('配置里没有可导入的主机（通配符和 Match 会被跳过）。') : t('没有找到 ~/.ssh/config，可以直接在右侧手动填写。'))
                 : h('div', { className: 'rd-import' },
-                  h('div', { className: 'rd-formhint', style: { margin: '4px 0 2px' } }, '检测到 ' + config.hosts.length + ' 台可用机器'),
+                  h('div', { className: 'rd-formhint', style: { margin: '4px 0 2px' } }, t("检测到 {n} 台可用机器", { n: (config.hosts.length) })),
                   config.hosts.map((entry) => h('label', { key: entry.alias, className: 'rd-improw' },
                     h('input', {
                       type: 'checkbox',
@@ -1610,14 +2134,14 @@ window.__ModuleLoader__.load({
                     }),
                     h('div', { style: { minWidth: 0 } },
                       h('div', { className: 'rd-impalias' }, entry.alias),
-                      h('div', { className: 'rd-impmeta' }, (entry.user || 'root') + '@' + entry.host + ':' + entry.port + (entry.proxy ? ' · ' + (entry.proxy.startsWith('jump:') ? '跳板' : '代理') : '')),
+                      h('div', { className: 'rd-impmeta' }, (entry.user || 'root') + '@' + entry.host + ':' + entry.port + (entry.proxy ? ' · ' + (entry.proxy.startsWith('jump:') ? t('跳板') : t('代理')) : '')),
                     ),
-                    h('span', { className: 'rd-impkey' }, entry.identityFile ? entry.identityFile.split(/[\\/]/).pop() : '默认密钥'),
+                    h('span', { className: 'rd-impkey' }, entry.identityFile ? entry.identityFile.split(/[\\/]/).pop() : t('默认密钥')),
                   )),
                   h('button', { className: 'rd-btn primary rd-importbtn', disabled: busy !== '' || selectedAliases.length === 0, onClick: importSelected },
-                    busy === 'import' ? '导入中…' : '导入选中 ' + selectedAliases.length + ' 台'),
+                    busy === 'import' ? t('导入中…') : t("导入选中 {n} 台", { n: (selectedAliases.length) })),
                 ),
-            h('div', { className: 'rd-formhint', style: { marginTop: 'auto' } }, '导入后不会自动连接；可在机器卡上点连接，或打开「启动时自动连接」。'),
+            h('div', { className: 'rd-formhint', style: { marginTop: 'auto' } }, t('导入后不会自动连接；可在机器卡上点连接，或打开「启动时自动连接」。')),
           ),
           editor,
         ),
@@ -1766,46 +2290,46 @@ window.__ModuleLoader__.load({
       }
 
       const preview = h('div', { className: 'rd-wspreview' },
-        h('div', { className: 'rd-formhint', style: { marginTop: 0 } }, '将添加为工作区'),
+        h('div', { className: 'rd-formhint', style: { marginTop: 0 } }, t('将添加为工作区')),
         h('div', { className: 'rd-wshost' },
           h(HostMark, { color: colorOf(host ? host.color : 'blue'), size: 18 }),
           h('span', null, host ? host.name : '—'),
           h(Dot, { state: host ? host.status : 'disconnected' }),
           host && host.latencyMs ? h('span', { className: 'mono' }, host.latencyMs + 'ms') : null,
         ),
-        field('侧栏显示名称', h('input', {
+        field(t('侧栏显示名称'), h('input', {
           className: 'rd-input',
           value: title,
           onChange: (event) => { setTitle(event.target.value); setTitleEdited(true) },
         })),
-        field('远程路径', h('div', { className: 'rd-wspath mono' }, targetPath || '—')),
+        field(t('远程路径'), h('div', { className: 'rd-wspath mono' }, targetPath || '—')),
         h('div', { style: { marginTop: 10 } },
-          toggleSwitch('创建后打开新会话', '直接进入该工作区的对话', openAfter, setOpenAfter),
+          toggleSwitch(t('创建后打开新会话'), t('直接进入该工作区的对话'), openAfter, setOpenAfter),
         ),
         h('button', { className: 'rd-btn primary rd-wsadd', disabled: busy !== '' || !host || targetPath.length === 0, onClick: add },
-          busy === 'add' ? '添加中…' : '添加工作区'),
+          busy === 'add' ? t('添加中…') : t('添加工作区')),
         error ? h('div', { className: 'rd-err', style: { marginTop: 8 } }, friendlyText(error)) : null,
         h('div', { className: 'rd-wsdivider' }),
-        h('div', { className: 'rd-formhint', style: { margin: '0 0 6px' } }, '已在 ' + (host ? host.name : '') + ' 的工作区 · ' + existing.length),
+        h('div', { className: 'rd-formhint', style: { margin: '0 0 6px' } }, t("已在 {host} 的工作区 · {n}", { host: ((host ? host.name : '')), n: (existing.length) })),
         existing.length === 0
-          ? h('div', { className: 'rd-formhint' }, '还没有工作区。')
+          ? h('div', { className: 'rd-formhint' }, t('还没有工作区。'))
           : existing.map((row) => h('div', { key: row.stub, className: 'rd-exist' },
             h(Dot, { state: row.connected ? 'connected' : 'disconnected' }),
             h('span', { className: 'rd-existpath' }, row.path),
             pendingDelete === row.stub
               ? h('span', { className: 'rd-confirm' },
-                h('button', { className: 'rd-mini danger', disabled: busy !== '', onClick: () => removeWorkspace(row.stub) }, '确认移除'),
-                h('button', { className: 'rd-mini', onClick: () => setPendingDelete('') }, '取消'))
-              : h('button', { className: 'rd-mini', title: '移除工作区（保留远端目录）', onClick: () => setPendingDelete(row.stub) }, h(Icon, { name: 'trash', size: 12 })),
+                h('button', { className: 'rd-mini danger', disabled: busy !== '', onClick: () => removeWorkspace(row.stub) }, t('确认移除')),
+                h('button', { className: 'rd-mini', onClick: () => setPendingDelete('') }, t('取消')))
+              : h('button', { className: 'rd-mini', title: t('移除工作区（保留远端目录）'), onClick: () => setPendingDelete(row.stub) }, h(Icon, { name: 'trash', size: 12 })),
           )),
-        h('div', { className: 'rd-formhint', style: { marginTop: 8 } }, '移除只从 DSH 侧栏摘除，机器上的目录不会被删除。'),
+        h('div', { className: 'rd-formhint', style: { marginTop: 8 } }, t('移除只从 DSH 侧栏摘除，机器上的目录不会被删除。')),
       )
 
       return h(React.Fragment, null,
         h('div', { className: 'rd-mhead3' },
           h('div', null,
-            h('div', { className: 'rd-mtitle' }, '新建远程工作区'),
-            h('div', { className: 'rd-msub' }, host ? '在 ' + host.name + ' 上选择一个目录，它就会成为 DSH 的一个工作区' : '选择一台机器'),
+            h('div', { className: 'rd-mtitle' }, t('新建远程工作区')),
+            h('div', { className: 'rd-msub' }, host ? t("在 {host} 上选择一个目录，它就会成为 DSH 的一个工作区", { host: (host.name) }) : t('选择一台机器')),
           ),
           h('button', { className: 'rd-mclose', onClick: closeDialog }, h(Icon, { name: 'x', size: 14 })),
         ),
@@ -1828,11 +2352,11 @@ window.__ModuleLoader__.load({
                 onChange: (event) => setPathInput(event.target.value),
                 onKeyDown: (event) => { if (event.key === 'Enter') void load(pathInput.trim() || '~', host) },
               }),
-              h('button', { className: 'rd-btn', disabled: busy !== '', onClick: () => void load(pathInput.trim() || '~', host) }, '前往'),
+              h('button', { className: 'rd-btn', disabled: busy !== '', onClick: () => void load(pathInput.trim() || '~', host) }, t('前往')),
               h('button', {
                 className: 'rd-btn',
                 disabled: busy !== '' || !pathInput.trim(),
-                title: '创建输入框中的目录（包含缺失的父目录）',
+                title: t('创建输入框中的目录（包含缺失的父目录）'),
                 onClick: () => {
                   void (async () => {
                     const target = pathInput.trim()
@@ -1859,8 +2383,8 @@ window.__ModuleLoader__.load({
             ),
             h('div', { className: 'rd-wsfilter' },
               h(Icon, { name: 'search', size: 12 }),
-              h('input', { placeholder: '筛选当前目录', value: filter, onChange: (event) => setFilter(event.target.value) }),
-              h('span', { className: 'rd-formhint' }, '只显示目录'),
+              h('input', { placeholder: t('筛选当前目录'), value: filter, onChange: (event) => setFilter(event.target.value) }),
+              h('span', { className: 'rd-formhint' }, t('只显示目录')),
             ),
             h('div', {
               className: 'rd-wtable',
@@ -1879,11 +2403,11 @@ window.__ModuleLoader__.load({
                 }
               },
             },
-              h('div', { className: 'rd-wthead' }, h('span', null, '名称'), h('span', null, '修改时间'), h('span', null, '类型')),
+              h('div', { className: 'rd-wthead' }, h('span', null, t('名称')), h('span', null, t('修改时间')), h('span', null, t('类型'))),
               busy === 'dirs' && !listing
-                ? h('div', { className: 'rd-wsrow' }, h('span', { className: 'rd-formhint' }, '正在读取目录…'))
+                ? h('div', { className: 'rd-wsrow' }, h('span', { className: 'rd-formhint' }, t('正在读取目录…')))
                 : dirs.length === 0
-                  ? h('div', { className: 'rd-wsrow' }, h('span', { className: 'rd-formhint' }, filter ? '没有匹配的目录' : '（空目录）'))
+                  ? h('div', { className: 'rd-wsrow' }, h('span', { className: 'rd-formhint' }, filter ? t('没有匹配的目录') : t('（空目录）')))
                   : dirs.map((dir) => h('div', {
                     key: dir.path,
                     className: 'rd-wsrow2' + (selected === dir.path ? ' sel' : ''),
@@ -1895,24 +2419,24 @@ window.__ModuleLoader__.load({
                       h('span', { style: { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' } }, dir.name),
                     ),
                     h('span', { className: 'dim2' }, dir.mtime ? ago(dir.mtime) : ''),
-                    h('span', { className: 'dim2' }, '目录'),
+                    h('span', { className: 'dim2' }, t('目录')),
                   )),
             ),
             h('div', { className: 'rd-wsfoot' },
-              h('span', null, '双击进入目录 · ↑↓ 选择 · Enter 进入 · Backspace 上级'),
+              h('span', null, t('双击进入目录 · ↑↓ 选择 · Enter 进入 · Backspace 上级')),
               newFolder === null
                 ? h('span', {
                   className: 'rd-pill',
                   style: { height: 24, cursor: 'pointer' },
                   onClick: () => { setNewFolder(''); setError('') },
-                }, h(Icon, { name: 'plus', size: 12 }), '新建文件夹')
+                }, h(Icon, { name: 'plus', size: 12 }), t('新建文件夹'))
                 : h('span', { className: 'rd-newfolder' },
                   h('input', {
                     className: 'rd-input',
                     style: { height: 24, width: 150 },
                     value: newFolder,
                     autoFocus: true,
-                    placeholder: '文件夹名',
+                    placeholder: t('文件夹名'),
                     onChange: (event) => setNewFolder(event.target.value),
                     onKeyDown: (event) => {
                       if (event.key === 'Escape') setNewFolder(null)
@@ -1953,8 +2477,8 @@ window.__ModuleLoader__.load({
                         setBusy('')
                       })()
                     },
-                  }, '创建'),
-                  h('button', { className: 'rd-btn', disabled: busy !== '', onClick: () => setNewFolder(null) }, '取消'),
+                  }, t('创建')),
+                  h('button', { className: 'rd-btn', disabled: busy !== '', onClick: () => setNewFolder(null) }, t('取消')),
                 ),
             ),
           ),
@@ -2266,9 +2790,9 @@ window.__ModuleLoader__.load({
           sessionId ? h('span', { className: 'rd-termsid' }, 'session ' + sessionId.slice(0, 8)) : null,
           h('span', { className: 'rd-termstatus' },
             h(Dot, { state: status === 'open' ? 'connected' : status === 'error' ? 'error' : status === 'closed' ? 'disconnected' : 'connecting' }),
-            status === 'open' ? '已连接' : status === 'closed' ? '已退出' : status === 'error' ? '失败' : '连接中',
+            status === 'open' ? t('已连接') : status === 'closed' ? t('已退出') : status === 'error' ? t('失败') : t('连接中'),
           ),
-          h('button', { className: 'rd-termbtn', onClick: () => void open(), title: '重开终端' }, h(Icon, { name: 'refresh', size: 13 })),
+          h('button', { className: 'rd-termbtn', onClick: () => void open(), title: t('重开终端') }, h(Icon, { name: 'refresh', size: 13 })),
         ),
         h('div', { className: 'rd-xterm', ref: boxRef }),
         error ? h('div', { className: 'rd-termerror' }, friendlyText(error)) : null,
@@ -2291,9 +2815,9 @@ window.__ModuleLoader__.load({
           h('div', { className: 'rd-termhead' },
             h('span', { className: 'dotrow' }, h('i'), h('i'), h('i')),
             h('span', { className: 'rd-termtab' }, host.name + ' — bash'),
-            h('span', { className: 'rd-termstatus' }, h(Dot, { state: 'connecting' }), '加载终端…'),
+            h('span', { className: 'rd-termstatus' }, h(Dot, { state: 'connecting' }), t('加载终端…')),
           ),
-          h('div', { className: 'rd-xterm-placeholder' }, '正在加载完整终端…'),
+          h('div', { className: 'rd-xterm-placeholder' }, t('正在加载完整终端…')),
         )
       }
       return engine === 'xterm' ? h(XtermTerminal, { host }) : h(LineTerminal, { host })
@@ -2446,9 +2970,9 @@ window.__ModuleLoader__.load({
           sessionId ? h('span', { className: 'rd-termsid' }, 'session ' + sessionId.slice(0, 8)) : null,
           h('span', { className: 'rd-termstatus' },
             h(Dot, { state: status === 'open' ? 'connected' : status === 'error' ? 'error' : status === 'closed' ? 'disconnected' : 'connecting' }),
-            status === 'open' ? '已连接' : status === 'closed' ? '已退出' : status === 'error' ? '失败' : '连接中',
+            status === 'open' ? t('已连接') : status === 'closed' ? t('已退出') : status === 'error' ? t('失败') : t('连接中'),
           ),
-          h('button', { className: 'rd-termbtn', onClick: () => void open(), title: '重开终端' }, h(Icon, { name: 'refresh', size: 13 })),
+          h('button', { className: 'rd-termbtn', onClick: () => void open(), title: t('重开终端') }, h(Icon, { name: 'refresh', size: 13 })),
         ),
         h('div', {
           className: 'rd-termout',
@@ -2463,7 +2987,7 @@ window.__ModuleLoader__.load({
             }
           },
           onMouseDown: () => viewRef.current?.focus(),
-        }, text.length === 0 ? h('span', { className: 'rd-termplaceholder' }, '正在打开远端 shell…') : text),
+        }, text.length === 0 ? h('span', { className: 'rd-termplaceholder' }, t('正在打开远端 shell…')) : text),
         error ? h('div', { className: 'rd-termerror' }, friendlyText(error)) : null,
       )
     }
@@ -2526,63 +3050,64 @@ window.__ModuleLoader__.load({
         h('div', { className: 'rd-porthead' },
           h('div', null,
             h('div', { className: 'rd-csect', style: { margin: '0 0 4px' } },
-              h('span', { className: 'st2' }, '已转发'),
-              h('span', { className: 'ct2' }, forwards.length + ' 个 · 连接恢复后自动重建' + (agentCount > 0 ? ' · ' + agentCount + ' 个由 Agent 创建' : '')),
+              h('span', { className: 'st2' }, t('已转发')),
+              h('span', { className: 'ct2' }, t('{n} 个 · 连接恢复后自动重建', { n: forwards.length })
+                + (agentCount > 0 ? ' · ' + t('{n} 个由 Agent 创建', { n: agentCount }) : '')),
             ),
           ),
-          h('button', { className: 'rd-btn sm', onClick: () => void load(), disabled: busy !== '' }, h(Icon, { name: 'refresh', size: 12 }), '刷新'),
+          h('button', { className: 'rd-btn sm', onClick: () => void load(), disabled: busy !== '' }, h(Icon, { name: 'refresh', size: 12 }), t('刷新')),
         ),
         forwards.length === 0
-          ? h('div', { className: 'rd-empty', style: { padding: '18px' } }, '还没有端口转发。下面可以从监听端口里选一个，或手动填写。')
+          ? h('div', { className: 'rd-empty', style: { padding: '18px' } }, t('还没有端口转发。下面可以从监听端口里选一个，或手动填写。'))
           : forwards.map((row) => h('div', { key: row.id, className: 'rd-portrow' },
             h(Dot, { state: 'connected' }),
             h('span', { className: 'rd-portmap mono' }, '127.0.0.1:' + row.localPort),
             h('span', { className: 'rd-portarrow' }, '→'),
             h('span', { className: 'rd-portmap mono' }, host.name + ':' + row.remotePort),
             row.origin === 'agent'
-              ? h('span', { className: 'rd-origin agent', title: '由 Agent 创建' }, 'Agent')
-              : h('span', { className: 'rd-origin', title: '手动创建' }, '手动'),
+              ? h('span', { className: 'rd-origin agent', title: t('由 Agent 创建') }, 'Agent')
+              : h('span', { className: 'rd-origin', title: t('手动创建') }, t('手动')),
             h('span', { className: 'rd-portactions' },
-              h('button', { className: 'rd-btn sm', onClick: () => window.open(row.url, '_blank') }, '打开'),
-              h('button', { className: 'rd-btn sm', onClick: () => { void navigator.clipboard?.writeText(row.url) } }, h(Icon, { name: 'copy', size: 12 }), '复制'),
-              h('button', { className: 'rd-btn sm', disabled: busy !== '', onClick: () => void stop(row.id) }, '停止'),
+              h('button', { className: 'rd-btn sm', onClick: () => window.open(row.url, '_blank') }, t('打开')),
+              h('button', { className: 'rd-btn sm', onClick: () => { void navigator.clipboard?.writeText(row.url) } }, h(Icon, { name: 'copy', size: 12 }), t('复制')),
+              h('button', { className: 'rd-btn sm', disabled: busy !== '', onClick: () => void stop(row.id) }, t('停止')),
             ),
           )),
 
         h('div', { className: 'rd-csect', style: { marginTop: 22 } },
-          h('span', { className: 'st2' }, '正在监听的端口'),
-          h('span', { className: 'ct2' }, ports === null ? '读取中…' : ports.length + ' 个 · 自动刷新'),
+          h('span', { className: 'st2' }, t('正在监听的端口')),
+          h('span', { className: 'ct2' }, ports === null ? t('读取中…') : t("{n} 个 · 自动刷新", { n: (ports.length) })),
         ),
         h('div', { className: 'rd-porttable' },
-          h('div', { className: 'rd-portheadrow' }, h('span', null, '端口'), h('span', null, '状态'), h('span', null, '操作')),
+          h('div', { className: 'rd-portheadrow' }, h('span', null, t('端口')), h('span', null, t('状态')), h('span', null, t('操作'))),
           ports === null
-            ? h('div', { className: 'rd-portempty' }, '读取远端监听端口…')
+            ? h('div', { className: 'rd-portempty' }, t('读取远端监听端口…'))
             : ports.length === 0
-              ? h('div', { className: 'rd-portempty' }, '没有读到监听端口（ss/netstat 不可用或无服务）。')
+              ? h('div', { className: 'rd-portempty' }, t('没有读到监听端口（ss/netstat 不可用或无服务）。'))
               : ports.slice(0, 40).map((row) => {
                 const existing = forwarded.get(row.port)
                 return h('div', { key: row.port, className: 'rd-portrow2' },
                   h('span', { className: 'mono' }, ':' + row.port),
-                  h('span', { className: 'rd-formhint' }, existing ? '已转发到 ' + existing.localPort : '监听中'),
+                  h('span', { className: 'rd-formhint' }, existing ? t("已转发到 {port}", { port: (existing.localPort) }) : t('监听中')),
                   h('span', { className: 'rd-portactions' },
                     existing
-                      ? h('button', { className: 'rd-btn sm', onClick: () => window.open(existing.url, '_blank') }, '打开')
+                      ? h('button', { className: 'rd-btn sm', onClick: () => window.open(existing.url, '_blank') }, t('打开'))
                       : h('button', {
                         className: 'rd-btn sm',
                         disabled: busy !== '',
                         onClick: () => void start(row.port, 0),
-                      }, busy === 'port:' + row.port ? '转发中…' : '转发'),
+                      }, busy === 'port:' + row.port ? t('转发中…') : t('转发')),
                   ),
                 )
               }),
         ),
 
         h('div', { className: 'rd-portadd' },
-          h('span', { className: 'rd-formhint' }, '手动添加'),
-          h('input', { className: 'rd-input mono', style: { width: 110 }, placeholder: '远程端口', value: remotePort, onChange: (event) => setRemotePort(event.target.value) }),
+          h('span', { className: 'rd-formhint' }, t('手动添加')),
+          h('input', { className: 'rd-input mono', style: { width: 110 }, placeholder: t('远程端口'), value: remotePort, onChange: (event) => setRemotePort(event.target.value) }),
           h('span', { className: 'rd-portarrow' }, '→'),
-          h('input', { className: 'rd-input mono', style: { width: 120 }, placeholder: '本地端口（自动）', value: localPort, onChange: (event) => setLocalPort(event.target.value) }),
-          h('button', { className: 'rd-btn primary', disabled: busy !== '' || !remotePort, onClick: () => void start(remotePort, localPort) }, '开启'),
+          h('input', { className: 'rd-input mono', style: { width: 120 }, placeholder: t('本地端口（自动）'), value: localPort, onChange: (event) => setLocalPort(event.target.value) }),
+          h('button', { className: 'rd-btn primary', disabled: busy !== '' || !remotePort, onClick: () => void start(remotePort, localPort) }, t('开启')),
         ),
         error ? h('div', { className: 'rd-err', style: { marginTop: 10 } }, friendlyText(error)) : null,
       )
@@ -2593,7 +3118,7 @@ window.__ModuleLoader__.load({
       try {
         return FilePanelInner({ host })
       } catch (error) {
-        return h('div', { className: 'rd-err', style: { margin: '12px 0' } }, '文件面板出错：' + friendlyText(error && error.message ? error.message : error))
+        return h('div', { className: 'rd-err', style: { margin: '12px 0' } }, t("文件面板出错：{message}", { message: (friendlyText(error && error.message ? error.message : error)) }))
       }
     }
 
@@ -2638,13 +3163,13 @@ window.__ModuleLoader__.load({
 
       function download(entry) {
         if (!startFileDownload(host.id, entry.path, entry.name)) return
-        setNotice('已开始下载 ' + entry.name)
+        setNotice(t("已开始下载 {name}", { name: (entry.name) }))
       }
 
       async function saveLocal(entry) {
         try {
           const result = await call('/connections/' + host.id + '/save-local', { method: 'POST', body: { path: entry.path } })
-          setNotice('已保存到 ' + result.localPath)
+          setNotice(t("已保存到 {path}", { path: (result.localPath) }))
           await call('/connections/' + host.id + '/reveal', { method: 'POST', body: { localPath: result.localPath } }).catch(() => {})
         } catch (failure) {
           setError(failure instanceof Error ? failure.message : String(failure))
@@ -2693,18 +3218,18 @@ window.__ModuleLoader__.load({
             {
               key: 'download',
               icon: 'download',
-              label: '下载',
-              title: isDir ? '打包下载此目录（tar.gz）：' + entry.path : '下载此文件：' + entry.path,
+              label: t('下载'),
+              title: isDir ? t("打包下载此目录（tar.gz）：{path}", { path: (entry.path) }) : t("下载此文件：{path}", { path: (entry.path) }),
               run: () => {
                 if (isDir) packDirectory(entry.path, entry.name)
-                else if (startFileDownload(host.id, entry.path, entry.name)) setNotice('已开始下载 ' + entry.name)
+                else if (startFileDownload(host.id, entry.path, entry.name)) setNotice(t("已开始下载 {name}", { name: (entry.name) }))
               },
             },
             {
               key: 'workspace',
               icon: 'folder',
-              label: '打开为工作区',
-              title: !isDir ? '只有目录可以添加为工作区' : taken ? '该目录已经是工作区' : '把 ' + entry.path + ' 添加为 DSH 工作区',
+              label: t('打开为工作区'),
+              title: !isDir ? t('只有目录可以添加为工作区') : taken ? t('该目录已经是工作区') : t("把 {path} 添加为 DSH 工作区", { path: (entry.path) }),
               disabled: !isDir || taken,
               run: () => { void openWorkspace(entry.path) },
             },
@@ -2715,22 +3240,22 @@ window.__ModuleLoader__.load({
           {
             key: 'upload',
             icon: 'upload',
-            label: '上传到此处',
-            title: '上传文件到 ' + currentDir,
+            label: t('上传到此处'),
+            title: t("上传文件到 {dirname}", { dirname: (currentDir) }),
             run: () => upload.pick({ connectionId: host.id, path: currentDir }),
           },
           {
             key: 'download',
             icon: 'download',
-            label: '下载此目录',
-            title: '打包下载 ' + currentDir + '（tar.gz）',
+            label: t('下载此目录'),
+            title: t("打包下载 {dirname}（tar.gz）", { dirname: (currentDir) }),
             run: () => packDirectory(currentDir, ''),
           },
           {
             key: 'workspace',
             icon: 'folder',
-            label: '打开为工作区',
-            title: taken ? '该目录已经是工作区' : '把 ' + currentDir + ' 添加为 DSH 工作区',
+            label: t('打开为工作区'),
+            title: taken ? t('该目录已经是工作区') : t("把 {path} 添加为 DSH 工作区", { path: (currentDir) }),
             disabled: taken,
             run: () => { void openWorkspace(currentDir) },
           },
@@ -2752,25 +3277,25 @@ window.__ModuleLoader__.load({
             }, crumb.label)),
           ),
           h('div', { className: 'rd-fright' },
-            h('input', { className: 'rd-fsearch', value: filter, placeholder: '筛选文件…', onChange: (event) => setFilter(event.target.value) }),
+            h('input', { className: 'rd-fsearch', value: filter, placeholder: t('筛选文件…'), onChange: (event) => setFilter(event.target.value) }),
             h('button', {
               className: 'rd-btn sm',
               disabled: upload.busy,
-              title: '上传到当前目录',
+              title: t('上传到当前目录'),
               onClick: () => upload.pick({ connectionId: host.id, path: currentDir }),
-            }, h(Icon, { name: 'upload', size: 12 }), upload.busy ? '上传中…' : '上传到目录'),
-            h('button', { className: 'rd-btn sm', onClick: () => void load(path) }, h(Icon, { name: 'refresh', size: 12 }), '刷新'),
+            }, h(Icon, { name: 'upload', size: 12 }), upload.busy ? t('上传中…') : t('上传到目录')),
+            h('button', { className: 'rd-btn sm', onClick: () => void load(path) }, h(Icon, { name: 'refresh', size: 12 }), t('刷新')),
           ),
         ),
         hostWorkspaces.length > 0 ? h('div', { className: 'rd-fjump' },
-          h('span', null, '快速跳转：'),
+          h('span', null, t('快速跳转：')),
           hostWorkspaces.map((row) => h('button', { key: row.workspaceId || row.path, className: 'rd-fchip', onClick: () => void load(row.path) }, row.folder || row.title || row.path)),
         ) : null,
         banner.length > 0 ? h('div', { className: 'rd-fnotice' }, banner) : null,
         uploadResumeNotice(upload),
         error ? h('div', { className: 'rd-err' }, friendlyText(error)) : null,
-        loading ? h('div', { className: 'rd-empty', style: { padding: '20px' } }, '正在读取远程目录…') : null,
-        !loading && !error && visible.length === 0 ? h('div', { className: 'rd-empty', style: { padding: '20px' } }, '这个目录是空的。') : null,
+        loading ? h('div', { className: 'rd-empty', style: { padding: '20px' } }, t('正在读取远程目录…')) : null,
+        !loading && !error && visible.length === 0 ? h('div', { className: 'rd-empty', style: { padding: '20px' } }, t('这个目录是空的。')) : null,
         !loading && visible.length > 0 ? h('div', { className: 'rd-flist' },
           visible.map((entry) => h('div', {
             key: entry.path,
@@ -2780,17 +3305,17 @@ window.__ModuleLoader__.load({
           },
             h(Icon, { name: entry.type === 'dir' ? 'folder' : 'file', size: 14 }),
             h('span', { className: 'rd-fname', title: entry.name }, entry.name),
-            h('span', { className: 'rd-fsize' }, entry.type === 'dir' ? '文件夹' : formatBytes(entry.size)),
+            h('span', { className: 'rd-fsize' }, entry.type === 'dir' ? t('文件夹') : formatBytes(entry.size)),
             h('span', { className: 'rd-fmod' }, entry.mtime ? ago(entry.mtime) : ''),
             h('span', { className: 'rd-factions' },
               entry.type === 'dir' ? null : h('button', {
                 className: 'rd-btn sm',
                 onClick: (event) => { event.stopPropagation(); download(entry) },
-              }, '下载'),
+              }, t('下载')),
               entry.type === 'dir' ? null : h('button', {
                 className: 'rd-btn sm',
                 onClick: (event) => { event.stopPropagation(); void saveLocal(entry) },
-              }, '本地显示'),
+              }, t('本地显示')),
             ),
           )),
         ) : null,
@@ -2906,7 +3431,7 @@ window.__ModuleLoader__.load({
         const metric = sample[section.key]
         const percent = percentOf(metric === undefined || metric === null ? null : metric.percent)
         if (percent === null || percent < setting.threshold) continue
-        lines.push(section.label + ' ' + formatPercent(percent) + ' 超过 ' + setting.threshold + '%')
+        lines.push(t("{section} {value} 超过 {threshold}%", { section: (t(section.label)), value: (formatPercent(percent)), threshold: (setting.threshold) }))
       }
       return lines
     }
@@ -2927,21 +3452,21 @@ window.__ModuleLoader__.load({
       if (key === 'cpu') {
         const parts = []
         const cores = formatCount(metric.cores)
-        if (cores !== null) parts.push(cores + ' 核')
+        if (cores !== null) parts.push(t("{n} 核", { n: (cores) }))
         const load = formatLoad(metric.load1)
-        if (load !== null) parts.push('负载 ' + load)
-        return parts.length > 0 ? parts.join(' · ') : '数据不可用'
+        if (load !== null) parts.push(t("负载 {value}", { value: (load) }))
+        return parts.length > 0 ? parts.join(' · ') : t('数据不可用')
       }
       const total = finiteBytes(metric.totalBytes)
       if (key === 'mem') {
         const used = finiteBytes(metric.usedBytes)
-        if (total === null || used === null) return '数据不可用'
+        if (total === null || used === null) return t('数据不可用')
         return formatBytes(used) + ' / ' + formatBytes(total)
       }
       const mount = typeof metric.mount === 'string' && metric.mount.length > 0 ? metric.mount : '—'
       const available = finiteBytes(metric.availableBytes)
       if (total === null || available === null) return mount
-      return mount + ' · ' + formatBytes(available) + ' 可用 / ' + formatBytes(total)
+      return t("{mount} · {available} 可用 / {total}", { mount: (mount), available: (formatBytes(available)), total: (formatBytes(total)) })
     }
 
     function clockOf(iso) {
@@ -2968,9 +3493,9 @@ window.__ModuleLoader__.load({
       const { config, sample, failure, loading } = props
       if (config !== null && config.enabled === false) {
         return h('div', { className: 'rd-mon' },
-          h('div', { className: 'rd-mon-hd' }, '服务器状态'),
-          h('div', { className: 'rd-hmenu-empty' }, '监控已关闭',
-            h('span', { className: 'sub' }, '在下方「监控设置」中开启后才会采样。')),
+          h('div', { className: 'rd-mon-hd' }, t('服务器状态')),
+          h('div', { className: 'rd-hmenu-empty' }, t('监控已关闭'),
+            h('span', { className: 'sub' }, t('在下方「监控设置」中开启后才会采样。'))),
         )
       }
       const rows = MONITOR_SECTIONS.map((section) => {
@@ -2981,18 +3506,18 @@ window.__ModuleLoader__.load({
         const value = percentOf(percent)
         const alert = !off && value !== null && value >= setting.threshold
         const sub = off
-          ? '已关闭'
-          : metric === null || metric === undefined ? (loading ? '采样中…' : '—') : monitorSub(section.key, metric)
-        return monitorRow(section.key, section.label, percent, sub, alert)
+          ? t('已关闭')
+          : metric === null || metric === undefined ? (loading ? t('采样中…') : '—') : monitorSub(section.key, metric)
+        return monitorRow(section.key, t(section.label), percent, sub, alert)
       })
       const clock = sample === null ? '' : clockOf(sample.sampledAt)
       return h('div', { className: 'rd-mon' },
-        h('div', { className: 'rd-mon-hd' }, '服务器状态',
-          config === null ? null : h('span', { className: 'r' }, '每 ' + Math.round(config.intervalMs / 1000) + ' 秒')),
+        h('div', { className: 'rd-mon-hd' }, t('服务器状态'),
+          config === null ? null : h('span', { className: 'r' }, t("每 {seconds} 秒", { seconds: (Math.round(config.intervalMs / 1000)) }))),
         rows,
         failure.length > 0
-          ? h('div', { className: 'rd-mon-err' }, '不可用 · ' + failure)
-          : clock.length > 0 ? h('div', { className: 'rd-mon-foot' }, '更新于 ' + clock) : null,
+          ? h('div', { className: 'rd-mon-err' }, t("不可用 · {reason}", { reason: (failure) }))
+          : clock.length > 0 ? h('div', { className: 'rd-mon-foot' }, t("更新于 {time}", { time: (clock) })) : null,
       )
     }
 
@@ -3335,19 +3860,19 @@ window.__ModuleLoader__.load({
       })
       const off = setting.enabled === false
       return h('div', { className: 'rd-set-fields' },
-        settingsRow('启用服务器状态监控',
-          settingsCheckbox('monitor.enabled', setting.enabled !== false, (checked) => patch({ enabled: checked }), false, '启用服务器状态监控'),
-          '关闭后头部胶囊只保留最后一次采样，不再轮询',
+        settingsRow(t('启用服务器状态监控'),
+          settingsCheckbox('monitor.enabled', setting.enabled !== false, (checked) => patch({ enabled: checked }), false, t('启用服务器状态监控')),
+          t('关闭后头部胶囊只保留最后一次采样，不再轮询'),
         ),
-        settingsRow('刷新间隔（秒，10–300）',
+        settingsRow(t('刷新间隔（秒，10–300）'),
           settingsNumber('monitor.intervalSec', Math.round(setting.intervalMs / 1000), 10, 300, 10, (value) => {
             patch({ intervalMs: clampInt(value, 10, 300, 30) * 1000 })
           }, off),
         ),
-        MONITOR_SECTIONS.map((section) => settingsRow(section.label + ' 告警阈值（1–100）',
+        MONITOR_SECTIONS.map((section) => settingsRow(t("{section} 告警阈值（1–100）", { section: (t(section.label)) }),
           h('div', { className: 'rd-set-pair' },
             settingsCheckbox('monitor.' + section.key + '.enabled', setting[section.key].enabled !== false,
-              (checked) => patchSection(section.key, { enabled: checked }), off, section.label + ' 告警阈值'),
+              (checked) => patchSection(section.key, { enabled: checked }), off, t("{section} 告警阈值", { section: (t(section.label)) })),
             settingsNumber('monitor.' + section.key + '.threshold', setting[section.key].threshold, 1, 100, 1, (value) => {
               patchSection(section.key, { threshold: clampInt(value, 1, 100, MONITOR_FALLBACK[section.key].threshold) })
             }, off || setting[section.key].enabled === false),
@@ -3372,6 +3897,15 @@ window.__ModuleLoader__.load({
       const timerRef = React.useRef(null)
       const sendingRef = React.useRef(false)
       const mountedRef = React.useRef(true)
+      const [uiLang, setUiLang] = React.useState(() => uiLanguagePreference())
+      const pickUiLanguage = (value) => {
+        setUiLanguagePreference(value)
+        setUiLang(uiLanguagePreference())
+        // Every surface re-reads t() while rendering; one store tick re-labels
+        // the whole UI without a reload.
+        store.languageRevision += 1
+        emit()
+      }
 
       React.useEffect(() => () => {
         mountedRef.current = false
@@ -3468,27 +4002,27 @@ window.__ModuleLoader__.load({
         lineHeight: String(clampStep(draft.lineHeight, LINE_HEIGHT_MIN, LINE_HEIGHT_MAX, 0.05, SETTINGS_FALLBACK.terminal.lineHeight)),
         letterSpacing: clampStep(draft.letterSpacing, LETTER_SPACING_MIN, LETTER_SPACING_MAX, 0.1, SETTINGS_FALLBACK.terminal.letterSpacing) + 'px',
       }
-      const statusText = status === 'failed' ? '保存失败' : status === 'pending' ? '保存中…' : status === 'saved' ? '已保存' : ''
+      const statusText = status === 'failed' ? t('保存失败') : status === 'pending' ? t('保存中…') : status === 'saved' ? t('已保存') : ''
       return h('div', { className: 'rd-set' },
         h('div', { className: 'rd-set-head' },
           h('div', { className: 'rd-set-headtext' },
-            h('div', { className: 'rd-set-headtitle' }, '远端工作台'),
-            h('div', { className: 'rd-set-desc' }, '终端外观、服务器状态监控与传输上限；改动即时生效。'),
+            h('div', { className: 'rd-set-headtitle' }, t('远端工作台')),
+            h('div', { className: 'rd-set-desc' }, t('终端外观、服务器状态监控与传输上限；改动即时生效。')),
           ),
           statusText.length > 0
             ? h('span', { className: 'rd-set-status', 'data-state': status, role: 'status' }, statusText)
             : null,
         ),
         h('div', { className: 'rd-set-group' },
-          h('div', { className: 'rd-set-title' }, '终端外观'),
-          settingsRow('字体族',
+          h('div', { className: 'rd-set-title' }, t('终端外观')),
+          settingsRow(t('字体族'),
             h('div', { className: 'rd-set-font' },
               h('select', {
                 id: settingsFieldId('terminal.fontId'),
                 'data-field': 'terminal.fontId',
                 value: draft.fontId,
                 onChange: (event) => pickFont(event.target.value),
-              }, TERMINAL_FONT_PRESETS.map((preset) => h('option', { key: preset.id, value: preset.id }, preset.label))),
+              }, TERMINAL_FONT_PRESETS.map((preset) => h('option', { key: preset.id, value: preset.id }, t(preset.label)))),
               draft.fontId === CUSTOM_FONT_ID
                 ? h('input', {
                   type: 'text',
@@ -3501,30 +4035,30 @@ window.__ModuleLoader__.load({
                 })
                 : null,
             ),
-            '留空即使用 DSH 内置等宽字体',
+            t('留空即使用 DSH 内置等宽字体'),
           ),
-          settingsRow('字号（9–24）',
+          settingsRow(t('字号（9–24）'),
             settingsNumber('terminal.fontSize', draft.fontSize, FONT_SIZE_MIN, FONT_SIZE_MAX, FONT_SIZE_STEP, (value) => patch({ fontSize: value })),
           ),
-          settingsRow('行高（1.0–2.0）',
+          settingsRow(t('行高（1.0–2.0）'),
             settingsNumber('terminal.lineHeight', draft.lineHeight, LINE_HEIGHT_MIN, LINE_HEIGHT_MAX, 0.05, (value) => patch({ lineHeight: value })),
           ),
-          settingsRow('字距（−0.5–2）',
+          settingsRow(t('字距（−0.5–2）'),
             settingsNumber('terminal.letterSpacing', draft.letterSpacing, LETTER_SPACING_MIN, LETTER_SPACING_MAX, 0.1, (value) => patch({ letterSpacing: value })),
           ),
           h('div', { className: 'rd-set-previewrow' },
-            h('div', { className: 'rd-set-desc' }, '字体预览：以下文本按当前设置渲染，不是真实终端输出'),
+            h('div', { className: 'rd-set-desc' }, t('字体预览：以下文本按当前设置渲染，不是真实终端输出')),
             h('div', {
               className: 'rd-set-preview',
               style: previewStyle,
               'data-field': 'terminal.preview',
               role: 'img',
-              'aria-label': '终端字体预览',
+              'aria-label': t('终端字体预览'),
             }, 'user@host:~$ ls -la'),
           ),
         ),
         h('div', { className: 'rd-set-group' },
-          h('div', { className: 'rd-set-title' }, '监控'),
+          h('div', { className: 'rd-set-title' }, t('监控')),
           h(MonitorFields, {
             value: draft.monitor,
             onChange: (updater) => patch((current) => ({
@@ -3534,24 +4068,41 @@ window.__ModuleLoader__.load({
           }),
         ),
         h('div', { className: 'rd-set-group' },
-          h('div', { className: 'rd-set-title' }, '传输'),
-          settingsRow('单次上限（MiB，1–8192）',
+          h('div', { className: 'rd-set-title' }, t('传输')),
+          settingsRow(t('单次上限（MiB，1–8192）'),
             settingsNumber('transfer.limitMiB', draft.limitMiB, TRANSFER_LIMIT_MIN_MIB, TRANSFER_LIMIT_MAX_MIB, 1, (value) => patch({ limitMiB: value })),
-            '上传与目录打包都受此限制',
+            t('上传与目录打包都受此限制'),
           ),
         ),
         h('div', { className: 'rd-set-group' },
-          h('div', { className: 'rd-set-title' }, '编辑器'),
-          settingsRow('自动保存',
-            settingsCheckbox('editor.autoSave', draft.autoSave !== false, (checked) => patch({ autoSave: checked }), false, '自动保存'),
-            '停止输入后自动写回远端；关闭后仍可用 Ctrl/Cmd+S 手动保存',
+          h('div', { className: 'rd-set-title' }, t('编辑器')),
+          settingsRow(t('自动保存'),
+            settingsCheckbox('editor.autoSave', draft.autoSave !== false, (checked) => patch({ autoSave: checked }), false, t('自动保存')),
+            t('停止输入后自动写回远端；关闭后仍可用 Ctrl/Cmd+S 手动保存'),
           ),
-          settingsRow('自动保存延迟（毫秒，300–10000）',
+          settingsRow(t('自动保存延迟（毫秒，300–10000）'),
             settingsNumber('editor.autoSaveDelayMs', draft.autoSaveDelayMs, 300, 10000, 100, (value) => patch({ autoSaveDelayMs: value }), draft.autoSave === false),
           ),
         ),
+        h('div', { className: 'rd-set-group' },
+          settingsRow(uiLangCopy('label'),
+            h('div', { className: 'rd-set-font' },
+              h('select', {
+                id: settingsFieldId('ui.language'),
+                'data-field': 'ui.language',
+                value: uiLang,
+                onChange: (event) => pickUiLanguage(event.target.value),
+              },
+                h('option', { value: 'auto' }, uiLangCopy('auto')),
+                h('option', { value: 'zh' }, '中文'),
+                h('option', { value: 'en' }, 'English'),
+              ),
+            ),
+            uiLangCopy('hint'),
+          ),
+        ),
         h('div', { className: 'rd-set-foot' },
-          h('button', { className: 'rd-set-textbtn', type: 'button', onClick: reset }, '恢复默认'),
+          h('button', { className: 'rd-set-textbtn', type: 'button', onClick: reset }, t('恢复默认')),
         ),
       )
     }
@@ -3574,19 +4125,19 @@ window.__ModuleLoader__.load({
 
       if (!ready) {
         return h('div', { className: 'rd-console' },
-          h('div', { className: 'rd-ctop' }, h('span', { className: 't' }, '远程开发')),
-          h('div', { style: { padding: 26 } }, h('div', { className: 'rd-empty' }, '正在加载远程连接…')),
+          h('div', { className: 'rd-ctop' }, h('span', { className: 't' }, t('远程开发'))),
+          h('div', { style: { padding: 26 } }, h('div', { className: 'rd-empty' }, t('正在加载远程连接…'))),
         )
       }
 
       if (connections.length === 0) {
         return h('div', { className: 'rd-console' },
-          h('div', { className: 'rd-ctop' }, h('span', { className: 't' }, '远程开发'), h('span', { className: 's' }, 'SSH 工作区')),
+          h('div', { className: 'rd-ctop' }, h('span', { className: 't' }, t('远程开发')), h('span', { className: 's' }, t('SSH 工作区'))),
           h('div', { style: { padding: 26 } },
             h('div', { className: 'rd-empty' },
-              h('div', { style: { fontSize: 13, color: 'inherit', marginBottom: 4 } }, '还没有连接任何机器'),
-              '添加一台 SSH 主机后，它的目录就能作为工作区在这里打开。',
-              h('div', null, h('button', { className: 'rd-btn primary', onClick: () => openHostDialog() }, h(Icon, { name: 'plus', size: 13 }), '添加机器')),
+              h('div', { style: { fontSize: 13, color: 'inherit', marginBottom: 4 } }, t('还没有连接任何机器')),
+              t('添加一台 SSH 主机后，它的目录就能作为工作区在这里打开。'),
+              h('div', null, h('button', { className: 'rd-btn primary', onClick: () => openHostDialog() }, h(Icon, { name: 'plus', size: 13 }), t('添加机器'))),
             ),
           ),
         )
@@ -3619,7 +4170,7 @@ window.__ModuleLoader__.load({
 
       const openWorkspaceRow = (row) => {
         const item = (store.workspaces.items || []).find((entry) => samePath(entry.path, row.stub))
-        if (item === undefined) { store.notice = '这个工作区不在 DSH 注册表里'; emit(); return }
+        if (item === undefined) { store.notice = t('这个工作区不在 DSH 注册表里'); emit(); return }
         store.consoleHost = host.id
         const ui = ctxRef ? ctxRef.get('uiWorkspace') : undefined
         if (ui) ui.openWorkspace(item.workspaceId)
@@ -3631,8 +4182,8 @@ window.__ModuleLoader__.load({
       }
 
       const rail = (rows, label) => rows.length === 0 ? null : h(React.Fragment, null,
-        h('div', { className: 'rh2' }, label, label === '已连接'
-          ? h('span', { className: 'add2', title: '添加机器', onClick: () => openHostDialog() }, h(Icon, { name: 'plus', size: 12 }))
+        h('div', { className: 'rh2' }, label, label === t('已连接')
+          ? h('span', { className: 'add2', title: t('添加机器'), onClick: () => openHostDialog() }, h(Icon, { name: 'plus', size: 12 }))
           : null),
         rows.map((row) => h('div', {
           key: row.id,
@@ -3650,12 +4201,12 @@ window.__ModuleLoader__.load({
             row.status === 'connected' && row.latencyMs ? h('span', { className: 'lat2' }, row.latencyMs + 'ms') : null,
             h('span', {
               className: 'rd-qpin' + (quickPins.includes(row.id) ? ' on' : ''),
-              title: quickPins.includes(row.id) ? '取消固定到快捷面板' : '固定到快捷面板（最多 3 台）',
+              title: quickPins.includes(row.id) ? t('取消固定到快捷面板') : t('固定到快捷面板（最多 3 台）'),
               onClick: (event) => {
                 event.stopPropagation()
                 const result = toggleQuickPin(row.id)
                 if (result.max) {
-                  setPinHint('快捷面板最多固定 3 台，请先取消一台')
+                  setPinHint(t('快捷面板最多固定 3 台，请先取消一台'))
                   setTimeout(() => setPinHint(''), 2600)
                 }
               },
@@ -3666,23 +4217,23 @@ window.__ModuleLoader__.load({
 
       return h('div', { className: 'rd-console' },
         h('div', { className: 'rd-ctop' },
-          h('span', { className: 't' }, '远程开发'),
-          h('span', { className: 's' }, connected.length + ' 台在线 · ' + workspaces.length + ' 个工作区'),
+          h('span', { className: 't' }, t('远程开发')),
+          h('span', { className: 's' }, t("{connected} 台在线 · {workspaces} 个工作区", { connected: (connected.length), workspaces: (workspaces.length) })),
           h('div', { className: 'r' },
             h('label', { className: 'rd-csearch' },
               h(Icon, { name: 'search', size: 13 }),
-              h('input', { value: query, placeholder: '搜索机器、工作区…', onChange: (event) => setQuery(event.target.value) }),
+              h('input', { value: query, placeholder: t('搜索机器、工作区…'), onChange: (event) => setQuery(event.target.value) }),
             ),
             h('button', { className: 'rd-btn primary', onClick: () => openHostDialog() },
-              h(Icon, { name: 'plus', size: 13 }), '添加机器'),
+              h(Icon, { name: 'plus', size: 13 }), t('添加机器')),
           ),
         ),
         h('div', { className: 'rd-cbody' },
           h('aside', { className: 'rd-rail2' },
             pinHint ? h('div', { className: 'rd-pinhint' }, pinHint) : null,
-            rail(connected.filter((row) => !filter || (row.name + ' ' + row.host + ' ' + row.username).toLowerCase().includes(filter)), '已连接'),
+            rail(connected.filter((row) => !filter || (row.name + ' ' + row.host + ' ' + row.username).toLowerCase().includes(filter)), t('已连接')),
             connected.length > 0 ? h('div', { className: 'sep2' }) : null,
-            rail(connections.filter((row) => row.status !== 'connected').filter((row) => !filter || (row.name + ' ' + row.host + ' ' + row.username).toLowerCase().includes(filter)), '未连接'),
+            rail(connections.filter((row) => row.status !== 'connected').filter((row) => !filter || (row.name + ' ' + row.host + ' ' + row.username).toLowerCase().includes(filter)), t('未连接')),
             h('div', { className: 'railfoot2' },
               h('div', null, 'Data: <DSH_HOME>/remote-deck'),
               h('div', null, 'Host ' + (state ? state.build : '')),
@@ -3690,7 +4241,7 @@ window.__ModuleLoader__.load({
           ),
           h('section', { className: 'rd-cpane' + (tab === 'terminal' ? ' term' : '') },
             h('div', { className: 'rd-tabs' },
-              [['overview', '概览'], ['terminal', '终端'], ['files', '文件'], ['ports', '端口转发']].map(([id, label]) => h('button', {
+              [['overview', t('概览')], ['terminal', t('终端')], ['files', t('文件')], ['ports', t('端口转发')]].map(([id, label]) => h('button', {
                 key: id,
                 className: 'rd-tab' + (tab === id ? ' on' : ''),
                 onClick: () => { store.consoleTab = id; emit() },
@@ -3699,7 +4250,7 @@ window.__ModuleLoader__.load({
             h('div', { className: 'rd-status' + (hostIssue ? ' bad' : '') },
               h(Dot, { state: hostIssue ? 'error' : host.status }),
               h('span', { className: 't', title: hostIssue ? (hostIssue.title + ' — ' + hostIssue.hint) : '' },
-                hostIssue ? hostIssue.title : (host.status === 'connected' ? '连接正常' : '未连接')),
+                hostIssue ? hostIssue.title : (host.status === 'connected' ? t('连接正常') : t('未连接'))),
             ),
             tab === 'overview' ? null : (tab === 'terminal' ? h(TerminalPanel, { host }) : tab === 'files' ? h(FilePanel, { host }) : h(PortsPanel, { host })),
             h('div', { className: 'rd-overview', style: { display: tab === 'overview' ? 'contents' : 'none' } },
@@ -3709,56 +4260,56 @@ window.__ModuleLoader__.load({
                 h('div', { className: 'rd-ctitle' }, host.name,
                   h('span', { className: 'rd-pill', style: { cursor: 'default', height: 22, fontSize: 10.5 } },
                     h(Dot, { state: host.status }),
-                    host.status === 'connected' ? '已连接' : host.status === 'connecting' ? '连接中' : host.status === 'error' ? '连接失败' : '未连接',
+                    host.status === 'connected' ? t('已连接') : host.status === 'connecting' ? t('连接中') : host.status === 'error' ? t('连接失败') : t('未连接'),
                   ),
                 ),
                 h('div', { className: 'rd-cmeta' },
                   h('span', { className: 'mono' }, host.username + '@' + host.host + ':' + host.port),
                   h('span', null, '·'),
-                  h('span', null, host.authType === 'password' ? '密码认证' : '密钥 ' + (host.privateKeyPath ? host.privateKeyPath.split(/[\\/]/).pop() : '')),
+                  h('span', null, host.authType === 'password' ? t('密码认证') : t("密钥 {name}", { name: ((host.privateKeyPath ? host.privateKeyPath.split(/[\\/]/).pop() : '')) })),
                   host.sys ? h('span', null, '·') : null,
                   host.sys ? h('span', null, host.sys.os + ' ' + shortKernel(host.sys.kernel)) : null,
                 ),
               ),
               h('div', { className: 'acts' },
-                h('button', { className: 'rd-btn', onClick: () => { store.consoleTab = 'terminal'; emit() } }, h(Icon, { name: 'term', size: 13 }), '终端'),
-                h('button', { className: 'rd-btn', onClick: () => { store.consoleTab = 'ports'; emit() } }, h(Icon, { name: 'link', size: 13 }), '端口'),
+                h('button', { className: 'rd-btn', onClick: () => { store.consoleTab = 'terminal'; emit() } }, h(Icon, { name: 'term', size: 13 }), t('终端')),
+                h('button', { className: 'rd-btn', onClick: () => { store.consoleTab = 'ports'; emit() } }, h(Icon, { name: 'link', size: 13 }), t('端口')),
                 h('button', {
                   className: 'rd-btn',
-                  title: host.autoConnect ? '启动 DSH 时自动连接：已开启' : '启动 DSH 时自动连接：已关闭',
+                  title: host.autoConnect ? t('启动 DSH 时自动连接：已开启') : t('启动 DSH 时自动连接：已关闭'),
                   onClick: () => void setAutoConnect(host.id, !host.autoConnect),
-                }, h(Icon, { name: 'bolt', size: 13 }), '自动连接：' + (host.autoConnect ? '开' : '关')),
+                }, h(Icon, { name: 'bolt', size: 13 }), t("自动连接：{state}", { state: ((host.autoConnect ? t('开') : t('关'))) })),
                 host.status === 'connected'
-                  ? h('button', { className: 'rd-btn', disabled: busy !== '', onClick: () => act('reconnect') }, h(Icon, { name: 'refresh', size: 13 }), '重连')
+                  ? h('button', { className: 'rd-btn', disabled: busy !== '', onClick: () => act('reconnect') }, h(Icon, { name: 'refresh', size: 13 }), t('重连'))
                   : null,
                 h('button', {
                   className: 'rd-btn',
                   disabled: busy !== '',
                   onClick: () => act(host.status === 'connected' ? 'disconnect' : 'connect'),
-                }, host.status === 'connected' ? '断开' : '连接'),
-                h('button', { className: 'rd-btn', onClick: editHost }, h(Icon, { name: 'edit', size: 13 }), '编辑'),
+                }, host.status === 'connected' ? t('断开') : t('连接')),
+                h('button', { className: 'rd-btn', onClick: editHost }, h(Icon, { name: 'edit', size: 13 }), t('编辑')),
               ),
             ),
 
             h('div', { className: 'rd-stats' },
-              h('div', { className: 'rd-stat' }, h('div', { className: 'k' }, '工作区'), h('div', { className: 'v' }, String(hostWorkspaces.length))),
-              h('div', { className: 'rd-stat' }, h('div', { className: 'k' }, '会话'), h('div', { className: 'v' }, String(hostSessions.length))),
-              h('div', { className: 'rd-stat' }, h('div', { className: 'k' }, '端口转发'), h('div', { className: 'v' }, String(((state && state.forwards) || []).filter((row) => row.connectionId === host.id).length), h('small', null, '运行中'))),
-              h('div', { className: 'rd-stat' }, h('div', { className: 'k' }, '往返延迟'), h('div', { className: 'v' }, host.latencyMs ? String(host.latencyMs) : '—', h('small', null, 'ms'))),
+              h('div', { className: 'rd-stat' }, h('div', { className: 'k' }, t('工作区')), h('div', { className: 'v' }, String(hostWorkspaces.length))),
+              h('div', { className: 'rd-stat' }, h('div', { className: 'k' }, t('会话')), h('div', { className: 'v' }, String(hostSessions.length))),
+              h('div', { className: 'rd-stat' }, h('div', { className: 'k' }, t('端口转发')), h('div', { className: 'v' }, String(((state && state.forwards) || []).filter((row) => row.connectionId === host.id).length), h('small', null, t('运行中')))),
+              h('div', { className: 'rd-stat' }, h('div', { className: 'k' }, t('往返延迟')), h('div', { className: 'v' }, host.latencyMs ? String(host.latencyMs) : '—', h('small', null, 'ms'))),
             ),
 
             h('div', { className: 'rd-csect' },
-              h('span', { className: 'st2' }, '工作区'),
-              h('span', { className: 'ct2' }, hostWorkspaces.length + ' 个'),
+              h('span', { className: 'st2' }, t('工作区')),
+              h('span', { className: 'ct2' }, t("{n} 个", { n: (hostWorkspaces.length) })),
               h('span', { className: 'rt2' },
-                h('button', { className: 'rd-btn sm', disabled: busy !== '', onClick: () => void refresh() }, h(Icon, { name: 'refresh', size: 12 }), '刷新'),
-                h('button', { className: 'rd-btn sm primary', onClick: () => startBrowserFromConsole(host) }, h(Icon, { name: 'plus', size: 12 }), '新建工作区'),
+                h('button', { className: 'rd-btn sm', disabled: busy !== '', onClick: () => void refresh() }, h(Icon, { name: 'refresh', size: 12 }), t('刷新')),
+                h('button', { className: 'rd-btn sm primary', onClick: () => startBrowserFromConsole(host) }, h(Icon, { name: 'plus', size: 12 }), t('新建工作区')),
               ),
             ),
 
             hostWorkspaces.length === 0
-              ? h('div', { className: 'rd-empty' }, '这台机器还没有工作区。', h('div', null,
-                h('button', { className: 'rd-btn primary', onClick: () => startBrowserFromConsole(host) }, h(Icon, { name: 'plus', size: 13 }), '在远程目录中新建')))
+              ? h('div', { className: 'rd-empty' }, t('这台机器还没有工作区。'), h('div', null,
+                h('button', { className: 'rd-btn primary', onClick: () => startBrowserFromConsole(host) }, h(Icon, { name: 'plus', size: 13 }), t('在远程目录中新建'))))
               : h('div', { className: 'rd-cards' },
                 hostWorkspaces.map((row) => {
                   const item = (store.workspaces.items || []).find((entry) => samePath(entry.path, row.stub))
@@ -3768,31 +4319,31 @@ window.__ModuleLoader__.load({
                     h('div', { className: 'top2' },
                       h(Icon, { name: 'folder', size: 13, style: { color: colorOf(row.color) } }),
                       h('span', { className: 'nm3' }, row.folder || row.title),
-                      item === undefined ? h('span', { className: 'pill', style: { fontSize: 9.5, height: 18, marginLeft: 'auto', padding: '0 5px' } }, '未注册') : null,
+                      item === undefined ? h('span', { className: 'pill', style: { fontSize: 9.5, height: 18, marginLeft: 'auto', padding: '0 5px' } }, t('未注册')) : null,
                     ),
                     h('div', { className: 'path2' }, row.path),
                     h('div', { className: 'foot2' },
-                      h('span', null, count + ' 个会话'),
+                      h('span', null, t("{n} 个会话", { n: (count) })),
                       h('span', null, '·'),
-                      h('span', null, ago(item && item.updatedAt) || '未使用'),
-                      h('span', { className: 'go2' }, '打开 ›'),
+                      h('span', null, ago(item && item.updatedAt) || t('未使用')),
+                      h('span', { className: 'go2' }, t('打开 ›')),
                     ),
                   )
                 }),
                 h('div', { className: 'rd-card add2', onClick: () => startBrowserFromConsole(host) },
-                  h(Icon, { name: 'plus', size: 14 }), '从远程目录新建工作区'),
+                  h(Icon, { name: 'plus', size: 14 }), t('从远程目录新建工作区')),
               ),
 
             h('div', { className: 'rd-csect' },
-              h('span', { className: 'st2' }, '最近会话'),
-              h('span', { className: 'ct2' }, hostSessions.length + ' 个 · 按更新时间'),
+              h('span', { className: 'st2' }, t('最近会话')),
+              h('span', { className: 'ct2' }, t("{n} 个 · 按更新时间", { n: (hostSessions.length) })),
             ),
             hostSessions.length === 0
-              ? h('div', { className: 'rd-hint' }, '这台机器上还没有会话。')
+              ? h('div', { className: 'rd-hint' }, t('这台机器上还没有会话。'))
               : h('div', null,
                 hostSessions.slice(0, 6).map((row) => h('div', { key: row.summary.id, className: 'rd-sess', onClick: () => openSessionRow(row.summary) },
                   h('span', { className: 'rd-badge', style: { background: colorOf(row.remote.color), width: 18, height: 18 } }, h(Icon, { name: 'term', size: 10 })),
-                  h('span', { className: 't2' }, row.summary.title || row.summary.displayTitle || '未命名会话'),
+                  h('span', { className: 't2' }, row.summary.title || row.summary.displayTitle || t('未命名会话')),
                   h('span', { className: 'tag2' }, row.remote.folder),
                   h('span', { className: 'm2' }, ago(row.summary.updatedAt)),
                 )),
@@ -3883,7 +4434,7 @@ window.__ModuleLoader__.load({
             const next = sampleOf(body)
             if (next === null) {
               setSample(null)
-              setFailure(String(body && body.error ? body.error : '采集失败'))
+              setFailure(String(body && body.error ? body.error : t('采集失败')))
             } else {
               setSample(next)
               setFailure('')
@@ -3959,8 +4510,8 @@ window.__ModuleLoader__.load({
       return h('button', {
         type: 'button',
         className: 'rd-dl',
-        title: '下载到本机：' + target,
-        'aria-label': '下载到本机',
+        title: t("下载到本机：{path}", { path: (target) }),
+        'aria-label': t('下载到本机'),
         onClick: download,
       }, h(Icon, { name: 'download', size: 16 }))
     }
@@ -3984,8 +4535,8 @@ window.__ModuleLoader__.load({
       return h('button', {
         type: 'button',
         className: 'rd-dl',
-        title: '直接下载（直链）：' + target,
-        'aria-label': '直接下载（直链）',
+        title: t("直接下载（直链）：{path}", { path: (target) }),
+        'aria-label': t('直接下载（直链）'),
         onClick: download,
       }, h(Icon, { name: 'link', size: 16 }))
     }
@@ -4028,8 +4579,8 @@ window.__ModuleLoader__.load({
         h('button', {
           type: 'button',
           className: 'rd-dl',
-          title: '下载到本机',
-          'aria-label': '下载到本机',
+          title: t('下载到本机'),
+          'aria-label': t('下载到本机'),
           onClick: download,
         }, h(Icon, { name: 'download', size: 16 })),
       )
@@ -4058,12 +4609,21 @@ window.__ModuleLoader__.load({
 
     function scanSummary(scan) {
       const size = countOf(scan.bytes) > 0 ? formatBytes(scan.bytes) : ''
-      let text = '将打包 ' + countOf(scan.files) + ' 个文件' + (size.length > 0 ? '（约 ' + size + '）' : '') + '。'
+      const files = countOf(scan.files)
+      let text = size.length > 0
+        ? t('将打包 {files} 个文件（约 {size}）。', { files, size })
+        : t('将打包 {files} 个文件。', { files })
       const skipped = []
-      if (countOf(scan.unreadable) > 0) skipped.push(countOf(scan.unreadable) + ' 项不可读')
-      if (countOf(scan.links) > 0) skipped.push(countOf(scan.links) + ' 个软链接')
-      if (skipped.length > 0) text += '其中 ' + skipped.join('、') + '将被跳过。'
-      if (scan.complete === false) text += '目录较大，扫描未完成，实际内容可能更多。'
+      if (countOf(scan.unreadable) > 0) skipped.push(t('{n} 项不可读', { n: countOf(scan.unreadable) }))
+      if (countOf(scan.links) > 0) skipped.push(t('{n} 个软链接', { n: countOf(scan.links) }))
+      if (skipped.length > 0) {
+        // The catalogue's template has a space the Chinese source never emits;
+        // split by language so the Chinese copy stays byte-for-byte identical.
+        text += uiLanguage() === 'en'
+          ? t('其中 {items} 将被跳过。', { items: skipped.join(', ') })
+          : '其中 ' + skipped.join(uiSeparator('、')) + '将被跳过。'
+      }
+      if (scan.complete === false) text += t('目录较大，扫描未完成，实际内容可能更多。')
       return text
     }
 
@@ -4163,7 +4723,7 @@ window.__ModuleLoader__.load({
         body: { path: dir, title: opt.title },
       })
       await refresh()
-      if (opt.notice === true) pushNotice('已添加工作区', result && result.stub ? result.stub : dir)
+      if (opt.notice === true) pushNotice(t('已添加工作区'), result && result.stub ? result.stub : dir)
       return result
     }
 
@@ -4228,13 +4788,13 @@ window.__ModuleLoader__.load({
           // A selection is one archive request; only a single directory keeps
           // the pre-flight scan and its confirmation.
           if (paths.length > 1) {
-            setNote('正在打包 ' + paths.length + ' 项…')
+            setNote(t("正在打包 {n} 项…", { n: (paths.length) }))
             startArchiveDownload(connectionId, paths, target.name, { tasks })
             return
           }
           const dir = paths[0]
           setBusy(true)
-          setNote('正在扫描目录…')
+          setNote(t('正在扫描目录…'))
           let scan = null
           try {
             scan = await call('/connections/' + encodeURIComponent(connectionId) + '/scan?path=' + encodeURIComponent(dir), { timeoutMs: 120000 })
@@ -4243,7 +4803,7 @@ window.__ModuleLoader__.load({
           }
           setBusy(false)
           if (scan === null || typeof scan !== 'object' || scan.ok === false) {
-            flash('预检失败，已直接开始打包', 2500)
+            flash(t('预检失败，已直接开始打包'), 2500)
             startArchiveDownload(connectionId, dir, target.name, { tasks })
             return
           }
@@ -4251,20 +4811,20 @@ window.__ModuleLoader__.load({
             setNote('')
             const choice = await ask({
               kind: 'download',
-              title: '打包确认',
+              title: t('打包确认'),
               subtitle: dir,
               body: scanSummary(scan),
               actions: [
-                { value: 'continue', label: '继续', tone: 'primary' },
-                { value: 'cancel', label: '取消', tone: 'ghost' },
+                { value: 'continue', label: t('继续'), tone: 'primary' },
+                { value: 'cancel', label: t('取消'), tone: 'ghost' },
               ],
             })
             if (choice !== 'continue') {
-              flash('已取消打包', 2000)
+              flash(t('已取消打包'), 2000)
               return
             }
           }
-          flash('已开始打包', 1500)
+          flash(t('已开始打包'), 1500)
           startArchiveDownload(connectionId, dir, target.name, { tasks })
         } finally {
           runRef.current = false
@@ -4439,23 +4999,23 @@ window.__ModuleLoader__.load({
       const list = upload !== null && upload !== undefined && Array.isArray(upload.resumeHint) ? upload.resumeHint : []
       if (list.length === 0) return null
       return h('div', { className: 'rd-rf-resume', role: 'status' },
-        h('div', { className: 'rd-rf-resumetitle' }, '有未完成的上传'),
+        h('div', { className: 'rd-rf-resumetitle' }, t('有未完成的上传')),
         list.map((job) => {
           const percent = job.size > 0 ? Math.max(0, Math.min(100, Math.round((job.offset / job.size) * 100))) : 0
           return h('div', { key: uploadJobKey(job.connectionId, job.dir, job.name), className: 'rd-rf-resumerow' },
             h('span', { className: 'rd-rf-resumetext', title: job.dir + '/' + job.name },
-              job.name + '（已传 ' + percent + '%，请重新选择该文件继续）'),
+              t("{name}（已传 {percent}%，请重新选择该文件继续）", { name: (job.name), percent: (percent) })),
             h('button', {
               className: 'rd-rf-statebtn',
               type: 'button',
               onClick: () => upload.pick({ connectionId: job.connectionId, path: job.dir }),
-            }, '重新选择'),
+            }, t('重新选择')),
             h('button', {
               className: 'rd-rf-taskx',
               type: 'button',
-              title: '忽略并删除远端临时文件',
+              title: t('忽略并删除远端临时文件'),
               onClick: () => upload.dismissResume(job),
-            }, '忽略'))
+            }, t('忽略')))
         }))
     }
 
@@ -4614,13 +5174,13 @@ window.__ModuleLoader__.load({
           const code = payload && payload.code ? payload.code : ''
           const message = payload && payload.message ? payload.message : 'HTTP ' + xhr.status
           if (code === 'TRANSFER_TOO_LARGE') {
-            settle({ ok: false, message: '「' + name + '」超过远端 ' + uploadLimitLabel(uploadLimitBytes()) + ' 上限，未上传。' })
+            settle({ ok: false, message: t("「{name}」超过远端 {limit} 上限，未上传。", { name: (name), limit: (uploadLimitLabel(uploadLimitBytes())) }) })
             return
           }
           settle({ ok: false, message: code.length > 0 ? code + '：' + message : message })
         }
-        xhr.onerror = () => settle({ ok: false, message: '网络中断，上传失败。' })
-        xhr.onabort = () => settle({ ok: false, cancelled: true, message: '已取消' })
+        xhr.onerror = () => settle({ ok: false, message: t('网络中断，上传失败。') })
+        xhr.onabort = () => settle({ ok: false, cancelled: true, message: t('已取消') })
         if (taskId !== '') sink.bind(taskId, xhr)
         xhr.send(file)
       })
@@ -4642,7 +5202,7 @@ window.__ModuleLoader__.load({
         const controller = typeof AbortController === 'function' ? new AbortController() : null
         const signal = controller === null ? undefined : controller.signal
         const cancelled = () => signal !== undefined && signal.aborted === true
-        const cancelledResult = { ok: false, cancelled: true, message: '已取消' }
+        const cancelledResult = { ok: false, cancelled: true, message: t('已取消') }
         if (taskId !== '' && controller !== null) sink.bind(taskId, controller)
         let offset = Number.isFinite(resumeFrom) && resumeFrom > 0 ? Math.min(size, Math.floor(resumeFrom)) : 0
         let failures = 0
@@ -4664,7 +5224,7 @@ window.__ModuleLoader__.load({
           try {
             const end = Math.min(size, offset + UPLOAD_CHUNK_BYTES)
             const chunk = typeof file.slice === 'function' ? file.slice(offset, end) : null
-            if (chunk === null) return { ok: false, message: '浏览器未能切分该文件，无法分片上传。' }
+            if (chunk === null) return { ok: false, message: t('浏览器未能切分该文件，无法分片上传。') }
             const response = await fetch(uploadPartUrl(connectionId, dir, name, offset), {
               method: 'POST',
               headers: { 'x-dsh-remote-token': info.token, 'content-type': 'application/octet-stream' },
@@ -4677,7 +5237,7 @@ window.__ModuleLoader__.load({
               const next = received === null ? end : received
               // A part that reports no progress would loop forever on a broken
               // server; treat it like a failed part and resynchronise.
-              if (next <= offset) throw new Error('远端没有接受这一分片，重试。')
+              if (next <= offset) throw new Error(t('远端没有接受这一分片，重试。'))
               offset = next
               failures = 0
               resuming = false
@@ -4716,7 +5276,7 @@ window.__ModuleLoader__.load({
               // Nothing reached the remote, so there is nothing worth resuming;
               // a partial upload keeps its record for the next attempt.
               if (offset <= 0) dropUploadJob(connectionId, dir, name)
-              return { ok: false, message: name + ' 连续 ' + UPLOAD_RETRY_LIMIT + ' 次上传失败：' + reason }
+              return { ok: false, message: t("{name} 连续 {count} 次上传失败：{reason}", { name: (name), count: (UPLOAD_RETRY_LIMIT), reason: (reason) }) }
             }
             await uploadWait(uploadRetryDelay(failures), signal)
             if (cancelled()) return cancelledResult
@@ -4755,10 +5315,10 @@ window.__ModuleLoader__.load({
               return { ok: true, message: '' }
             }
             if (response.status === 409 && code === 'EXISTS') {
-              return { ok: false, message: '远端已存在同名文件，未覆盖：' + name }
+              return { ok: false, message: t("远端已存在同名文件，未覆盖：{name}", { name: (name) }) }
             }
             if (response.status === 404 && code === 'NOT_FOUND') {
-              return { ok: false, message: '远端临时文件已不存在，请重新上传：' + name }
+              return { ok: false, message: t("远端临时文件已不存在，请重新上传：{name}", { name: (name) }) }
             }
             if (response.status < 500) return { ok: false, message: code.length > 0 ? code + '：' + detail : detail }
             throw new Error(detail)
@@ -4767,7 +5327,7 @@ window.__ModuleLoader__.load({
             failures += 1
             if (failures >= UPLOAD_RETRY_LIMIT) {
               const reason = failure instanceof Error ? failure.message : String(failure)
-              return { ok: false, message: name + ' 收尾失败 ' + UPLOAD_RETRY_LIMIT + ' 次：' + reason }
+              return { ok: false, message: t("{name} 收尾失败 {count} 次：{reason}", { name: (name), count: (UPLOAD_RETRY_LIMIT), reason: (reason) }) }
             }
             await uploadWait(uploadRetryDelay(failures), signal)
           }
@@ -4793,7 +5353,7 @@ window.__ModuleLoader__.load({
        */
       const runDirectoryBatch = async (connectionId, dir, list) => {
         setBusy(true)
-        setNote('上传中 0/' + list.length)
+        setNote(t("上传中 0/{total}", { total: (list.length) }))
         const folders = new Set()
         for (const file of list) {
           const relative = typeof file.webkitRelativePath === 'string' && file.webkitRelativePath.length > 0
@@ -4813,7 +5373,7 @@ window.__ModuleLoader__.load({
           }
         } catch (failure) {
           setBusy(false)
-          setNote('创建目录失败：' + (failure instanceof Error ? failure.message : String(failure)))
+          setNote(t("创建目录失败：{message}", { message: ((failure instanceof Error ? failure.message : String(failure))) }))
           return
         }
         setBusy(false)
@@ -4830,7 +5390,7 @@ window.__ModuleLoader__.load({
       }
       const runBatch = async (connectionId, dir, list, targets) => {
         setBusy(true)
-        setNote('上传中 0/' + list.length)
+        setNote(t("上传中 0/{total}", { total: (list.length) }))
         const skipDirs = new Set()
         let done = 0
         let failed = 0
@@ -4845,7 +5405,7 @@ window.__ModuleLoader__.load({
             : (file && typeof file.name === 'string' && file.name.trim().length > 0 ? file.name : 'upload.bin')
           if (skipDirs.has(targetDir)) {
             skipped += 1
-            setNote('上传中 ' + (done + failed + skipped) + '/' + list.length)
+            setNote(t("上传中 {current}/{total}", { current: ((done + failed + skipped)), total: (list.length) }))
             continue
           }
           const size = file && typeof file.size === 'number' && Number.isFinite(file.size) ? Math.floor(file.size) : 0
@@ -4857,7 +5417,7 @@ window.__ModuleLoader__.load({
           const limit = uploadLimitBytes()
           let result
           if (size > limit) {
-            result = { ok: false, message: '「' + name + '」超过 ' + uploadLimitLabel(limit) + ' 上限，未上传。' }
+            result = { ok: false, message: t("「{name}」超过 {limit} 上限，未上传。", { name: (name), limit: (uploadLimitLabel(limit)) }) }
           } else if (size > UPLOAD_CHUNK_MIN_BYTES) {
             result = await sendChunked(connectionId, targetDir, file, name, taskId, resumeFrom)
           } else {
@@ -4870,7 +5430,7 @@ window.__ModuleLoader__.load({
             clearResumeHint(connectionId, targetDir, name)
             sink.done(taskId)
             done += 1
-            setNote('上传中 ' + (done + failed + skipped) + '/' + list.length)
+            setNote(t("上传中 {current}/{total}", { current: ((done + failed + skipped)), total: (list.length) }))
             continue
           }
           if (result.cancelled === true) {
@@ -4882,13 +5442,13 @@ window.__ModuleLoader__.load({
           failed += 1
           const choice = await ask({
             kind: 'upload',
-            title: name + ' 上传失败',
+            title: t("{name} 上传失败", { name: (name) }),
             subtitle: result.message,
-            body: '第 ' + (index + 1) + '/' + list.length + ' 个文件。可跳过此文件、跳过该目录，或停止本次上传。',
+            body: t("第 {index}/{total} 个文件。可跳过此文件、跳过该目录，或停止本次上传。", { index: ((index + 1)), total: (list.length) }),
             actions: [
-              { value: 'skip', label: '跳过', tone: 'primary' },
-              { value: 'dir', label: '跳过该目录', tone: 'ghost' },
-              { value: 'stop', label: '停止', tone: 'danger' },
+              { value: 'skip', label: t('跳过'), tone: 'primary' },
+              { value: 'dir', label: t('跳过该目录'), tone: 'ghost' },
+              { value: 'stop', label: t('停止'), tone: 'danger' },
             ],
           })
           if (choice === 'stop') {
@@ -4898,11 +5458,11 @@ window.__ModuleLoader__.load({
           if (choice === 'dir') skipDirs.add(targetDir)
         }
         setBusy(false)
-        const parts = ['已上传 ' + done]
-        if (failed > 0) parts.push('失败 ' + failed)
-        if (skipped > 0) parts.push('跳过 ' + skipped)
-        setNote(parts.join('，') + (stopped ? '（已停止）' : ''))
-        if (done > 0) pushNotice('已上传 ' + done + ' 个文件', dir)
+        const parts = [t("已上传 {n}", { n: (done) })]
+        if (failed > 0) parts.push(t("失败 {n}", { n: (failed) }))
+        if (skipped > 0) parts.push(t("跳过 {n}", { n: (skipped) }))
+        setNote(parts.join(uiSeparator('，')) + (stopped ? t('（已停止）') : ''))
+        if (done > 0) pushNotice(t("已上传 {n} 个文件", { n: (done) }), dir)
         // The file lists hold their own directory state, so the console store's
         // refresh() is the wrong thing to call: it never re-reads this listing.
         if (typeof afterUploaded === 'function') afterUploaded(dir)
@@ -5016,20 +5576,20 @@ window.__ModuleLoader__.load({
     }
 
     function taskKindLabel(kind) {
-      if (kind === 'upload') return '上传'
-      if (kind === 'delete') return '删除'
-      if (kind === 'transfer') return '复制/移动'
-      return '下载'
+      if (kind === 'upload') return t('上传')
+      if (kind === 'delete') return t('删除')
+      if (kind === 'transfer') return t('复制/移动')
+      return t('下载')
     }
 
     function taskStatusText(task) {
-      if (task.status === 'failed') return '失败'
-      if (task.status === 'cancelled') return '已取消'
-      if (task.status === 'done') return '已完成'
+      if (task.status === 'failed') return t('失败')
+      if (task.status === 'cancelled') return t('已取消')
+      if (task.status === 'done') return t('已完成')
       // A resumed upload or one waiting out a reconnect says so instead of
       // looking like a stuck "进行中".
-      if (task.resuming === true) return '续传中'
-      return '进行中'
+      if (task.resuming === true) return t('续传中')
+      return t('进行中')
     }
 
     function taskPercent(task) {
@@ -5183,7 +5743,7 @@ window.__ModuleLoader__.load({
       const reason = body !== null && (body.error || body.message) ? (body.error || body.message) : 'HTTP ' + response.status
       const partial = deleted === null
         ? ''
-        : '（已删除 ' + countOf(deleted.files) + ' 个文件、' + countOf(deleted.dirs) + ' 个目录）'
+        : t("（已删除 {files} 个文件、{dirs} 个目录）", { files: (countOf(deleted.files)), dirs: (countOf(deleted.dirs)) })
       throw new Error(reason + partial)
     }
 
@@ -5242,16 +5802,18 @@ window.__ModuleLoader__.load({
     }
 
     /** "N ok / M failed (first reason)" from the per-item results. */
-    function transferSummary(results, verb) {
+    function transferSummary(results, move) {
       const ok = results.filter((row) => row !== null && row !== undefined && row.ok === true).length
       const failed = results.length - ok
       const first = results.find((row) => row !== null && row !== undefined && row.ok !== true)
-      const reason = first === undefined ? '' : String(first.message || first.code || '失败')
+      const reason = first === undefined ? '' : String(first.message || first.code || t('失败'))
       return {
         ok,
         failed,
         reason,
-        text: failed === 0 ? '已' + verb + ' ' + ok + ' 项' : '成功 ' + ok + ' / 失败 ' + failed + '（' + reason + '）',
+        text: failed === 0
+          ? t(move === true ? '已移动 {n} 项' : '已复制 {n} 项', { n: ok })
+          : t('成功 {done} / 失败 {failed}（{reason}）', { done: ok, failed, reason }),
       }
     }
 
@@ -5352,11 +5914,11 @@ window.__ModuleLoader__.load({
 
     function remoteKindLabel(entry) {
       const kind = entry === null || entry === undefined || typeof entry.kind !== 'string' ? '' : entry.kind
-      if (kind === 'link') return '软链接'
-      if (kind === 'fifo') return '命名管道'
-      if (kind === 'socket') return '套接字'
-      if (kind === 'char') return '字符设备'
-      if (kind === 'block') return '块设备'
+      if (kind === 'link') return t('软链接')
+      if (kind === 'fifo') return t('命名管道')
+      if (kind === 'socket') return t('套接字')
+      if (kind === 'char') return t('字符设备')
+      if (kind === 'block') return t('块设备')
       return ''
     }
 
@@ -5401,7 +5963,7 @@ window.__ModuleLoader__.load({
 
     function editorBaseName(filePath) {
       const parts = String(filePath === undefined || filePath === null ? '' : filePath).split('/').filter(Boolean)
-      return parts.length === 0 ? '未命名' : parts[parts.length - 1]
+      return parts.length === 0 ? t('未命名') : parts[parts.length - 1]
     }
 
     // ------------------------------------------------------------- code mirror
@@ -5827,73 +6389,73 @@ window.__ModuleLoader__.load({
       const lines = text.length === 0 ? 0 : text.split('\n').length
       const bytes = dirty ? text.length : (meta !== null && meta.size > 0 ? meta.size : text.length)
       const statusText = state === 'loading'
-        ? '读取中…'
+        ? t('读取中…')
         : savingNow
-          ? '正在保存…'
+          ? t('正在保存…')
           : dirty
-            ? '未保存'
-            : savedAt.length > 0 ? (saveKind === 'auto' ? '已自动保存' : '已保存') : '未修改'
+            ? t('未保存')
+            : savedAt.length > 0 ? (saveKind === 'auto' ? t('已自动保存') : t('已保存')) : t('未修改')
       // The encoding and the line ending are shown because a save preserves
       // both, and a user editing a legacy file deserves to see which one it is.
       const fileMeta = meta === null || meta === undefined ? null : meta
       const encodingLabel = fileMeta === null || typeof fileMeta.encoding !== 'string' ? ''
         : fileMeta.encoding.toUpperCase().replace('UTF8', 'UTF-8')
       const eolLabel = fileMeta === null ? '' : (fileMeta.eol === 'crlf' ? 'CRLF' : 'LF')
-      const statusLine = lines + ' 行 · ' + formatBytes(bytes) + ' · ' + statusText
+      const statusLine = t('{lines} 行 · {size} · {status}', { lines, size: formatBytes(bytes), status: statusText })
         + (encodingLabel.length > 0 ? ' · ' + encodingLabel : '')
         + (eolLabel.length > 0 ? ' ' + eolLabel : '')
         + (savedAt.length > 0 ? ' ' + clockOf(savedAt) : '')
-        + (readonly ? ' · 只读（编码无法无损写回）' : '')
-        + (engine === 'fallback' ? ' · ' + CM_MODE_FALLBACK_TEXT : '')
+        + (readonly ? t(' · 只读（编码无法无损写回）') : '')
+        + (engine === 'fallback' ? ' · ' + t(CM_MODE_FALLBACK_TEXT) : '')
 
       if (remote === null || filePath === '') {
         return h('div', { className: 'rd-edit' },
           h('div', { className: 'rd-rf-state' },
             h('span', { className: 'rd-rf-stateicon' }, h(Icon, { name: 'server', size: 22 })),
-            h('div', { className: 'rd-rf-statetitle' }, '没有可编辑的远端文件'),
-            h('div', { className: 'rd-rf-statehint' }, '在远端文件页双击一个文本文件即可在这里打开。')))
+            h('div', { className: 'rd-rf-statetitle' }, t('没有可编辑的远端文件')),
+            h('div', { className: 'rd-rf-statehint' }, t('在远端文件页双击一个文本文件即可在这里打开。'))))
       }
       if (state === 'binary' || state === 'truncated') {
         return h('div', { className: 'rd-edit' },
           h('div', { className: 'rd-rf-state' },
             h('span', { className: 'rd-rf-stateicon' }, h(Icon, { name: 'file', size: 22 })),
-            h('div', { className: 'rd-rf-statetitle' }, state === 'binary' ? '这个文件是二进制内容' : '文件过大，未完整载入'),
+            h('div', { className: 'rd-rf-statetitle' }, state === 'binary' ? t('这个文件是二进制内容') : t('文件过大，未完整载入')),
             h('div', { className: 'rd-rf-statehint' }, state === 'binary'
-              ? '编辑器只处理文本；可以用 DSH 的预览查看它。'
-              : '超过 ' + formatBytes(EDIT_MAX_BYTES) + ' 的文件不在编辑器里打开：只载入一部分会让保存截断原文件。'),
-            h('button', { className: 'rd-rf-statebtn', type: 'button', onClick: openInPreview }, h(Icon, { name: 'file', size: 13 }), '用 DSH 预览打开')))
+              ? t('编辑器只处理文本；可以用 DSH 的预览查看它。')
+              : t("超过 {size} 的文件不在编辑器里打开：只载入一部分会让保存截断原文件。", { size: (formatBytes(EDIT_MAX_BYTES)) })),
+            h('button', { className: 'rd-rf-statebtn', type: 'button', onClick: openInPreview }, h(Icon, { name: 'file', size: 13 }), t('用 DSH 预览打开'))))
       }
       if (state === 'error') {
         return h('div', { className: 'rd-edit' },
           h('div', { className: 'rd-rf-state' },
             h('span', { className: 'rd-rf-stateicon' }, h(Icon, { name: 'server', size: 22 })),
-            h('div', { className: 'rd-rf-statetitle' }, '读取失败'),
+            h('div', { className: 'rd-rf-statetitle' }, t('读取失败')),
             h('div', { className: 'rd-rf-statehint' }, friendlyText(failure)),
-            h('button', { className: 'rd-rf-statebtn', type: 'button', onClick: () => void load() }, '重试')))
+            h('button', { className: 'rd-rf-statebtn', type: 'button', onClick: () => void load() }, t('重试'))))
       }
       return h('div', { className: 'rd-edit' },
         h('div', { className: 'rd-edit-head' },
           h('span', { className: 'rd-edit-name', title: filePath }, editorBaseName(filePath)),
-          dirty ? h('span', { className: 'rd-edit-flag' }, '未保存') : null,
+          dirty ? h('span', { className: 'rd-edit-flag' }, t('未保存')) : null,
           h('div', { className: 'rd-edit-acts' },
-            readonly ? h('span', { className: 'rd-edit-ro' }, '只读') : null,
+            readonly ? h('span', { className: 'rd-edit-ro' }, t('只读')) : null,
             readonly && guessedEncoding.length > 0
               ? h('button', {
                 className: 'rd-edit-btn',
                 type: 'button',
-                title: '文件不是 UTF-8。确认编码后即可编辑并原样写回。',
+                title: t('文件不是 UTF-8。确认编码后即可编辑并原样写回。'),
                 onClick: () => void load(guessedEncoding),
-              }, '按 ' + guessedEncoding.toUpperCase() + ' 打开')
+              }, t("按 {encoding} 打开", { encoding: (guessedEncoding.toUpperCase()) }))
               : null,
-            !readonly && dirty ? h('button', { className: 'rd-edit-btn primary', type: 'button', disabled: saving, onClick: () => void save(false, 'manual') }, saving ? '保存中…' : '保存') : null,
-            h('button', { className: 'rd-edit-btn', type: 'button', onClick: () => void load() }, '重新读取'),
-            dirty ? h('button', { className: 'rd-edit-btn', type: 'button', onClick: closeTab }, '放弃修改并关闭') : null,
+            !readonly && dirty ? h('button', { className: 'rd-edit-btn primary', type: 'button', disabled: saving, onClick: () => void save(false, 'manual') }, saving ? t('保存中…') : t('保存')) : null,
+            h('button', { className: 'rd-edit-btn', type: 'button', onClick: () => void load() }, t('重新读取')),
+            dirty ? h('button', { className: 'rd-edit-btn', type: 'button', onClick: closeTab }, t('放弃修改并关闭')) : null,
           ),
         ),
         draftOffer === null
           ? null
           : h('div', { className: 'rd-edit-draft' },
-            h('span', null, '检测到未保存的草稿（' + clockOf(draftOffer.savedAt) + '）'),
+            h('span', null, t("检测到未保存的草稿（{time}）", { time: (clockOf(draftOffer.savedAt)) })),
             h('button', {
               className: 'rd-edit-btn',
               type: 'button',
@@ -5904,7 +6466,7 @@ window.__ModuleLoader__.load({
                 setDraftOffer(null)
                 setAutoPaused(false)
               },
-            }, '恢复'),
+            }, t('恢复')),
             h('button', {
               className: 'rd-edit-btn',
               type: 'button',
@@ -5912,15 +6474,15 @@ window.__ModuleLoader__.load({
                 void dropEditorDraft(connectionId, filePath)
                 setDraftOffer(null)
               },
-            }, '丢弃')),
+            }, t('丢弃'))),
         conflict
           ? h('div', { className: 'rd-edit-conflict' },
-            h('span', null, '文件已被外部修改，保存会覆盖对方的改动。'),
-            h('button', { className: 'rd-edit-btn', type: 'button', onClick: () => void load() }, '重新加载（丢弃我的修改）'),
-            h('button', { className: 'rd-edit-btn primary', type: 'button', onClick: () => { setAutoPaused(false); void save(true, 'manual') } }, '强制覆盖'))
+            h('span', null, t('文件已被外部修改，保存会覆盖对方的改动。')),
+            h('button', { className: 'rd-edit-btn', type: 'button', onClick: () => void load() }, t('重新加载（丢弃我的修改）')),
+            h('button', { className: 'rd-edit-btn primary', type: 'button', onClick: () => { setAutoPaused(false); void save(true, 'manual') } }, t('强制覆盖')))
           : null,
         state === 'loading'
-          ? h('div', { className: 'rd-rf-state' }, h('div', { className: 'rd-rf-statetitle' }, '正在读取远端文件…'))
+          ? h('div', { className: 'rd-rf-state' }, h('div', { className: 'rd-rf-statetitle' }, t('正在读取远端文件…')))
           : engine === 'cm'
             ? h('div', { className: 'rd-edit-cm', ref: cmHostRef })
             : h('textarea', {
@@ -5965,8 +6527,8 @@ window.__ModuleLoader__.load({
       return h('button', {
         className: 'rd-rf-actionbtn',
         type: 'button',
-        title: '在远端文件中打开 ' + (absolutePath.length > 0 ? absolutePath : remote.path),
-        'aria-label': '在远端文件中打开',
+        title: t("在远端文件中打开 {path}", { path: ((absolutePath.length > 0 ? absolutePath : remote.path)) }),
+        'aria-label': t('在远端文件中打开'),
         onClick: open,
       }, h(Icon, { name: 'folder', size: 14 }))
     }
@@ -6063,8 +6625,8 @@ window.__ModuleLoader__.load({
         return h('div', { className: 'rd-rf' },
           h('div', { className: 'rd-rf-state' },
             h('span', { className: 'rd-rf-stateicon' }, h(Icon, { name: 'server', size: 22 })),
-            h('div', { className: 'rd-rf-statetitle' }, '此会话不在远端工作区'),
-            h('div', { className: 'rd-rf-statehint' }, '这个页面只浏览远端文件；在远程工作区的会话里打开它。')))
+            h('div', { className: 'rd-rf-statetitle' }, t('此会话不在远端工作区')),
+            h('div', { className: 'rd-rf-statehint' }, t('这个页面只浏览远端文件；在远程工作区的会话里打开它。'))))
       }
 
       const currentDir = path || rootPath
@@ -6169,19 +6731,19 @@ window.__ModuleLoader__.load({
       const parsePathInput = (value) => {
         const raw = String(value === undefined || value === null ? '' : value).trim()
         if (raw.length === 0 || raw === '~') return { ok: true, path: rootPath }
-        if (raw.charAt(0) !== '/') return { ok: false, error: '请输入绝对路径（以 / 开头），或用 ~ 回到远端根目录' }
+        if (raw.charAt(0) !== '/') return { ok: false, error: t('请输入绝对路径（以 / 开头），或用 ~ 回到远端根目录') }
         const normalized = raw.replace(/\/{2,}/g, '/').replace(/\/+$/, '')
         const parts = normalized.split('/').filter(Boolean)
-        if (parts.includes('..')) return { ok: false, error: '路径不能包含 ..' }
+        if (parts.includes('..')) return { ok: false, error: t('路径不能包含 ..') }
         return { ok: true, path: parts.length === 0 ? '/' : '/' + parts.join('/') }
       }
       /** Validate a single path segment the way the host will. */
       const parseName = (value) => {
         const name = String(value === undefined || value === null ? '' : value).trim()
-        if (name.length === 0) return { ok: false, error: '名字不能为空' }
-        if (name === '.' || name === '..') return { ok: false, error: '名字不能是 . 或 ..' }
-        if (name.includes('/')) return { ok: false, error: '名字不能包含 /' }
-        if (name.includes('\u0000')) return { ok: false, error: '名字不能包含空字符' }
+        if (name.length === 0) return { ok: false, error: t('名字不能为空') }
+        if (name === '.' || name === '..') return { ok: false, error: t('名字不能是 . 或 ..') }
+        if (name.includes('/')) return { ok: false, error: t('名字不能包含 /') }
+        if (name.includes('\u0000')) return { ok: false, error: t('名字不能包含空字符') }
         return { ok: true, name }
       }
       const openActionPrompt = (kind, entry) => {
@@ -6215,17 +6777,17 @@ window.__ModuleLoader__.load({
           )
           setActionPrompt(null)
           if (kind === 'rename') {
-            pushNotice('已重命名为 ' + parsed.name, result.path)
+            pushNotice(t("已重命名为 {name}", { name: (parsed.name) }), result.path)
             setSelection([result.path])
             setAnchor(result.path)
           } else {
-            pushNotice(kind === 'mkdir' ? '已新建文件夹 ' + parsed.name : '已新建文件 ' + parsed.name, result.path)
+            pushNotice(kind === 'mkdir' ? t("已新建文件夹 {name}", { name: (parsed.name) }) : t("已新建文件 {name}", { name: (parsed.name) }), result.path)
           }
           void load(currentDir)
         } catch (failure) {
           const message = failure instanceof Error ? failure.message : String(failure)
           const code = failure !== null && failure !== undefined && typeof failure.code === 'string' ? failure.code : ''
-          setActionPrompt({ ...actionPrompt, error: code === 'EXISTS' ? '这个名字已经存在' : message })
+          setActionPrompt({ ...actionPrompt, error: code === 'EXISTS' ? t('这个名字已经存在') : message })
         }
       }
       const submitPathInput = () => {
@@ -6279,10 +6841,10 @@ window.__ModuleLoader__.load({
         setClipboard(next)
       }
       /** One aggregate task row for a whole copy / move batch. */
-      const runTransfer = async (paths, toDir, move, verb, clearClipboard) => {
+      const runTransfer = async (paths, toDir, move, clearClipboard) => {
         if (paths.length === 0) return
         const controller = typeof AbortController === 'function' ? new AbortController() : null
-        const id = tasks.begin('transfer', paths.length + ' 项', toDir, paths.length)
+        const id = tasks.begin('transfer', t("{n} 项", { n: (paths.length) }), toDir, paths.length)
         if (controller !== null) tasks.bind(id, controller)
         try {
           const results = await transferRemotePaths(connectionId, paths, toDir, move, controller)
@@ -6290,7 +6852,7 @@ window.__ModuleLoader__.load({
             tasks.cancelled(id)
             return
           }
-          const summary = transferSummary(results, verb)
+          const summary = transferSummary(results, move)
           if (summary.failed === 0) tasks.done(id)
           else tasks.fail(id, summary.text)
           pushNotice(summary.text, toDir)
@@ -6303,13 +6865,13 @@ window.__ModuleLoader__.load({
           }
           const message = failure instanceof Error ? failure.message : String(failure)
           tasks.fail(id, message)
-          pushNotice('操作失败', message)
+          pushNotice(t('操作失败'), message)
         }
       }
       const pasteClipboard = () => {
         const clip = clipboard
         if (clip.paths.length === 0) return
-        void runTransfer(clip.paths, currentDir, clip.mode === 'cut', clip.mode === 'cut' ? '移动' : '复制', clip.mode === 'cut')
+        void runTransfer(clip.paths, currentDir, clip.mode === 'cut', clip.mode === 'cut')
       }
       const dropInto = (entry, paths) => {
         if (!isRemoteDir(entry)) return
@@ -6317,14 +6879,14 @@ window.__ModuleLoader__.load({
         // directory is a no-op: no request at all.
         const list = paths.filter((row) => row !== entry.path && !entry.path.startsWith(row + '/') && parentRemoteDir(row) !== entry.path)
         if (list.length === 0) return
-        void runTransfer(list, entry.path, true, '移动', false)
+        void runTransfer(list, entry.path, true, false)
       }
       const saveLocalEntry = async (entry) => {
         const id = tasks.begin('download', entry.name, entry.path, 0)
         try {
           const result = await call('/connections/' + encodeURIComponent(connectionId) + '/save-local', { method: 'POST', body: { path: entry.path } })
           tasks.done(id)
-          pushNotice('已保存到 ' + result.localPath, '')
+          pushNotice(t("已保存到 {path}", { path: (result.localPath) }), '')
           await call('/connections/' + encodeURIComponent(connectionId) + '/reveal', { method: 'POST', body: { localPath: result.localPath } }).catch(() => {})
         } catch (failure) {
           const message = failure instanceof Error ? failure.message : String(failure)
@@ -6389,7 +6951,7 @@ window.__ModuleLoader__.load({
         if (list.length === 0) return
         const multi = list.length > 1
         const controller = typeof AbortController === 'function' ? new AbortController() : null
-        const id = tasks.begin('delete', multi ? list.length + ' 项' : list[0].name, multi ? '' : list[0].path, list.length)
+        const id = tasks.begin('delete', multi ? t("{n} 项", { n: (list.length) }) : list[0].name, multi ? '' : list[0].path, list.length)
         if (controller !== null) tasks.bind(id, controller)
         let done = 0
         let failed = 0
@@ -6414,11 +6976,11 @@ window.__ModuleLoader__.load({
         }
         if (failed === 0) {
           tasks.done(id)
-          pushNotice(multi ? '已永久删除 ' + done + ' 项' : '已永久删除 ' + list[0].name,
-            countOf(removed.files) + ' 个文件、' + countOf(removed.dirs) + ' 个目录')
+          pushNotice(multi ? t("已永久删除 {n} 项", { n: (done) }) : t("已永久删除 {name}", { name: (list[0].name) }),
+            t("{files} 个文件、{dirs} 个目录", { files: (countOf(removed.files)), dirs: (countOf(removed.dirs)) }))
         } else {
-          tasks.fail(id, '成功 ' + done + ' / 失败 ' + failed + '（' + firstError + '）')
-          pushNotice('删除完成：成功 ' + done + ' / 失败 ' + failed, firstError)
+          tasks.fail(id, t("成功 {done} / 失败 {failed}（{reason}）", { done: (done), failed: (failed), reason: (firstError) }))
+          pushNotice(t("删除完成：成功 {done} / 失败 {failed}", { done: (done), failed: (failed) }), firstError)
         }
         setSelection([])
         setAnchor('')
@@ -6437,15 +6999,15 @@ window.__ModuleLoader__.load({
             {
               key: 'download',
               icon: 'download',
-              label: multi ? '下载 ' + targets.length + ' 项（打包）' : '下载',
+              label: multi ? t("下载 {n} 项（打包）", { n: (targets.length) }) : t('下载'),
               title: multi
-                ? '把选中的 ' + targets.length + ' 项打包成一个 tar.gz'
-                : isDir ? '打包下载此目录（tar.gz）：' + single.path : '下载此文件：' + single.path,
+                ? t("把选中的 {n} 项打包成一个 tar.gz", { n: (targets.length) })
+                : isDir ? t("打包下载此目录（tar.gz）：{path}", { path: (single.path) }) : t("下载此文件：{path}", { path: (single.path) }),
               run: () => {
                 if (multi) {
                   const paths = targets.map((target) => target.path)
                   if (paths.length > ARCHIVE_SELECTION_MAX) {
-                    pushNotice('一次最多打包 ' + ARCHIVE_SELECTION_MAX + ' 项', '请减少选择后重试')
+                    pushNotice(t("一次最多打包 {n} 项", { n: (ARCHIVE_SELECTION_MAX) }), t('请减少选择后重试'))
                     return
                   }
                   void archive.run({ connectionId, paths, name: 'selection-' + paths.length + '-items' })
@@ -6459,8 +7021,8 @@ window.__ModuleLoader__.load({
             items.push({
               key: 'upload',
               icon: 'upload',
-              label: '上传到此处',
-              title: '上传文件到 ' + currentDir,
+              label: t('上传到此处'),
+              title: t("上传文件到 {dirname}", { dirname: (currentDir) }),
               run: () => upload.pick({ connectionId, path: currentDir }),
             })
           }
@@ -6468,8 +7030,8 @@ window.__ModuleLoader__.load({
             items.push({
               key: 'rename',
               icon: 'edit',
-              label: '重命名',
-              title: '重命名 ' + single.path + '（F2）',
+              label: t('重命名'),
+              title: t("重命名 {path}（F2）", { path: (single.path) }),
               run: () => openActionPrompt('rename', single),
             })
           }
@@ -6477,25 +7039,25 @@ window.__ModuleLoader__.load({
             items.push({
               key: 'savelocal',
               icon: 'download',
-              label: '下载到本地并显示',
-              title: '保存到本机下载目录并在文件夹中显示：' + single.path,
+              label: t('下载到本地并显示'),
+              title: t("保存到本机下载目录并在文件夹中显示：{path}", { path: (single.path) }),
               run: () => { void saveLocalEntry(single) },
             })
           }
           items.push({
             key: 'delete',
             icon: 'trash',
-            label: multi ? '删除 ' + targets.length + ' 项' : '删除',
+            label: multi ? t("删除 {n} 项", { n: (targets.length) }) : t('删除'),
             danger: true,
-            title: multi ? '永久删除选中的 ' + targets.length + ' 项' : '永久删除 ' + single.path,
+            title: multi ? t("永久删除选中的 {n} 项", { n: (targets.length) }) : t("永久删除 {path}", { path: (single.path) }),
             run: () => setConfirming({ targets }),
           })
           if (isDir) {
             items.push({
               key: 'workspace',
               icon: 'folder',
-              label: '打开为工作区',
-              title: taken ? '该目录已经是工作区' : '把 ' + single.path + ' 添加为 DSH 工作区',
+              label: t('打开为工作区'),
+              title: taken ? t('该目录已经是工作区') : t("把 {path} 添加为 DSH 工作区", { path: (single.path) }),
               disabled: taken,
               run: () => { void openWorkspace(single.path) },
             })
@@ -6506,43 +7068,43 @@ window.__ModuleLoader__.load({
           {
             key: 'upload',
             icon: 'upload',
-            label: '上传到此处',
-            title: '上传文件到 ' + currentDir,
+            label: t('上传到此处'),
+            title: t("上传文件到 {dirname}", { dirname: (currentDir) }),
             run: () => upload.pick({ connectionId, path: currentDir }),
           },
           {
             key: 'download',
             icon: 'download',
-            label: '下载此目录',
-            title: '打包下载 ' + currentDir + '（tar.gz）',
+            label: t('下载此目录'),
+            title: t("打包下载 {dirname}（tar.gz）", { dirname: (currentDir) }),
             run: () => void archive.run({ connectionId, path: currentDir, name: '' }),
           },
           {
             key: 'uploaddir',
             icon: 'upload',
-            label: '上传文件夹',
-            title: '把整个文件夹上传到 ' + currentDir,
+            label: t('上传文件夹'),
+            title: t("把整个文件夹上传到 {dirname}", { dirname: (currentDir) }),
             run: () => upload.pickDirectory({ connectionId, path: currentDir }),
           },
           {
             key: 'mkdir',
             icon: 'folder',
-            label: '新建文件夹',
-            title: '在 ' + currentDir + ' 下新建文件夹',
+            label: t('新建文件夹'),
+            title: t("在 {dirname} 下新建文件夹", { dirname: (currentDir) }),
             run: () => openActionPrompt('mkdir'),
           },
           {
             key: 'touch',
             icon: 'file',
-            label: '新建文件',
-            title: '在 ' + currentDir + ' 下新建空文件',
+            label: t('新建文件'),
+            title: t("在 {dirname} 下新建空文件", { dirname: (currentDir) }),
             run: () => openActionPrompt('touch'),
           },
           {
             key: 'refresh',
             icon: 'refresh',
-            label: '刷新',
-            title: '重新读取 ' + currentDir,
+            label: t('刷新'),
+            title: t("重新读取 {dirname}", { dirname: (currentDir) }),
             run: () => { void load(currentDir) },
           },
         ]
@@ -6552,18 +7114,18 @@ window.__ModuleLoader__.load({
         const targets = Array.isArray(confirming.targets) ? confirming.targets : []
         const multi = targets.length > 1
         const first = targets[0]
-        const names = targets.slice(0, 3).map((target) => target.name).join('、') + (targets.length > 3 ? ' 等' : '')
+        const names = targets.slice(0, 3).map((target) => target.name).join(uiSeparator('、')) + (targets.length > 3 ? t(' 等') : '')
         return {
-          title: multi ? '永久删除 ' + targets.length + ' 项？' : (isRemoteDir(first) ? '永久删除这个目录？' : '永久删除这个文件？'),
+          title: multi ? t("永久删除 {n} 项？", { n: (targets.length) }) : (isRemoteDir(first) ? t('永久删除这个目录？') : t('永久删除这个文件？')),
           subtitle: multi ? names : first.name,
           body: h('div', null,
             h('div', null, multi
-              ? '将永久删除 ' + targets.length + ' 项（含目录递归），不可恢复。'
-              : (isRemoteDir(first) ? '将递归删除其下全部内容，永久删除、不可恢复。' : '永久删除、不可恢复。')),
+              ? t("将永久删除 {n} 项（含目录递归），不可恢复。", { n: (targets.length) })
+              : (isRemoteDir(first) ? t('将递归删除其下全部内容，永久删除、不可恢复。') : t('永久删除、不可恢复。'))),
             h('div', { className: 'rd-tf-path' }, targets.slice(0, 4).map((target) => target.path).join('\n'))),
           actions: [
-            { value: 'delete', label: '永久删除', tone: 'danger' },
-            { value: 'cancel', label: '取消', tone: 'ghost' },
+            { value: 'delete', label: t('永久删除'), tone: 'danger' },
+            { value: 'cancel', label: t('取消'), tone: 'ghost' },
           ],
         }
       })()
@@ -6578,7 +7140,7 @@ window.__ModuleLoader__.load({
             pathDraft === null
               ? h('div', {
                 className: 'rd-rf-crumbs',
-                title: '点击空白处输入路径',
+                title: t('点击空白处输入路径'),
                 onClick: (event) => {
                   if (event.target !== event.currentTarget) return
                   setPathDraft(currentDir)
@@ -6606,15 +7168,15 @@ window.__ModuleLoader__.load({
                 pathError.length > 0 ? h('span', { className: 'rd-rf-patherr' }, pathError) : null,
               ),
           ),
-          selection.length > 1 ? h('span', { className: 'rd-rf-selcount', title: '右键可对整组操作' }, '已选 ' + selection.length + ' 项') : null,
+          selection.length > 1 ? h('span', { className: 'rd-rf-selcount', title: t('右键可对整组操作') }, t("已选 {n} 项", { n: (selection.length) })) : null,
           h('div', { className: 'rd-rf-acts' },
             h('input', {
               className: 'rd-rf-filter',
               type: 'text',
               value: filter,
-              placeholder: '筛选…',
+              placeholder: t('筛选…'),
               spellCheck: false,
-              'aria-label': '按文件名筛选当前目录',
+              'aria-label': t('按文件名筛选当前目录'),
               onChange: (event) => setFilter(event.target.value),
               onKeyDown: (event) => {
                 if (event.key === 'Escape') {
@@ -6626,33 +7188,33 @@ window.__ModuleLoader__.load({
             h('button', {
               className: 'rd-rf-act',
               type: 'button',
-              title: '在当前目录新建文件夹',
+              title: t('在当前目录新建文件夹'),
               onClick: () => openActionPrompt('mkdir'),
             }, h(Icon, { name: 'plus', size: 14 }), ),
             h('button', {
               className: 'rd-rf-act',
               type: 'button',
-              title: '在当前目录刷新',
+              title: t('在当前目录刷新'),
               onClick: () => { void load(currentDir) },
             }, h(Icon, { name: 'refresh', size: 14 })),
             h('button', {
               className: 'rd-rf-act' + (showHidden ? ' on' : ''),
               type: 'button',
               'aria-pressed': showHidden,
-              title: showHidden ? '隐藏以 . 开头的文件' : '显示隐藏文件（以 . 开头）',
+              title: showHidden ? t('隐藏以 . 开头的文件') : t('显示隐藏文件（以 . 开头）'),
               onClick: toggleHidden,
             }, h(Icon, { name: showHidden ? 'eyeoff' : 'eye', size: 14 })),
             h('button', {
               className: 'rd-rf-act',
               type: 'button',
-              title: atRoot ? '已经在根目录' : '上级目录：' + parentRemoteDir(currentDir),
+              title: atRoot ? t('已经在根目录') : t("上级目录：{path}", { path: (parentRemoteDir(currentDir)) }),
               disabled: atRoot,
               onClick: () => void load(parentRemoteDir(currentDir)),
             }, h(Icon, { name: 'arrowleft', size: 14 })),
             h('button', {
               className: 'rd-rf-act',
               type: 'button',
-              title: '上传到当前目录：' + currentDir,
+              title: t("上传到当前目录：{dirname}", { dirname: (currentDir) }),
               disabled: upload.busy,
               onClick: () => upload.pick({ connectionId, path: currentDir }),
             }, h(Icon, { name: 'upload', size: 14 })),
@@ -6671,15 +7233,15 @@ window.__ModuleLoader__.load({
           actionPrompt === null ? null : h('div', { className: 'rd-rf-prompt' },
             h('span', { className: 'rd-rf-promptlabel' },
               actionPrompt.kind === 'rename'
-                ? '重命名为'
-                : actionPrompt.kind === 'mkdir' ? '新建文件夹' : '新建文件'),
+                ? t('重命名为')
+                : actionPrompt.kind === 'mkdir' ? t('新建文件夹') : t('新建文件')),
             h('input', {
               className: 'rd-rf-promptinput' + (actionPrompt.error.length > 0 ? ' bad' : ''),
               type: 'text',
               value: actionPrompt.value,
               spellCheck: false,
               autoFocus: true,
-              'aria-label': actionPrompt.kind === 'rename' ? '新名字' : '名字',
+              'aria-label': actionPrompt.kind === 'rename' ? t('新名字') : t('名字'),
               onFocus: (event) => event.target.select(),
               onChange: (event) => setActionPrompt({ ...actionPrompt, value: event.target.value, error: '' }),
               onKeyDown: (event) => {
@@ -6695,31 +7257,31 @@ window.__ModuleLoader__.load({
                 }
               },
             }),
-            h('button', { className: 'rd-rf-act', type: 'button', title: '确定', onClick: () => void submitActionPrompt() },
+            h('button', { className: 'rd-rf-act', type: 'button', title: t('确定'), onClick: () => void submitActionPrompt() },
               h(Icon, { name: 'check', size: 14 })),
-            h('button', { className: 'rd-rf-act', type: 'button', title: '取消', onClick: () => setActionPrompt(null) },
+            h('button', { className: 'rd-rf-act', type: 'button', title: t('取消'), onClick: () => setActionPrompt(null) },
               h(Icon, { name: 'x', size: 14 })),
             actionPrompt.error.length > 0 ? h('span', { className: 'rd-rf-patherr' }, actionPrompt.error) : null,
           ),
           error.length > 0
             ? h('div', { className: 'rd-rf-state' },
               h('span', { className: 'rd-rf-stateicon' }, h(Icon, { name: 'server', size: 22 })),
-              h('div', { className: 'rd-rf-statetitle' }, '读取失败'),
+              h('div', { className: 'rd-rf-statetitle' }, t('读取失败')),
               h('div', { className: 'rd-rf-statehint' }, friendlyText(error)))
             : loading && visible.length === 0
               ? h('div', { className: 'rd-rf-state' },
                 h('span', { className: 'rd-rf-stateicon' }, h(Icon, { name: 'refresh', size: 22 })),
-                h('div', { className: 'rd-rf-statetitle' }, '正在读取远端目录…'))
+                h('div', { className: 'rd-rf-statetitle' }, t('正在读取远端目录…')))
               : visible.length === 0
                 ? h('div', { className: 'rd-rf-state' },
                   h('span', { className: 'rd-rf-stateicon' }, h(Icon, { name: 'folder', size: 22 })),
-                  h('div', { className: 'rd-rf-statetitle' }, '这个目录是空的'),
-                  h('div', { className: 'rd-rf-statehint' }, '上传文件后它们会出现在这里。'),
+                  h('div', { className: 'rd-rf-statetitle' }, t('这个目录是空的')),
+                  h('div', { className: 'rd-rf-statehint' }, t('上传文件后它们会出现在这里。')),
                   h('button', {
                     className: 'rd-rf-statebtn',
                     type: 'button',
                     onClick: () => upload.pick({ connectionId, path: currentDir }),
-                  }, h(Icon, { name: 'upload', size: 13 }), '上传到此处'))
+                  }, h(Icon, { name: 'upload', size: 13 }), t('上传到此处')))
                 : h('div', { className: 'rd-rf-list' },
                   visible.map((entry, index) => h('div', {
                     key: entry.path,
@@ -6769,14 +7331,14 @@ window.__ModuleLoader__.load({
                 h('span', { className: 'rd-rf-taskname', title: task.path || task.name }, taskKindLabel(task.kind) + ' · ' + task.name),
                 h('span', { className: 'rd-rf-taskst' }, taskStatusText(task)),
                 task.status === 'running'
-                  ? h('button', { className: 'rd-rf-taskx', type: 'button', title: '取消', onClick: () => tasks.cancel(task.id) }, '取消')
-                  : h('button', { className: 'rd-rf-taskx', type: 'button', title: '移除', onClick: () => tasks.drop(task.id) }, h(Icon, { name: 'x', size: 11 })),
+                  ? h('button', { className: 'rd-rf-taskx', type: 'button', title: t('取消'), onClick: () => tasks.cancel(task.id) }, t('取消'))
+                  : h('button', { className: 'rd-rf-taskx', type: 'button', title: t('移除'), onClick: () => tasks.drop(task.id) }, h(Icon, { name: 'x', size: 11 })),
               ),
               h('div', {
                 className: 'rd-rf-taskbar' + (task.status === 'running' && task.total === 0 ? ' pending' : ''),
               }, h('i', { style: { width: taskPercent(task) + '%' } })),
               task.status === 'running' && task.total > 0
-                ? h('div', { className: 'rd-rf-tasksub' }, '已传 ' + formatBytes(task.sent) + ' / ' + formatBytes(task.total))
+                ? h('div', { className: 'rd-rf-tasksub' }, t("已传 {sent} / {total}", { sent: (formatBytes(task.sent)), total: (formatBytes(task.total)) }))
                 : null,
               task.error.length > 0 ? h('div', { className: 'rd-rf-taskerr' }, task.error) : null,
             )))) : null,
@@ -6907,12 +7469,12 @@ window.__ModuleLoader__.load({
       if (!remote || !recovery) return null
       const attachmentCount = (recovery.attachments || []).length
       return h('div', { className: 'rd-recover' },
-        h('div', { className: 'rt' }, '⚠ 上一条消息发送失败'),
+        h('div', { className: 'rt' }, t('⚠ 上一条消息发送失败')),
         h('div', { className: 'rtext' }, recovery.text),
         attachmentCount > 0
           ? h('div', { className: 'rchips' },
-            h('span', { className: 'rd-chip' }, '附件 ' + attachmentCount + ' 个'),
-            h('span', { className: 'rd-chip' }, '会一并恢复'))
+            h('span', { className: 'rd-chip' }, t("附件 {n} 个", { n: (attachmentCount) })),
+            h('span', { className: 'rd-chip' }, t('会一并恢复')))
           : null,
         h('div', { className: 'ractions' },
           h('button', {
@@ -6922,13 +7484,13 @@ window.__ModuleLoader__.load({
               pendingRef.current = null
               lastDraftRef.current = null
             },
-          }, '恢复消息'),
+          }, t('恢复消息')),
           h('button', {
             className: 'rd-rbtn ghost',
             onClick: () => setRecovery(sessionId, null),
-          }, '忽略'),
+          }, t('忽略')),
         ),
-        h('div', { className: 'rhint' }, '只在当前会话显示；恢复后文档引用可能需重新 @ 添加'),
+        h('div', { className: 'rhint' }, t('只在当前会话显示；恢复后文档引用可能需重新 @ 添加')),
       )
     }
 
@@ -7005,19 +7567,19 @@ window.__ModuleLoader__.load({
         h(Icon, { name: 'server', size: 14 }),
         h('span', null, remote.host + ' · ' + (remote.folder || remote.title)),
         alerts.length > 0
-          ? h('span', { className: 'rd-hpill-alert', title: alerts.join('；') }, h(Icon, { name: 'alert', size: 11 }))
+          ? h('span', { className: 'rd-hpill-alert', title: alerts.join(uiSeparator('；')) }, h(Icon, { name: 'alert', size: 11 }))
           : null,
         forwards.length > 0
-          ? h('span', { className: 'rd-hpill-count', title: forwards.length + ' 个端口转发，点开查看' },
+          ? h('span', { className: 'rd-hpill-count', title: t("{n} 个端口转发，点开查看", { n: (forwards.length) }) },
             h(Icon, { name: 'link', size: 11 }), String(forwards.length))
           : null,
         h(Icon, { name: 'chev', size: 11 }),
           recovery
             ? h('button', {
               className: 'rd-pill-restore',
-              title: '恢复上一条发送失败的消息',
+              title: t('恢复上一条发送失败的消息'),
               onClick: (event) => { event.stopPropagation(); restoreRecovery(sessionId, props.inputActions) },
-            }, '恢复')
+            }, t('恢复'))
             : null,
         ),
         menu === null
@@ -7034,31 +7596,31 @@ window.__ModuleLoader__.load({
               failure: monitor.failure,
               loading: monitor.loading,
             }),
-            h('div', { className: 'rd-hmenu-sect' }, '端口转发' + (forwards.length > 0 ? ' · ' + forwards.length : '')),
+            h('div', { className: 'rd-hmenu-sect' }, t('端口转发') + (forwards.length > 0 ? ' · ' + forwards.length : '')),
             forwards.length === 0
-              ? h('div', { className: 'rd-hmenu-empty' }, '还没有端口转发',
-                h('span', { className: 'sub' }, 'Agent 可以用 remote_forward 创建，也能在控制台的端口页手动添加。'))
+              ? h('div', { className: 'rd-hmenu-empty' }, t('还没有端口转发'),
+                h('span', { className: 'sub' }, t('Agent 可以用 remote_forward 创建，也能在控制台的端口页手动添加。')))
               : h('div', { className: 'rd-hmenu-list' }, forwards.map((row) => h('div', { key: row.id, className: 'rd-hmenu-row' },
                 h('span', { className: 'map' }, '127.0.0.1:' + row.localPort),
                 h('span', { className: 'arrow' }, '→'),
                 h('span', { className: 'map' }, String(row.remotePort)),
                 row.origin === 'agent'
-                  ? h('span', { className: 'rd-origin agent', title: '由 Agent 创建' }, 'Agent')
-                  : h('span', { className: 'rd-origin', title: '手动创建' }, '手动'),
+                  ? h('span', { className: 'rd-origin agent', title: t('由 Agent 创建') }, 'Agent')
+                  : h('span', { className: 'rd-origin', title: t('手动创建') }, t('手动')),
                 h('span', { className: 'acts' },
-                  h('button', { className: 'rd-btn sm', onClick: () => window.open(row.url, '_blank') }, '打开'),
-                  h('button', { className: 'rd-btn sm', onClick: () => { void navigator.clipboard?.writeText(row.url) } }, '复制'),
-                  h('button', { className: 'rd-btn sm', disabled: busy === row.id, onClick: () => void stopForward(row.id) }, busy === row.id ? '…' : '停止'),
+                  h('button', { className: 'rd-btn sm', onClick: () => window.open(row.url, '_blank') }, t('打开')),
+                  h('button', { className: 'rd-btn sm', onClick: () => { void navigator.clipboard?.writeText(row.url) } }, t('复制')),
+                  h('button', { className: 'rd-btn sm', disabled: busy === row.id, onClick: () => void stopForward(row.id) }, busy === row.id ? '…' : t('停止')),
                 ),
               ))),
             h('div', { className: 'rd-hmenu-footrow' },
               h('button', { className: 'rd-hmenu-foot', onClick: () => { setMenu(null); openConsole(remote.connectionId) } },
-                h(Icon, { name: 'server', size: 13 }), '进入远程开发'),
+                h(Icon, { name: 'server', size: 13 }), t('进入远程开发')),
               h('button', {
                 className: 'rd-hmenu-foot',
-                title: '在这台远端主机上打开终端（远端 PTY）',
+                title: t('在这台远端主机上打开终端（远端 PTY）'),
                 onClick: () => { setMenu(null); openConsole(remote.connectionId, 'terminal') },
-              }, h(Icon, { name: 'term', size: 13 }), '远端终端'),
+              }, h(Icon, { name: 'term', size: 13 }), t('远端终端')),
             ),
           ),
       )
@@ -7155,7 +7717,7 @@ window.__ModuleLoader__.load({
         ctx.slots.register({ name: 'conversation.session.header.utilities', id: 'remote-deck-pill', order: -20 }, HeaderPill),
       ))
       offs.push(ctx.slots.inject('sidebar.panellist', () =>
-        ctx.slots.register({ name: 'sidebar.panellist', id: 'remote-deck', order: 5, label: '远程开发' }, ConsoleIcon),
+        ctx.slots.register({ name: 'sidebar.panellist', id: 'remote-deck', order: 5, label: t('远程开发') }, ConsoleIcon),
       ))
       offs.push(ctx.slots.inject('deliverables.file.actions', () =>
         ctx.slots.register({ name: 'deliverables.file.actions', id: 'remote-deck-download', order: 20 }, DeliverableDownloadAction),
@@ -7186,7 +7748,7 @@ window.__ModuleLoader__.load({
         ctx.slots.register({ name: 'sidebar.right.pane.tab.title', key: EDIT_KIND }, RemoteEditorTitle),
       ))
       offs.push(ctx.slots.inject('settings.section', () =>
-        ctx.slots.register({ name: 'settings.section', id: 'remote-deck', order: 30, label: () => '远端工作台' }, RemoteDeckSettings),
+        ctx.slots.register({ name: 'settings.section', id: 'remote-deck', order: 30, label: () => t('远端工作台') }, RemoteDeckSettings),
       ))
       offs.push(ctx.slots.inject('main', () =>
         ctx.slots.register({ name: 'main', key: 'remote-deck' }, Console),
@@ -7211,14 +7773,14 @@ window.__ModuleLoader__.load({
             id: REMOTE_FILES_ID,
             kind: REMOTE_FILES_KIND,
             multiple: false,
-            title: () => '远端文件',
+            title: () => t('远端文件'),
             // Our own type's guide card, alongside DSH's own files card — the
             // built-in card is neither shadowed nor displaced.
             guide: [{
               id: 'browse',
               order: 30,
-              title: () => '远端文件',
-              description: () => '浏览、上传、下载与删除远端文件',
+              title: () => t('远端文件'),
+              description: () => t('浏览、上传、下载与删除远端文件'),
             }],
           }), 'remote-deck: files tab type')
           // The editor tab type is deliberately guide-less: the guide page keeps
@@ -7227,7 +7789,7 @@ window.__ModuleLoader__.load({
             id: EDIT_KIND,
             kind: EDIT_KIND,
             multiple: true,
-            title: () => '远端编辑',
+            title: () => t('远端编辑'),
           }), 'remote-deck: edit tab type')
         })
       }
