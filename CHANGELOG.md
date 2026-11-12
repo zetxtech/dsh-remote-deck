@@ -11,6 +11,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - v1.1.0: full xterm.js terminal, i18n (zh/en), explicit debug switch, virtualized large folders.
 
+## [1.21.0] - 2026-11-13
+
+### Added
+
+- **Rename, new folder and new file in the remote file page.** One inline field serves all three — `F2` or the context
+  menu renames the selected entry (prefilled, Enter to apply), and the empty-space menu creates a folder or a file in
+  the current directory. The host gained `POST /rename`, `/mkdir` and `/touch`: the name must be a single segment
+  (no `/`, not `.` or `..`, no NUL, ≤255 bytes), an existing target answers `409 EXISTS`, a missing source `404`, and
+  the client turns `EXISTS` into 这个名字已经存在. Renaming to the same name is a no-op rather than a conflict.
+- **A filter field in the file page header** narrows the listing by name; `Esc` clears it.
+- **`Ctrl/Cmd+F` now works in the editor** (and `Ctrl/Cmd+H` replaces): the CodeMirror search addon was vendored all
+  along but never wired up.
+- The host and workspace dialogs' switches are real `role="switch"` controls now: focusable, toggled with Enter or
+  Space, labelled for screen readers, with a visible focus ring. They were click-only spans before.
+
+### Notes
+
+- Verified on the real host: file and directory renames, `EXISTS`/`NOT_FOUND`, `mkdir`, an empty `touch`, names with a
+  slash or `..` refused, and creating an entry under `/`.
+
 ## [1.20.0] - 2026-11-13
 
 ### Fixed

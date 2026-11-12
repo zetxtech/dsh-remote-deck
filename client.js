@@ -52,7 +52,13 @@ window.__ModuleLoader__.load({
         clearTimeout(timer)
       }
       const body = await response.json().catch(() => ({}))
-      if (!response.ok || body.ok === false) throw new Error(body.message || 'HTTP ' + response.status)
+      if (!response.ok || body.ok === false) {
+        const error = new Error(body.message || 'HTTP ' + response.status)
+        // Callers branch on the code (EXISTS, STALE, TOO_LARGE…), and the
+        // message is prose, so the code rides along.
+        if (typeof body.code === 'string') error.code = body.code
+        throw error
+      }
       return body
     }
 
@@ -626,6 +632,13 @@ window.__ModuleLoader__.load({
       .rd-rf-sep { flex:none;padding:0 1px;color:var(--dsw-alias-label-tertiary,#8f959e);user-select:none }
       .rd-rf-body { flex:1;min-height:0;display:flex;flex-direction:column }
       .rd-rf-list { flex:1;min-height:0;overflow:auto;padding:0 6px 8px }
+      .rd-rf-filter { width:130px;height:24px;box-sizing:border-box;padding:0 8px;border:1px solid var(--dsw-alias-border-l2,#e8e8ec);border-radius:var(--dsw-radius-sm,8px);background:var(--dsw-alias-bg-layer-1,#fff);color:var(--dsw-alias-label-primary,#1f2329);font:inherit;font-size:11.5px;outline:none }
+      .rd-rf-filter:focus { border-color:var(--dsw-alias-state-business-primary,#1d6fc4) }
+      .rd-rf-prompt { flex:none;display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:8px 8px 6px }
+      .rd-rf-promptlabel { flex:none;font-size:11.5px;color:var(--dsw-alias-label-secondary,#5f6672) }
+      .rd-rf-promptinput { flex:1;min-width:120px;height:26px;box-sizing:border-box;padding:0 8px;border:1px solid var(--dsw-alias-border-l2,#e8e8ec);border-radius:var(--dsw-radius-sm,8px);background:var(--dsw-alias-bg-layer-1,#fff);color:var(--dsw-alias-label-primary,#1f2329);font:inherit;font-size:12px;outline:none }
+      .rd-rf-promptinput.bad { border-color:var(--dsw-alias-state-error-primary,#c0392b) }
+      [data-rd-theme="dark"] .rd-rf-filter, [data-rd-theme="dark"] .rd-rf-promptinput { background:var(--dsw-alias-bg-layer-1,#1b1e23);border-color:#2c3138 }
       .rd-rf-row { display:flex;align-items:center;gap:9px;height:32px;box-sizing:border-box;padding:0 8px;border-radius:8px }
       .rd-rf-row.dir { cursor:pointer }
       .rd-rf-row:hover { background:var(--dsw-alias-interactive-bg-hover,rgba(15,23,42,.05)) }
@@ -772,7 +785,8 @@ window.__ModuleLoader__.load({
       .rd-formtitle { font-size:12px;font-weight:700 }
       .switch { width:34px;height:20px;border-radius:999px;background:var(--dsw-alias-state-idle-primary, #d7dbe1);position:relative;flex:none;cursor:pointer;transition:background .15s }
       .switch::after { content:"";position:absolute;width:16px;height:16px;border-radius:50%;background:#fff;top:2px;left:2px;box-shadow:0 1px 2px rgba(0,0,0,.15);transition:left .15s }
-      .switch.on { background:#1d6fc4 }
+      .switch.on { background:var(--dsw-alias-brand-primary,#1d6fc4) }
+      .switch:focus-visible { outline:2px solid var(--dsw-alias-brand-primary,#1d6fc4);outline-offset:2px }
       .switch.on::after { left:16px }
       .rd-formsub { font-size:10.5px;color:var(--dsw-alias-label-secondary,#8f959e);margin-top:3px;line-height:1.6 }
       .rd-formhint { font-size:10px;color:var(--dsw-alias-label-secondary,#8f959e);line-height:1.6 }
@@ -1611,9 +1625,24 @@ window.__ModuleLoader__.load({
     }
 
     function toggleSwitch(title, hint, value, onChange) {
+      // A real switch for keyboards and screen readers: the old plain span could
+      // only be clicked, so this control was unreachable without a mouse.
+      const field = 'rd-tg-' + String(title).replace(/[^a-zA-Z0-9]+/g, '-').toLowerCase()
       return h('div', { className: 'rd-tg' },
-        h('span', { className: 'switch' + (value ? ' on' : ''), onClick: () => onChange(!value) }),
-        h('div', null, h('div', null, title), h('small', null, hint)),
+        h('span', {
+          className: 'switch' + (value ? ' on' : ''),
+          role: 'switch',
+          tabIndex: 0,
+          'aria-checked': value === true,
+          'aria-labelledby': field,
+          onClick: () => onChange(!value),
+          onKeyDown: (event) => {
+            if (event.key !== 'Enter' && event.key !== ' ') return
+            event.preventDefault()
+            onChange(!value)
+          },
+        }),
+        h('div', null, h('div', { id: field }, title), h('small', null, hint)),
       )
     }
 
@@ -4941,6 +4970,9 @@ window.__ModuleLoader__.load({
       if (codeMirrorLoader === null) {
         codeMirrorLoader = injectAsset('link', { rel: 'stylesheet', href: assetUrl('codemirror.css') })
           .then(() => injectAsset('script', { src: assetUrl('codemirror.min.js') }))
+          // Search is the one addon every editor needs; the rest stay out.
+          .then(() => injectAsset('script', { src: assetUrl('addon/search/searchcursor.min.js') }))
+          .then(() => injectAsset('script', { src: assetUrl('addon/search/search.min.js') }))
           .then(() => typeof window.CodeMirror === 'function')
           .catch(() => false)
       }
@@ -5078,7 +5110,17 @@ window.__ModuleLoader__.load({
           indentUnit: 2,
           tabSize: 2,
           viewportMargin: Infinity,
-          extraKeys: { 'Ctrl-S': () => { void save(false) }, 'Cmd-S': () => { void save(false) } },
+          extraKeys: {
+            'Ctrl-S': () => { void save(false) },
+            'Cmd-S': () => { void save(false) },
+            // `findPersistent` keeps the dialog open while you jump between
+            // matches, which is what every editor does for Ctrl-F.
+            'Ctrl-F': 'findPersistent',
+            'Cmd-F': 'findPersistent',
+            'Shift-Ctrl-F': 'replace',
+            'Shift-Cmd-F': 'replace',
+            'Ctrl-H': 'replace',
+          },
         })
         instance.on('change', () => editText(instance.getValue()))
         cmRef.current = instance
@@ -5441,6 +5483,10 @@ window.__ModuleLoader__.load({
       const [pathError, setPathError] = React.useState('')
       const [menu, setMenu] = React.useState(null)
       const [confirming, setConfirming] = React.useState(null)
+      const [filter, setFilter] = React.useState('')
+      // `{ kind, entry?, value, error }` — one inline field serves rename,
+      // new folder and new file, so the list stays the only place you type.
+      const [actionPrompt, setActionPrompt] = React.useState(null)
       const menuRef = React.useRef(null)
       const tabInfo = typeof props.useTabInfo === 'function' ? props.useTabInfo() : null
       const tabActions = tabInfo !== null && tabInfo !== undefined && tabInfo.tab !== undefined && tabInfo.tab !== null
@@ -5519,8 +5565,10 @@ window.__ModuleLoader__.load({
       const status = host ? host.status : 'disconnected'
       const segments = currentDir.split('/').filter(Boolean)
       const atRoot = segments.length === 0
+      const needle = filter.trim().toLowerCase()
       const visible = entries
         .filter((entry) => showHidden || !remoteEntryName(entry).startsWith('.'))
+        .filter((entry) => needle.length === 0 || remoteEntryName(entry).toLowerCase().includes(needle))
         .sort(compareRemoteEntries)
       const toggleHidden = () => setShowHidden((current) => {
         const next = !current
@@ -5619,6 +5667,59 @@ window.__ModuleLoader__.load({
         const parts = normalized.split('/').filter(Boolean)
         if (parts.includes('..')) return { ok: false, error: '路径不能包含 ..' }
         return { ok: true, path: parts.length === 0 ? '/' : '/' + parts.join('/') }
+      }
+      /** Validate a single path segment the way the host will. */
+      const parseName = (value) => {
+        const name = String(value === undefined || value === null ? '' : value).trim()
+        if (name.length === 0) return { ok: false, error: '名字不能为空' }
+        if (name === '.' || name === '..') return { ok: false, error: '名字不能是 . 或 ..' }
+        if (name.includes('/')) return { ok: false, error: '名字不能包含 /' }
+        if (name.includes('\u0000')) return { ok: false, error: '名字不能包含空字符' }
+        return { ok: true, name }
+      }
+      const openActionPrompt = (kind, entry) => {
+        setActionPrompt({
+          kind,
+          entry: entry === undefined ? null : entry,
+          value: kind === 'rename' && entry !== undefined ? remoteEntryName(entry) : '',
+          error: '',
+        })
+        setMenu(null)
+      }
+      const submitActionPrompt = async () => {
+        if (actionPrompt === null) return
+        const parsed = parseName(actionPrompt.value)
+        if (parsed.ok !== true) {
+          setActionPrompt({ ...actionPrompt, error: parsed.error })
+          return
+        }
+        const kind = actionPrompt.kind
+        const entry = actionPrompt.entry
+        if (kind === 'rename' && entry !== null && parsed.name === remoteEntryName(entry)) {
+          // Renaming to the same name is a no-op, not a conflict.
+          setActionPrompt(null)
+          return
+        }
+        const path = kind === 'rename' ? entry.path : currentDir
+        try {
+          const result = await call(
+            '/connections/' + encodeURIComponent(connectionId) + '/' + kind,
+            { method: 'POST', body: { path, name: parsed.name } },
+          )
+          setActionPrompt(null)
+          if (kind === 'rename') {
+            pushNotice('已重命名为 ' + parsed.name, result.path)
+            setSelection([result.path])
+            setAnchor(result.path)
+          } else {
+            pushNotice(kind === 'mkdir' ? '已新建文件夹 ' + parsed.name : '已新建文件 ' + parsed.name, result.path)
+          }
+          void load(currentDir)
+        } catch (failure) {
+          const message = failure instanceof Error ? failure.message : String(failure)
+          const code = failure !== null && failure !== undefined && typeof failure.code === 'string' ? failure.code : ''
+          setActionPrompt({ ...actionPrompt, error: code === 'EXISTS' ? '这个名字已经存在' : message })
+        }
       }
       const submitPathInput = () => {
         const parsed = parsePathInput(pathDraft)
@@ -5729,6 +5830,15 @@ window.__ModuleLoader__.load({
         if (target !== null && target !== undefined) {
           const tag = String(target.tagName === undefined ? '' : target.tagName).toLowerCase()
           if (tag === 'input' || tag === 'textarea' || tag === 'select' || target.isContentEditable === true) return
+        }
+        if (String(event.key === undefined ? '' : event.key) === 'F2') {
+          const single = selection.length === 1
+            ? entries.find((entry) => entry.path === selection[0])
+            : null
+          if (single === undefined || single === null) return
+          event.preventDefault()
+          openActionPrompt('rename', single)
+          return
         }
         if (event.ctrlKey !== true && event.metaKey !== true) return
         const key = String(event.key === undefined ? '' : event.key).toLowerCase()
@@ -5847,6 +5957,15 @@ window.__ModuleLoader__.load({
               run: () => upload.pick({ connectionId, path: currentDir }),
             })
           }
+          if (!multi) {
+            items.push({
+              key: 'rename',
+              icon: 'edit',
+              label: '重命名',
+              title: '重命名 ' + single.path + '（F2）',
+              run: () => openActionPrompt('rename', single),
+            })
+          }
           if (!multi && !isDir) {
             items.push({
               key: 'savelocal',
@@ -5890,6 +6009,20 @@ window.__ModuleLoader__.load({
             label: '下载此目录',
             title: '打包下载 ' + currentDir + '（tar.gz）',
             run: () => void archive.run({ connectionId, path: currentDir, name: '' }),
+          },
+          {
+            key: 'mkdir',
+            icon: 'folder',
+            label: '新建文件夹',
+            title: '在 ' + currentDir + ' 下新建文件夹',
+            run: () => openActionPrompt('mkdir'),
+          },
+          {
+            key: 'touch',
+            icon: 'file',
+            label: '新建文件',
+            title: '在 ' + currentDir + ' 下新建空文件',
+            run: () => openActionPrompt('touch'),
           },
           {
             key: 'refresh',
@@ -5961,6 +6094,33 @@ window.__ModuleLoader__.load({
           ),
           selection.length > 1 ? h('span', { className: 'rd-rf-selcount', title: '右键可对整组操作' }, '已选 ' + selection.length + ' 项') : null,
           h('div', { className: 'rd-rf-acts' },
+            h('input', {
+              className: 'rd-rf-filter',
+              type: 'text',
+              value: filter,
+              placeholder: '筛选…',
+              spellCheck: false,
+              'aria-label': '按文件名筛选当前目录',
+              onChange: (event) => setFilter(event.target.value),
+              onKeyDown: (event) => {
+                if (event.key === 'Escape') {
+                  event.stopPropagation()
+                  setFilter('')
+                }
+              },
+            }),
+            h('button', {
+              className: 'rd-rf-act',
+              type: 'button',
+              title: '在当前目录新建文件夹',
+              onClick: () => openActionPrompt('mkdir'),
+            }, h(Icon, { name: 'plus', size: 14 }), ),
+            h('button', {
+              className: 'rd-rf-act',
+              type: 'button',
+              title: '在当前目录刷新',
+              onClick: () => { void load(currentDir) },
+            }, h(Icon, { name: 'refresh', size: 14 })),
             h('button', {
               className: 'rd-rf-act' + (showHidden ? ' on' : ''),
               type: 'button',
@@ -5982,12 +6142,6 @@ window.__ModuleLoader__.load({
               disabled: upload.busy,
               onClick: () => upload.pick({ connectionId, path: currentDir }),
             }, h(Icon, { name: 'upload', size: 14 })),
-            h('button', {
-              className: 'rd-rf-act',
-              type: 'button',
-              title: '刷新远端目录',
-              onClick: () => void load(currentDir),
-            }, h(Icon, { name: 'refresh', size: 14 })),
           ),
         ),
         h('div', {
@@ -6000,6 +6154,39 @@ window.__ModuleLoader__.load({
             setAnchor('')
           },
         },
+          actionPrompt === null ? null : h('div', { className: 'rd-rf-prompt' },
+            h('span', { className: 'rd-rf-promptlabel' },
+              actionPrompt.kind === 'rename'
+                ? '重命名为'
+                : actionPrompt.kind === 'mkdir' ? '新建文件夹' : '新建文件'),
+            h('input', {
+              className: 'rd-rf-promptinput' + (actionPrompt.error.length > 0 ? ' bad' : ''),
+              type: 'text',
+              value: actionPrompt.value,
+              spellCheck: false,
+              autoFocus: true,
+              'aria-label': actionPrompt.kind === 'rename' ? '新名字' : '名字',
+              onFocus: (event) => event.target.select(),
+              onChange: (event) => setActionPrompt({ ...actionPrompt, value: event.target.value, error: '' }),
+              onKeyDown: (event) => {
+                if (event.key === 'Enter') {
+                  event.preventDefault()
+                  void submitActionPrompt()
+                  return
+                }
+                if (event.key === 'Escape') {
+                  event.preventDefault()
+                  event.stopPropagation()
+                  setActionPrompt(null)
+                }
+              },
+            }),
+            h('button', { className: 'rd-rf-act', type: 'button', title: '确定', onClick: () => void submitActionPrompt() },
+              h(Icon, { name: 'check', size: 14 })),
+            h('button', { className: 'rd-rf-act', type: 'button', title: '取消', onClick: () => setActionPrompt(null) },
+              h(Icon, { name: 'x', size: 14 })),
+            actionPrompt.error.length > 0 ? h('span', { className: 'rd-rf-patherr' }, actionPrompt.error) : null,
+          ),
           error.length > 0
             ? h('div', { className: 'rd-rf-state' },
               h('span', { className: 'rd-rf-stateicon' }, h(Icon, { name: 'server', size: 22 })),
