@@ -36,6 +36,8 @@ addresses and paths are demo data (`dev-box`, `203.0.113.10`, `/srv/demo-app`).
 | Area | What you get |
 | --- | --- |
 | Connections | Multiple hosts, key or password auth, `~/.ssh/config` import, connection test with OS/latency, per-host auto-connect (off by default; toggle in the dialog, quick panel or console), keepalive and backoff reconnect |
+| Remote files | The workspace-files card opens a remote file page in a Remote Deck workspace: remote path, right-click upload / download / delete (permanent-deletion confirmation) and a cancellable task bar |
+| Settings | Settings → 远端工作台 holds the terminal font and size, the monitor thresholds and the transfer cap |
 | Sidebar terminal | In a Remote Deck workspace the right-sidebar terminal opens a remote PTY on the SSH host (`bash -l`) instead of a local shell |
 | Monitoring | The header pill shows CPU, memory and the free space of the session path's filesystem, raises an alert icon past a threshold, and keeps the refresh interval, per-metric switches and thresholds in settings |
 | Transfers | Download a remote folder as a streamed `tar.gz` (symlinks skipped, never followed through a loop or a mount) or upload files into the displayed folder over SFTP. A pre-flight scan reports files, bytes and unreadable entries first; upload failures offer 跳过 / 跳过该目录 / 停止; both directions are capped by a size guard |

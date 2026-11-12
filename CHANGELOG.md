@@ -11,6 +11,45 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - v1.1.0: full xterm.js terminal, i18n (zh/en), explicit debug switch, virtualized large folders.
 
+## [1.13.0] - 2026-11-12
+
+### Added
+
+- **A remote file page in the right sidebar** (远端文件): a breadcrumb with the *remote* POSIX path, double-click to
+  descend, and context menus — empty space offers 上传到此处 / 下载此目录 / 刷新, an entry offers 下载 (file
+  directly, folder as a tar.gz), 上传到此处 (folders), 删除 (permanent, see below) and 打开为工作区. The two
+  actions this plugin used to add to DSH's own file tab are removed, so that tab is back to stock and downloads
+  now live where the user asked for them.
+- **Delete with a permanent-deletion confirmation**: `POST /connections/:id/delete` removes one path over SFTP —
+  recursively for directories, never following a symbolic link, refusing a workspace root unless `force` and the
+  filesystem root always. The dialog names the entry and its full remote path and says 永久删除 / 不可恢复;
+  nothing is sent before confirmation.
+- **A task bar under the file list**: uploads (with progress), downloads (streamed so they can be interrupted) and
+  deletes (indeterminate) each get a row with a cancel button; finished rows fade out, failures stay with their
+  reason, and several tasks can run at once. Cancelling aborts the request — a cancelled delete stops within one
+  SFTP round trip and reports nothing back.
+- **Settings → 远端工作台**: terminal appearance (font family from a preset list or a custom value, size, line
+  height, letter spacing, with a live preview), the monitor (moved out of the header dropdown, which now only
+  displays), and the transfer cap. Stored host-side as one document (`GET/POST /settings`) with the old
+  `monitor.json` migrated on first write, and the font applied live to the xterm instances and to the plain-text
+  fallback through a CSS variable.
+- **The right-sidebar guide card for workspace files is taken over**: inside a remote workspace it opens the
+  remote file page, in a local workspace it opens DSH's own tab as before. `localStorage['rd-guide-takeover'] = '0'`
+  plus a reload leaves DSH's card untouched.
+
+### Changed
+
+- The upload and archive cap is read from the settings document per transfer instead of being fixed at startup,
+  so a change in Settings applies to the next upload without a restart.
+
+### Notes
+
+- Cancellation is detected through the *response* closing (plus a destroyed response or socket): `request.destroyed`
+  and `req:close` fire as soon as the body has been read, which would have aborted every delete immediately.
+- Verified on a real host: a tree with nested files, a link escaping it and a link looping back was deleted with
+  the counts (5 files / 3 directories / 40 bytes) reported correctly, the escaping target left untouched, a missing
+  path raising the missing error and a cancelled delete removing nothing.
+
 ## [1.12.0] - 2026-11-12
 
 ### Added

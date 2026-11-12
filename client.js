@@ -379,7 +379,7 @@ window.__ModuleLoader__.load({
       .rd-host .box { width:20px;height:20px;border-radius:6px;display:grid;place-items:center;color:#fff;flex:none }
       .rd-host .nm { font-size:11.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis }
       .rd-host .st { font-size:9.5px;color:var(--dsw-alias-label-secondary,#8f959e);display:flex;align-items:center;gap:4px }
-      .rd-host .lat { font-family:ui-monospace,Consolas,monospace;color:#4c8f5c }
+      .rd-host .lat { font-family:var(--rd-term-font,ui-monospace,Consolas,monospace);color:#4c8f5c }
       .rd-auto { display:inline-grid;place-items:center;width:15px;height:15px;border-radius:4px;background:rgba(210,153,34,.14);color:#b07d18;flex:none;cursor:pointer }
       .rd-auto:hover { background:rgba(210,153,34,.24) }
       [data-rd-theme="dark"] .rd-auto { background:rgba(210,153,34,.2);color:#e3b341 }
@@ -395,7 +395,7 @@ window.__ModuleLoader__.load({
       .rd-ws .fi { width:26px;height:26px;border-radius:7px;display:grid;place-items:center;flex:none;background:rgba(47,125,221,.1);color:#2f7ddd }
       .rd-ws .nm { font-size:12px;font-weight:600;display:flex;align-items:center;gap:5px }
       .rd-ws .cur { font-size:9px;color:#1b7a33;background:#e8f6ec;border-radius:3px;padding:0 3px }
-      .rd-ws .pa { font-family:ui-monospace,Consolas,monospace;font-size:10px;color:var(--dsw-alias-label-secondary,#8f959e);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:240px }
+      .rd-ws .pa { font-family:var(--rd-term-font,ui-monospace,Consolas,monospace);font-size:10px;color:var(--dsw-alias-label-secondary,#8f959e);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:240px }
       .rd-ws .rt { margin-left:auto;text-align:right;font-size:9.5px;color:var(--dsw-alias-label-secondary,#8f959e);line-height:1.5;flex:none }
       .rd-ws .rt b { color:var(--dsw-alias-label-primary,#1f2329);font-weight:500 }
 
@@ -410,7 +410,7 @@ window.__ModuleLoader__.load({
       [data-rd-theme="dark"] .rd-fwdsum .go { color:#7cc4ff }
 
       .rd-foot { border-top:1px solid var(--dsw-alias-border-l1, rgba(15,23,42,.08));background:var(--dsw-alias-bg-layer-2, rgba(15,23,42,.02));padding:8px 14px;display:flex;align-items:center;gap:6px;font-size:10px;color:var(--dsw-alias-label-secondary,#8f959e) }
-      .rd-foot .mono { font-family:ui-monospace,Consolas,monospace }
+      .rd-foot .mono { font-family:var(--rd-term-font,ui-monospace,Consolas,monospace) }
 
       .rd-notice { border:1px solid rgba(210,153,34,.35);background:rgba(210,153,34,.08);color:#7a5b12;border-radius:9px;padding:10px 12px;font-size:11.5px;line-height:1.6 }
       .rd-err { color:#b42318;font-size:11px;line-height:1.5;word-break:break-word }
@@ -420,7 +420,7 @@ window.__ModuleLoader__.load({
       .rd-field label { font-size:10.5px;color:var(--dsw-alias-label-secondary,#8f959e) }
       .rd-input { height:30px;border:1px solid var(--dsw-alias-border-l1,#e8e8ec);border-radius:8px;background:var(--dsw-alias-bg-layer-1,#fff);padding:0 9px;font-size:12px;color:inherit;outline:none;min-width:0 }
       .rd-input:focus { border-color:#9cc4ea;box-shadow:0 0 0 3px rgba(29,111,196,.12) }
-      .rd-input.mono { font-family:ui-monospace,Consolas,monospace;font-size:11px }
+      .rd-input.mono { font-family:var(--rd-term-font,ui-monospace,Consolas,monospace);font-size:11px }
       .rd-grid2 { display:grid;grid-template-columns:1fr 1fr;gap:10px }
       .rd-grid3 { display:grid;grid-template-columns:76px 1fr 92px;gap:8px }
       .rd-btn { height:28px;padding:0 10px;border-radius:7px;border:1px solid var(--dsw-alias-border-l1,#e8e8ec);background:transparent;color:inherit;font-size:11.5px;cursor:pointer;display:inline-flex;align-items:center;gap:5px;justify-content:center }
@@ -438,7 +438,7 @@ window.__ModuleLoader__.load({
       .rd-dir .sub { margin-left:auto;font-size:9.5px;color:var(--dsw-alias-label-secondary,#8f959e) }
 
       .rd-pill { display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 9px;border-radius:7px;border:1px solid #c8dcf3;background:rgba(47,125,221,.08);color:#175a99;font-size:11.5px;white-space:nowrap;cursor:pointer;max-width:340px }
-      .rd-pill .mono { font-family:ui-monospace,Consolas,monospace;font-size:10.5px;overflow:hidden;text-overflow:ellipsis }
+      .rd-pill .mono { font-family:var(--rd-term-font,ui-monospace,Consolas,monospace);font-size:10.5px;overflow:hidden;text-overflow:ellipsis }
       .rd-pill:hover { background:rgba(47,125,221,.14) }
       .rd-hpill { box-sizing:border-box;height:28px;padding:0 8px;border-radius:var(--dsw-radius-sm);border-color:transparent;background:transparent;color:var(--dsw-alias-label-secondary,#5f6672);font-size:12px;line-height:18px }
       .rd-hpill:hover { background:var(--dsw-alias-interactive-bg-hover,rgba(15,23,42,.05));color:var(--dsw-alias-label-primary,#1f2329) }
@@ -452,7 +452,7 @@ window.__ModuleLoader__.load({
       .rd-hmenu-list { display:flex;flex-direction:column;gap:2px;max-height:240px;overflow:auto }
       .rd-hmenu-row { display:flex;align-items:center;gap:6px;padding:5px 6px;border-radius:8px }
       .rd-hmenu-row:hover { background:var(--dsw-alias-bg-layer-2,rgba(15,23,42,.04)) }
-      .rd-hmenu-row .map { font-family:ui-monospace,Consolas,monospace;font-size:10.5px;color:var(--dsw-alias-label-secondary,#5f6672) }
+      .rd-hmenu-row .map { font-family:var(--rd-term-font,ui-monospace,Consolas,monospace);font-size:10.5px;color:var(--dsw-alias-label-secondary,#5f6672) }
       .rd-hmenu-row .arrow { color:var(--dsw-alias-label-tertiary,#8f959e) }
       .rd-hmenu-row .acts { margin-left:auto;display:flex;gap:4px;flex:none }
       .rd-hmenu-row .acts .rd-btn { height:22px;padding:0 7px;font-size:10.5px }
@@ -470,7 +470,7 @@ window.__ModuleLoader__.load({
       .rd-mon-name { flex:none;min-width:26px;color:var(--dsw-alias-label-primary,#1f2329);font-size:11.5px }
       .rd-mon-bar { flex:1;height:4px;border-radius:999px;background:var(--dsw-alias-border-l1,#e8e8ec);overflow:hidden }
       .rd-mon-bar i { display:block;height:100%;border-radius:999px;background:var(--dsw-alias-state-business-primary,#1d6fc4);transition:width .25s ease }
-      .rd-mon-val { flex:none;min-width:44px;text-align:right;color:var(--dsw-alias-label-secondary,#5f6672);font-family:ui-monospace,Consolas,monospace;font-size:11px;font-variant-numeric:tabular-nums }
+      .rd-mon-val { flex:none;min-width:44px;text-align:right;color:var(--dsw-alias-label-secondary,#5f6672);font-family:var(--rd-term-font,ui-monospace,Consolas,monospace);font-size:11px;font-variant-numeric:tabular-nums }
       .rd-mon-row[data-alert="true"] .rd-mon-bar i { background:#e5484d }
       .rd-mon-row[data-alert="true"] .rd-mon-val { color:#e5484d }
       .rd-mon-sub { padding-left:33px;color:var(--dsw-alias-label-tertiary,#8f959e);font-size:10.5px;font-variant-numeric:tabular-nums;overflow:hidden;text-overflow:ellipsis;white-space:nowrap }
@@ -509,9 +509,9 @@ window.__ModuleLoader__.load({
       .rd-host2[data-active="true"] { background:var(--dsw-alias-bg-layer-1,#fff);border-color:var(--dsw-alias-border-l1, rgba(15,23,42,.1));box-shadow:0 1px 2px rgba(16,24,40,.05) }
       .rd-host2 .ico2 { width:26px;height:26px;border-radius:7px;display:grid;place-items:center;color:#fff;flex:none }
       .rd-host2 .nm2 { font-size:12.5px;font-weight:600;line-height:1.3 }
-      .rd-host2 .meta2 { font-size:10px;color:var(--dsw-alias-label-secondary,#8f959e);font-family:ui-monospace,Consolas,monospace }
+      .rd-host2 .meta2 { font-size:10px;color:var(--dsw-alias-label-secondary,#8f959e);font-family:var(--rd-term-font,ui-monospace,Consolas,monospace) }
       .rd-host2 .rt2 { margin-left:auto;text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:2px }
-      .rd-host2 .lat2 { font-size:10px;font-family:ui-monospace,Consolas,monospace;color:#4c8f5c }
+      .rd-host2 .lat2 { font-size:10px;font-family:var(--rd-term-font,ui-monospace,Consolas,monospace);color:#4c8f5c }
       .rd-rail2 .sep2 { height:1px;background:var(--dsw-alias-border-l1, rgba(15,23,42,.07));margin:8px }
       .rd-rail2 .railfoot2 { margin-top:auto;padding:10px 8px 2px;font-size:10px;color:var(--dsw-alias-label-secondary,#8f959e);line-height:1.7;border-top:1px solid var(--dsw-alias-border-l1, rgba(15,23,42,.07)) }
       .rd-cpane { flex:1;min-width:0;overflow:auto;padding:22px 26px 30px }
@@ -519,7 +519,7 @@ window.__ModuleLoader__.load({
       .rd-cavatar { width:46px;height:46px;border-radius:12px;color:#fff;display:grid;place-items:center;flex:none }
       .rd-ctitle { font-size:19px;font-weight:700;letter-spacing:-.3px;display:flex;align-items:center;gap:8px }
       .rd-cmeta { display:flex;align-items:center;gap:8px;margin-top:5px;font-size:11.5px;color:var(--dsw-alias-label-secondary,#8f959e);flex-wrap:wrap }
-      .rd-cmeta .mono { font-family:ui-monospace,Consolas,monospace;font-size:11px;color:var(--dsw-alias-label-secondary,#5f6672) }
+      .rd-cmeta .mono { font-family:var(--rd-term-font,ui-monospace,Consolas,monospace);font-size:11px;color:var(--dsw-alias-label-secondary,#5f6672) }
       .rd-chead .acts { margin-left:auto;display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end }
       .rd-stats { display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:20px }
       .rd-stat { border:1px solid var(--dsw-alias-border-l1, rgba(15,23,42,.1));border-radius:10px;padding:11px 13px }
@@ -536,7 +536,7 @@ window.__ModuleLoader__.load({
       .rd-card .stripe2 { position:absolute;left:0;top:10px;bottom:10px;width:3px;border-radius:0 3px 3px 0 }
       .rd-card .top2 { display:flex;align-items:center;gap:7px }
       .rd-card .nm3 { font-size:12.5px;font-weight:600 }
-      .rd-card .path2 { margin-top:7px;font-family:ui-monospace,Consolas,monospace;font-size:10.5px;color:var(--dsw-alias-label-secondary,#5f6672);background:var(--dsw-alias-bg-layer-2, rgba(15,23,42,.035));border-radius:6px;padding:5px 7px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap }
+      .rd-card .path2 { margin-top:7px;font-family:var(--rd-term-font,ui-monospace,Consolas,monospace);font-size:10.5px;color:var(--dsw-alias-label-secondary,#5f6672);background:var(--dsw-alias-bg-layer-2, rgba(15,23,42,.035));border-radius:6px;padding:5px 7px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap }
       .rd-card .foot2 { display:flex;align-items:center;gap:8px;margin-top:9px;font-size:10.5px;color:var(--dsw-alias-label-secondary,#8f959e) }
       .rd-card .foot2 .go2 { margin-left:auto;color:#1d6fc4;font-size:11px }
       .rd-card.add2 { border-style:dashed;display:flex;align-items:center;justify-content:center;gap:7px;color:var(--dsw-alias-label-secondary,#8f959e);font-size:12px;min-height:96px;cursor:pointer }
@@ -585,6 +585,85 @@ window.__ModuleLoader__.load({
       [data-rd-theme="dark"] .rd-ctx { background:var(--dsw-alias-bg-layer-1,#1b1e23);border-color:var(--dsw-alias-border-l1,#2c3138) }
       [data-rd-theme="dark"] .rd-ctx-i:hover { background:rgba(255,255,255,.07) }
       [data-rd-theme="dark"] .rd-ctx-i[disabled]:hover { background:transparent }
+      .rd-ctx-i.danger { color:#c0392b }
+      .rd-ctx-i.danger svg { opacity:1 }
+      .rd-ctx-i.danger:hover { background:rgba(229,72,77,.1) }
+      [data-rd-theme="dark"] .rd-ctx-i.danger { color:#ff8b8b }
+      [data-rd-theme="dark"] .rd-ctx-i.danger:hover { background:rgba(229,72,77,.18) }
+      .rd-set { display:flex;flex-direction:column;gap:16px;font-size:12px;color:var(--dsw-alias-label-primary,#1f2329);max-width:560px }
+      .rd-set-group { display:flex;flex-direction:column;gap:7px }
+      .rd-set-title { font-size:11px;font-weight:600;color:var(--dsw-alias-label-secondary,#5f6672);letter-spacing:.2px }
+      .rd-set-fields { display:flex;flex-direction:column;gap:7px }
+      .rd-set-row { display:flex;align-items:center;gap:9px;min-height:26px }
+      .rd-set-row .lb { flex:1;min-width:0;font-size:11.5px;color:var(--dsw-alias-label-secondary,#5f6672) }
+      .rd-set-row .hint { flex:none;font-size:10px;color:var(--dsw-alias-label-tertiary,#8f959e) }
+      .rd-set-row input[type="number"], .rd-set-text, .rd-set-font select { height:26px;box-sizing:border-box;padding:0 7px;border:1px solid var(--dsw-alias-border-l1,#e8e8ec);border-radius:6px;background:var(--dsw-alias-bg-layer-1,#fff);color:var(--dsw-alias-label-primary,#1f2329);font:inherit;font-size:11.5px;font-variant-numeric:tabular-nums }
+      .rd-set-row input[type="number"] { width:78px }
+      .rd-set-row input[type="number"][disabled] { opacity:.5 }
+      .rd-set-row input[type="checkbox"] { width:14px;height:14px;flex:none;margin:0;accent-color:#2f7ddd }
+      .rd-set-font { display:flex;align-items:center;gap:6px;flex:none;max-width:340px }
+      .rd-set-font select { flex:none;min-width:150px }
+      .rd-set-text { flex:1;min-width:0 }
+      .rd-set-preview { padding:9px 12px;border-radius:8px;border:1px solid #1c232c;background:#0f1216;color:#c9d1d9;overflow:auto;white-space:pre;font-variant-ligatures:none }
+      .rd-set-actions { display:flex;gap:8px }
+      [data-rd-theme="dark"] .rd-set-row input[type="number"], [data-rd-theme="dark"] .rd-set-text, [data-rd-theme="dark"] .rd-set-font select { background:var(--dsw-alias-bg-layer-1,#1b1e23);border-color:#2c3138 }
+      .rd-gcard { display:flex;align-items:center;gap:10px;width:100%;box-sizing:border-box;padding:10px 12px;border:0;border-radius:20px;background:transparent;color:var(--dsw-alias-label-primary,#1f2329);font:inherit;text-align:left;cursor:pointer }
+      .rd-gcard:hover { background:var(--dsw-alias-bg-layer-2,rgba(15,23,42,.05)) }
+      .rd-gcard-icon { position:relative;flex:none;display:grid;place-items:center;width:32px;height:32px }
+      .rd-gcard-icon svg { color:#e8b339 }
+      .rd-gcard-tag { position:absolute;right:-3px;bottom:-2px;font-style:normal;font-size:8px;line-height:1;padding:2px 3px;border-radius:5px;background:rgba(47,125,221,.16);color:#1d6fc4 }
+      .rd-gcard-text { flex:1;min-width:0;display:flex;flex-direction:column;gap:2px }
+      .rd-gcard-title { font-size:12.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap }
+      .rd-gcard-desc { font-size:10.5px;color:var(--dsw-alias-label-secondary,#8f959e);overflow:hidden;text-overflow:ellipsis;white-space:nowrap }
+      .rd-gcard-keys { flex:none;background:transparent;padding:0;color:var(--dsw-alias-label-tertiary,#8f959e) }
+      [data-rd-theme="dark"] .rd-gcard:hover { background:rgba(255,255,255,.06) }
+      [data-rd-theme="dark"] .rd-gcard-tag { background:rgba(47,125,221,.24);color:#8cc6ff }
+
+      .rd-rfiles { display:flex;flex-direction:column;height:100%;min-height:0;font-size:12px;color:var(--dsw-alias-label-primary,#1f2329) }
+      .rd-rfiles-head { flex:none;display:flex;align-items:center;gap:7px;padding:9px 10px 5px;min-width:0 }
+      .rd-rfiles-head .nm { flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11.5px;font-weight:600 }
+      .rd-rfiles-crumbs { flex:none;display:flex;align-items:center;gap:2px;flex-wrap:wrap;padding:0 8px 6px }
+      .rd-rfiles-list { flex:1;min-height:0;overflow:auto;padding:0 6px 8px }
+      .rd-rfiles-row { display:flex;align-items:center;gap:8px;padding:5px 6px;border-radius:7px;color:var(--dsw-alias-label-primary,#1f2329) }
+      .rd-rfiles-row.dir { cursor:pointer }
+      .rd-rfiles-row:hover { background:var(--dsw-alias-bg-layer-2,rgba(15,23,42,.045)) }
+      .rd-rfiles-row.sel { background:rgba(47,125,221,.12) }
+      .rd-rfiles-row .nm { flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px }
+      .rd-rfiles-row .sz { flex:none;color:var(--dsw-alias-label-tertiary,#8f959e);font-size:10.5px;font-variant-numeric:tabular-nums }
+      .rd-rfiles-empty { flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;gap:4px;padding:18px 14px;color:var(--dsw-alias-label-secondary,#8f959e);line-height:1.6 }
+      .rd-rfiles-empty .nm { color:var(--dsw-alias-label-primary,#1f2329);font-size:12.5px;font-weight:600 }
+      .rd-rfiles-empty .sub { font-size:11px }
+
+      .rd-tasks { flex:none;border-top:1px solid var(--dsw-alias-border-l1,#e8e8ec);padding:6px 8px 7px;display:flex;flex-direction:column;gap:6px;max-height:34%;overflow:auto }
+      .rd-task { display:flex;align-items:flex-start;gap:7px }
+      .rd-task > svg { margin-top:2px;color:var(--dsw-alias-label-tertiary,#8f959e);flex:none }
+      .rd-task-main { flex:1;min-width:0;display:flex;flex-direction:column;gap:3px }
+      .rd-task-top { display:flex;align-items:center;gap:6px;min-width:0 }
+      .rd-task-top .nm { flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px }
+      .rd-task-top .st { flex:none;font-size:10px;color:var(--dsw-alias-label-tertiary,#8f959e) }
+      .rd-task[data-state="failed"] .rd-task-top .st { color:#c0392b }
+      .rd-task[data-state="done"] .rd-task-top .st { color:#2ea043 }
+      .rd-task-x { flex:none;border:0;background:transparent;color:var(--dsw-alias-label-secondary,#5f6672);font:inherit;font-size:10.5px;cursor:pointer;padding:0 3px;border-radius:4px;display:inline-flex;align-items:center }
+      .rd-task-x:hover { background:var(--dsw-alias-bg-layer-2,rgba(15,23,42,.06)) }
+      .rd-task-bar { height:3px;border-radius:999px;background:var(--dsw-alias-border-l1,#e8e8ec);overflow:hidden }
+      .rd-task-bar i { display:block;height:100%;border-radius:999px;background:var(--dsw-alias-state-business-primary,#1d6fc4);transition:width .2s ease }
+      .rd-task[data-state="failed"] .rd-task-bar i { background:#e5484d }
+      .rd-task[data-state="done"] .rd-task-bar i { background:#2ea043 }
+      .rd-task-bar.pending i { width:35% !important;animation:rd-task-slide 1.1s ease-in-out infinite }
+      @keyframes rd-task-slide { 0% { margin-left:0 } 50% { margin-left:65% } 100% { margin-left:0 } }
+      .rd-task-sub { font-size:10px;color:var(--dsw-alias-label-tertiary,#8f959e);font-variant-numeric:tabular-nums }
+      .rd-task-err { font-size:10.5px;line-height:1.45;color:#c0392b;overflow-wrap:anywhere }
+      .rd-tf-path { margin-top:5px;font-family:var(--rd-term-font,ui-monospace,Consolas,monospace);font-size:11px;color:var(--dsw-alias-label-secondary,#8f959e);overflow-wrap:anywhere }
+      [data-rd-theme="dark"] .rd-rfiles-row:hover { background:rgba(255,255,255,.06) }
+      [data-rd-theme="dark"] .rd-rfiles-row.sel { background:rgba(47,125,221,.2) }
+      [data-rd-theme="dark"] .rd-tasks { border-top-color:#2c3138 }
+      [data-rd-theme="dark"] .rd-task-bar { background:rgba(255,255,255,.12) }
+      [data-rd-theme="dark"] .rd-task-bar i { background:#4f8fd6 }
+      [data-rd-theme="dark"] .rd-task[data-state="failed"] .rd-task-bar i { background:#ff7b72 }
+      [data-rd-theme="dark"] .rd-task[data-state="done"] .rd-task-bar i { background:#3fb950 }
+      [data-rd-theme="dark"] .rd-task[data-state="failed"] .rd-task-top .st { color:#ff9a9a }
+      [data-rd-theme="dark"] .rd-task-err { color:#ff9a9a }
+      [data-rd-theme="dark"] .rd-task-x:hover { background:rgba(255,255,255,.08) }
 
       .rd-pill-restore { border:1px solid rgba(29,111,196,.35);background:rgba(29,111,196,.08);color:#1d6fc4;border-radius:999px;font-size:11px;padding:2px 8px;margin-left:6px;cursor:pointer;line-height:1.5 }
       .rd-pill-restore:hover { background:rgba(29,111,196,.16) }
@@ -682,13 +761,13 @@ window.__ModuleLoader__.load({
       .rd-formhint { font-size:10px;color:var(--dsw-alias-label-secondary,#8f959e);line-height:1.6 }
       .rd-link { color:#1d6fc4;cursor:pointer;font-size:10.5px }
       .rd-cfg { display:flex;align-items:center;gap:7px;height:30px;border:1px solid var(--dsw-alias-border-l1, rgba(15,23,42,.12));border-radius:8px;background:var(--dsw-alias-bg-layer-1,#fff);padding:0 9px;margin-top:9px;font-size:10.5px;color:var(--dsw-alias-label-secondary,#5f6672) }
-      .rd-cfg .mono { font-family:ui-monospace,Consolas,monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap }
+      .rd-cfg .mono { font-family:var(--rd-term-font,ui-monospace,Consolas,monospace);overflow:hidden;text-overflow:ellipsis;white-space:nowrap }
       .rd-import { flex:1;overflow:auto;min-height:0;margin-top:4px }
       .rd-improw { display:flex;align-items:center;gap:9px;padding:8px 9px;border:1px solid var(--dsw-alias-border-l1, rgba(15,23,42,.1));border-radius:9px;background:var(--dsw-alias-bg-layer-1,#fff);margin-top:7px;cursor:pointer }
       .rd-improw:hover { border-color:#a9c9ec }
       .rd-ck { width:15px;height:15px;accent-color:#1d6fc4;flex:none }
-      .rd-impalias { font-family:ui-monospace,Consolas,monospace;font-size:11.5px;font-weight:600 }
-      .rd-impmeta { font-family:ui-monospace,Consolas,monospace;font-size:9.5px;color:var(--dsw-alias-label-secondary,#8f959e);margin-top:2px }
+      .rd-impalias { font-family:var(--rd-term-font,ui-monospace,Consolas,monospace);font-size:11.5px;font-weight:600 }
+      .rd-impmeta { font-family:var(--rd-term-font,ui-monospace,Consolas,monospace);font-size:9.5px;color:var(--dsw-alias-label-secondary,#8f959e);margin-top:2px }
       .rd-impkey { margin-left:auto;font-size:9px;color:#1b7a33;background:rgba(46,160,67,.1);border-radius:4px;padding:2px 5px;white-space:nowrap }
       .rd-importbtn { margin-top:10px;width:100% }
       .rd-seg { display:inline-flex;padding:2px;background:var(--dsw-alias-border-l1, rgba(15,23,42,.06));border-radius:8px;height:32px;align-items:center }
@@ -699,13 +778,13 @@ window.__ModuleLoader__.load({
       .rd-tg { display:flex;align-items:flex-start;gap:8px;font-size:11.5px }
       .rd-tg small { display:block;font-size:9.5px;color:var(--dsw-alias-label-secondary,#8f959e);margin-top:1px }
       .rd-testok { margin-top:12px;border:1px solid rgba(46,160,67,.35);background:rgba(46,160,67,.07);border-radius:9px;padding:9px 11px;display:flex;align-items:center;gap:8px;font-size:11px;color:#1b7a33 }
-      .rd-testok .mono { font-family:ui-monospace,Consolas,monospace;font-size:10px;color:#39704a }
+      .rd-testok .mono { font-family:var(--rd-term-font,ui-monospace,Consolas,monospace);font-size:10px;color:#39704a }
       .rd-mfoot3 { margin-top:auto;display:flex;align-items:center;gap:8px;padding-top:12px;border-top:1px solid var(--dsw-alias-border-l1, rgba(15,23,42,.08)) }
       .rd-wscol { flex:1;min-width:0;padding:12px 16px;display:flex;flex-direction:column;min-height:0 }
       .rd-wshosts { display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px }
       .rd-hostchip { display:inline-flex;align-items:center;gap:6px;height:26px;padding:0 10px;border-radius:7px;border:1px solid var(--dsw-alias-border-l1, rgba(15,23,42,.12));background:transparent;color:inherit;font-size:11px;cursor:pointer }
       .rd-hostchip.on { border-color:#a9c9ec;background:rgba(47,125,221,.08);color:#175a99 }
-      .rd-wscrumbs { display:flex;align-items:center;gap:2px;margin:2px 0 6px;font-family:ui-monospace,Consolas,monospace;font-size:10.5px;color:var(--dsw-alias-label-secondary,#5f6672);overflow:hidden;white-space:nowrap }
+      .rd-wscrumbs { display:flex;align-items:center;gap:2px;margin:2px 0 6px;font-family:var(--rd-term-font,ui-monospace,Consolas,monospace);font-size:10.5px;color:var(--dsw-alias-label-secondary,#5f6672);overflow:hidden;white-space:nowrap }
       .rd-wscrumbs .c3 { padding:1px 4px;border-radius:4px;cursor:pointer }
       .rd-wscrumbs .c3:hover { background:var(--dsw-alias-border-l1, rgba(15,23,42,.06)) }
       .rd-wscrumbs .sep3 { color:#c6ccd4 }
@@ -724,12 +803,12 @@ window.__ModuleLoader__.load({
       .rd-wsfoot .rd-pill { margin-left:auto }
       .rd-wspreview { width:304px;flex:none;border-left:1px solid var(--dsw-alias-border-l1, rgba(15,23,42,.08));background:var(--dsw-alias-bg-layer-2, rgba(15,23,42,.02));padding:14px 16px;display:flex;flex-direction:column;overflow:auto }
       .rd-wshost { display:flex;align-items:center;gap:7px;margin:8px 0 10px;font-size:11.5px;font-weight:600 }
-      .rd-wshost .mono { font-family:ui-monospace,Consolas,monospace;font-size:10px;color:#4c8f5c }
-      .rd-wspath { font-family:ui-monospace,Consolas,monospace;font-size:10.5px;color:var(--dsw-alias-label-secondary,#5f6672);background:var(--dsw-alias-bg-layer-2, rgba(15,23,42,.04));border-radius:7px;padding:7px 9px;word-break:break-all;margin-top:5px }
+      .rd-wshost .mono { font-family:var(--rd-term-font,ui-monospace,Consolas,monospace);font-size:10px;color:#4c8f5c }
+      .rd-wspath { font-family:var(--rd-term-font,ui-monospace,Consolas,monospace);font-size:10.5px;color:var(--dsw-alias-label-secondary,#5f6672);background:var(--dsw-alias-bg-layer-2, rgba(15,23,42,.04));border-radius:7px;padding:7px 9px;word-break:break-all;margin-top:5px }
       .rd-wsadd { margin-top:14px;width:100% }
       .rd-wsdivider { height:1px;background:var(--dsw-alias-border-l1, rgba(15,23,42,.1));margin:14px 0 10px }
       .rd-exist { display:flex;align-items:center;gap:7px;padding:6px 0;border-bottom:1px dashed var(--dsw-alias-border-l1, rgba(15,23,42,.07));font-size:10.5px }
-      .rd-existpath { font-family:ui-monospace,Consolas,monospace;color:var(--dsw-alias-label-secondary,#5f6672);overflow:hidden;text-overflow:ellipsis;white-space:nowrap }
+      .rd-existpath { font-family:var(--rd-term-font,ui-monospace,Consolas,monospace);color:var(--dsw-alias-label-secondary,#5f6672);overflow:hidden;text-overflow:ellipsis;white-space:nowrap }
       .rd-exist .rd-mini { margin-left:auto }
       .rd-mini { height:22px;padding:0 7px;border-radius:6px;border:1px solid var(--dsw-alias-border-l1, rgba(15,23,42,.12));background:transparent;color:var(--dsw-alias-label-secondary,#5f6672);font-size:10px;cursor:pointer;display:inline-flex;align-items:center;gap:4px }
       .rd-mini:hover { background:var(--dsw-alias-border-l1, rgba(15,23,42,.05)) }
@@ -747,12 +826,12 @@ window.__ModuleLoader__.load({
       .rd-termhead { display:flex;align-items:center;gap:8px;background:#0f1216;border:1px solid #1c232c;border-bottom:0;border-radius:11px 11px 0 0;padding:9px 12px;color:#8b949e;font-size:10.5px }
       .rd-termhead .dotrow { display:flex;gap:4px }
       .rd-termhead .dotrow i { width:8px;height:8px;border-radius:50%;background:#2a313a;display:block }
-      .rd-termtab { color:#d7dee6;background:#1a212a;border-radius:5px;padding:2px 8px;font-family:ui-monospace,Consolas,monospace;font-size:10px }
+      .rd-termtab { color:#d7dee6;background:#1a212a;border-radius:5px;padding:2px 8px;font-family:var(--rd-term-font,ui-monospace,Consolas,monospace);font-size:10px }
       .rd-termstatus { margin-left:auto;display:flex;align-items:center;gap:5px }
-      .rd-termsid { color:#5b6674;font-family:ui-monospace,Consolas,monospace;font-size:10px;margin-left:2px }
+      .rd-termsid { color:#5b6674;font-family:var(--rd-term-font,ui-monospace,Consolas,monospace);font-size:10px;margin-left:2px }
       .rd-termbtn { border:0;background:transparent;color:#8b949e;cursor:pointer;display:grid;place-items:center;width:22px;height:22px;border-radius:5px }
       .rd-termbtn:hover { background:#1a212a;color:#d7dee6 }
-      .rd-termout { background:#0f1216;border:1px solid #1c232c;border-top:0;border-radius:0 0 11px 11px;padding:12px 14px;flex:1;min-height:0;overflow:auto;color:#c9d1d9;font-family:ui-monospace,Consolas,monospace;font-size:11.5px;line-height:1.7;white-space:pre-wrap;word-break:break-all;outline:none;cursor:text }
+      .rd-termout { background:#0f1216;border:1px solid #1c232c;border-top:0;border-radius:0 0 11px 11px;padding:12px 14px;flex:1;min-height:0;overflow:auto;color:#c9d1d9;font-family:var(--rd-term-font,ui-monospace,Consolas,monospace);font-size:11.5px;line-height:1.7;white-space:pre-wrap;word-break:break-all;outline:none;cursor:text }
       .rd-termout:focus { box-shadow:inset 0 0 0 1px rgba(99,182,255,.35) }
       .rd-xterm { flex:1;min-height:0;background:#0f1216;border:1px solid #1c232c;border-top:0;border-radius:0 0 11px 11px;padding:8px 10px;overflow:hidden }
       .rd-xterm .xterm { height:100% }
@@ -762,14 +841,14 @@ window.__ModuleLoader__.load({
       .rd-ports { display:flex;flex-direction:column }
       .rd-porthead { display:flex;align-items:center;gap:8px }
       .rd-portrow { display:flex;align-items:center;gap:9px;padding:10px 12px;border:1px solid var(--dsw-alias-border-l1, rgba(15,23,42,.1));border-radius:10px;margin-bottom:8px;font-size:11.5px }
-      .rd-portmap { font-family:ui-monospace,Consolas,monospace;font-size:11px;color:var(--dsw-alias-label-secondary,#5f6672) }
+      .rd-portmap { font-family:var(--rd-term-font,ui-monospace,Consolas,monospace);font-size:11px;color:var(--dsw-alias-label-secondary,#5f6672) }
       .rd-portarrow { color:var(--dsw-alias-label-secondary,#8f959e) }
       .rd-portactions { margin-left:auto;display:flex;gap:6px }
       .rd-porttable { border:1px solid var(--dsw-alias-border-l1, rgba(15,23,42,.1));border-radius:10px;overflow:hidden }
       .rd-portheadrow { display:grid;grid-template-columns:90px 1fr 120px;gap:10px;padding:8px 12px;background:var(--dsw-alias-bg-layer-2, rgba(15,23,42,.03));border-bottom:1px solid var(--dsw-alias-border-l1, rgba(15,23,42,.07));font-size:10.5px;color:var(--dsw-alias-label-secondary,#8f959e) }
       .rd-portrow2 { display:grid;grid-template-columns:90px 1fr 120px;gap:10px;align-items:center;padding:8px 12px;border-bottom:1px solid var(--dsw-alias-border-l1, rgba(15,23,42,.05));font-size:11.5px }
       .rd-portrow2:last-child { border-bottom:0 }
-      .rd-portrow2 .mono { font-family:ui-monospace,Consolas,monospace }
+      .rd-portrow2 .mono { font-family:var(--rd-term-font,ui-monospace,Consolas,monospace) }
       .rd-portempty { padding:14px 12px;font-size:11px;color:var(--dsw-alias-label-secondary,#8f959e) }
       .rd-portadd { display:flex;align-items:center;gap:8px;margin-top:12px;padding:10px 12px;border:1px dashed rgba(15,23,42,.18);border-radius:10px }
       .rd-origin { display:inline-flex;align-items:center;height:16px;padding:0 5px;border-radius:4px;background:rgba(15,23,42,.06);color:var(--dsw-alias-label-secondary,#8f959e);font-size:10px;flex:none }
@@ -1827,8 +1906,12 @@ window.__ModuleLoader__.load({
       const [sessionId, setSessionId] = React.useState('')
       const sessionRef = React.useRef('')
       const termRef = React.useRef(null)
+      const fitRef = React.useRef(null)
       const abortRef = React.useRef(null)
       const observerRef = React.useRef(null)
+      const settingsSnapshot = useSettingsSnapshot()
+      const appearance = (settingsSnapshot === null ? SETTINGS_FALLBACK : settingsSnapshot).terminal
+      const terminalFont = appearance.fontFamily.length > 0 ? appearance.fontFamily : FALLBACK_TERMINAL_FONT
 
       const cleanup = React.useCallback(() => {
         abortRef.current?.abort()
@@ -1840,6 +1923,7 @@ window.__ModuleLoader__.load({
         const id = sessionRef.current
         sessionRef.current = ''
         if (id) call('/terminals/' + id, { method: 'DELETE' }).catch(() => {})
+        fitRef.current = null
         const term = termRef.current
         termRef.current = null
         if (term) {
@@ -1851,6 +1935,23 @@ window.__ModuleLoader__.load({
         }
       }, [])
 
+      React.useEffect(() => {
+        const term = termRef.current
+        if (term === null || term === undefined || term.options === undefined) return
+        term.options.fontFamily = terminalFont
+        term.options.fontSize = appearance.fontSize
+        term.options.lineHeight = appearance.lineHeight
+        term.options.letterSpacing = appearance.letterSpacing
+        const fit = fitRef.current
+        if (fit !== null) {
+          try {
+            fit.fit()
+          } catch {
+            /* not measured yet */
+          }
+        }
+      }, [terminalFont, appearance.fontSize, appearance.lineHeight, appearance.letterSpacing])
+
       const open = React.useCallback(async () => {
         cleanup()
         setStatus('connecting')
@@ -1858,9 +1959,10 @@ window.__ModuleLoader__.load({
         const info = boot()
         if (!boxRef.current || !window.Terminal || info === null) return
         const term = new window.Terminal({
-          fontFamily: '"Cascadia Code", Consolas, ui-monospace, monospace',
-          fontSize: 12,
-          lineHeight: 1.35,
+          fontFamily: terminalFont,
+          fontSize: appearance.fontSize,
+          lineHeight: appearance.lineHeight,
+          letterSpacing: appearance.letterSpacing,
           cursorBlink: true,
           scrollback: 2000,
           theme: {
@@ -1871,6 +1973,7 @@ window.__ModuleLoader__.load({
           },
         })
         const fit = new window.FitAddon.FitAddon()
+        fitRef.current = fit
         term.loadAddon(fit)
         term.open(boxRef.current)
         try {
@@ -2314,6 +2417,7 @@ window.__ModuleLoader__.load({
       const root = workspace ? workspace.path : '/'
       const [ctx, setCtx] = React.useState(null)
       const menuRef = React.useRef(null)
+      const closeMenu = React.useCallback(() => setCtx(null), [])
       const upload = useDirectoryUpload()
       const archive = useArchiveDownload()
 
@@ -2376,28 +2480,7 @@ window.__ModuleLoader__.load({
         event.stopPropagation()
         setCtx({ x: Number(event.clientX) || 0, y: Number(event.clientY) || 0, entry })
       }
-      React.useEffect(() => {
-        if (ctx === null) return undefined
-        const onDown = (event) => {
-          const node = menuRef.current
-          if (node !== null && node.contains(event.target)) return
-          setCtx(null)
-        }
-        const onKey = (event) => {
-          if (event.key === 'Escape') setCtx(null)
-        }
-        const onLeave = () => setCtx(null)
-        document.addEventListener('mousedown', onDown)
-        document.addEventListener('keydown', onKey)
-        window.addEventListener('resize', onLeave)
-        window.addEventListener('scroll', onLeave, true)
-        return () => {
-          document.removeEventListener('mousedown', onDown)
-          document.removeEventListener('keydown', onKey)
-          window.removeEventListener('resize', onLeave)
-          window.removeEventListener('scroll', onLeave, true)
-        }
-      }, [ctx !== null])
+      useContextMenuDismiss(ctx !== null, closeMenu, menuRef)
       const openWorkspace = async (dir) => {
         try {
           await addRemoteWorkspace(host.id, dir, { notice: true })
@@ -2466,22 +2549,7 @@ window.__ModuleLoader__.load({
       const visible = entries.filter((entry) => entry.name.toLowerCase().includes(filter.toLowerCase()))
 
       const menuItems = menuItemsFor()
-      const menu = ctx === null ? null : h('div', {
-        className: 'rd-ctx',
-        ref: menuRef,
-        role: 'menu',
-        'aria-label': ctx.entry ? '条目操作' : '当前目录操作',
-        style: ctxMenuStyle(ctx.x, ctx.y, menuItems.length),
-        onContextMenu: (event) => event.preventDefault(),
-      }, menuItems.map((item) => h('button', {
-        key: item.key,
-        type: 'button',
-        role: 'menuitem',
-        className: 'rd-ctx-i',
-        disabled: item.disabled === true,
-        title: item.title,
-        onClick: item.disabled === true ? undefined : () => { setCtx(null); item.run() },
-      }, h(Icon, { name: item.icon, size: 13 }), item.label)))
+      const menu = contextMenuElement(ctx, menuRef, menuItems, closeMenu)
       return h('div', { className: 'rd-files', onContextMenu: openBlankMenu },
         h('div', { className: 'rd-fbar' },
           h('div', { className: 'rd-crumbs' },
@@ -2723,6 +2791,361 @@ window.__ModuleLoader__.load({
         failure.length > 0
           ? h('div', { className: 'rd-mon-err' }, '不可用 · ' + failure)
           : clock.length > 0 ? h('div', { className: 'rd-mon-foot' }, '更新于 ' + clock) : null,
+      )
+    }
+
+    // ----------------------------------------------------------------- settings
+    // One document for terminal appearance, monitoring and the transfer cap.
+    // The DSH settings page writes it; every surface reads this same cache, so
+    // a save reaches open terminals and running uploads without a reload.
+
+    const SETTINGS_FALLBACK = {
+      terminal: { fontFamily: '', fontSize: 12.5, lineHeight: 1.35, letterSpacing: 0 },
+      monitor: MONITOR_FALLBACK,
+      transfer: { limitBytes: 512 * 1024 * 1024 },
+    }
+
+    /** `value: null` is the "custom…" row; an empty value means the built-in font. */
+    const TERMINAL_FONT_PRESETS = [
+      { id: 'builtin', label: '系统默认（内置字体）', value: '' },
+      { id: 'jetbrains', label: 'JetBrains Mono', value: 'JetBrains Mono' },
+      { id: 'cascadia-mono', label: 'Cascadia Mono', value: 'Cascadia Mono' },
+      { id: 'cascadia-code', label: 'Cascadia Code', value: 'Cascadia Code' },
+      { id: 'fira-code', label: 'Fira Code', value: 'Fira Code' },
+      { id: 'maple-mono', label: 'Maple Mono', value: 'Maple Mono' },
+      { id: 'sarasa-mono-sc', label: 'Sarasa Mono SC', value: 'Sarasa Mono SC' },
+      { id: 'consolas', label: 'Consolas', value: 'Consolas' },
+      { id: 'menlo', label: 'Menlo', value: 'Menlo' },
+      { id: 'courier-new', label: 'Courier New', value: 'Courier New' },
+      { id: 'custom', label: '自定义…', value: null },
+    ]
+    const CUSTOM_FONT_ID = 'custom'
+    const FALLBACK_TERMINAL_FONT = '"Cascadia Code", Consolas, ui-monospace, monospace'
+    const FONT_SIZE_MIN = 9
+    const FONT_SIZE_MAX = 24
+    const FONT_SIZE_STEP = 0.5
+    const LINE_HEIGHT_MIN = 1
+    const LINE_HEIGHT_MAX = 2
+    const LETTER_SPACING_MIN = -0.5
+    const LETTER_SPACING_MAX = 2
+    const TRANSFER_LIMIT_MIN_MIB = 1
+    const TRANSFER_LIMIT_MAX_MIB = 8192
+    const DEFAULT_TRANSFER_LIMIT_MIB = 512
+
+    function sanitizeFontFamilyClient(value) {
+      if (typeof value !== 'string') return ''
+      return value
+        .replace(/[;{}<>"'\\`]/g, '')
+        .replace(/[\r\n\u2028\u2029]/g, '')
+        .replace(/[\u0000-\u001f\u007f]+/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim()
+        .slice(0, 200)
+        .trim()
+    }
+
+    function clampStep(value, min, max, step, fallback) {
+      const num = typeof value === 'number' ? value : Number(value)
+      if (!Number.isFinite(num)) return fallback
+      const rounded = Math.round(num / step) * step
+      return Math.min(max, Math.max(min, Math.round(rounded * 100) / 100))
+    }
+
+    function normalizeTerminalSettings(value, base) {
+      const source = value !== null && typeof value === 'object' ? value : {}
+      return {
+        fontFamily: source.fontFamily === undefined ? base.fontFamily : sanitizeFontFamilyClient(source.fontFamily),
+        fontSize: clampStep(source.fontSize, FONT_SIZE_MIN, FONT_SIZE_MAX, FONT_SIZE_STEP, base.fontSize),
+        lineHeight: clampStep(source.lineHeight, LINE_HEIGHT_MIN, LINE_HEIGHT_MAX, 0.05, base.lineHeight),
+        letterSpacing: clampStep(source.letterSpacing, LETTER_SPACING_MIN, LETTER_SPACING_MAX, 0.1, base.letterSpacing),
+      }
+    }
+
+    function normalizeTransferSettings(value, base) {
+      const source = value !== null && typeof value === 'object' ? value : {}
+      return {
+        limitBytes: clampInt(source.limitBytes, 1024 * 1024, 8 * 1024 * 1024 * 1024, base.limitBytes),
+      }
+    }
+
+    function normalizeSettingsDocument(raw) {
+      const source = raw !== null && typeof raw === 'object' ? raw : {}
+      return {
+        terminal: normalizeTerminalSettings(source.terminal, SETTINGS_FALLBACK.terminal),
+        monitor: normalizeMonitor(source.monitor),
+        transfer: normalizeTransferSettings(source.transfer, SETTINGS_FALLBACK.transfer),
+      }
+    }
+
+    const settingsStore = { value: null, loading: false, error: '', listeners: new Set() }
+
+    function emitSettings() {
+      for (const listener of settingsStore.listeners) listener()
+    }
+
+    function subscribeSettings(listener) {
+      settingsStore.listeners.add(listener)
+      return () => {
+        settingsStore.listeners.delete(listener)
+      }
+    }
+
+    /** `null` until GET /settings answers; callers fall back to SETTINGS_FALLBACK. */
+    function useSettingsSnapshot() {
+      return useSyncExternalStore(subscribeSettings, () => settingsStore.value)
+    }
+
+    /** The monospace stack for plain-text surfaces follows the terminal family. */
+    function applyTerminalAppearance(terminal) {
+      try {
+        const root = document.documentElement
+        if (root === null || root === undefined || root.style === undefined) return
+        if (typeof terminal.fontFamily === 'string' && terminal.fontFamily.length > 0) {
+          root.style.setProperty('--rd-term-font', terminal.fontFamily + ', ui-monospace, monospace')
+        } else {
+          root.style.removeProperty('--rd-term-font')
+        }
+      } catch {
+        /* not a page context */
+      }
+    }
+
+    async function loadSettings() {
+      if (settingsStore.loading) return
+      settingsStore.loading = true
+      try {
+        const body = await call('/settings', { timeoutMs: 10000 })
+        settingsStore.value = normalizeSettingsDocument(body ? body.config : null)
+        settingsStore.error = ''
+        applyTerminalAppearance(settingsStore.value.terminal)
+      } catch (failure) {
+        settingsStore.error = failure instanceof Error ? failure.message : String(failure)
+      }
+      settingsStore.loading = false
+      emitSettings()
+    }
+
+    async function saveSettings(patch) {
+      const body = await call('/settings', { method: 'POST', body: patch, timeoutMs: 10000 })
+      settingsStore.value = normalizeSettingsDocument(body ? body.config : patch)
+      applyTerminalAppearance(settingsStore.value.terminal)
+      emitSettings()
+      return settingsStore.value
+    }
+
+    /** The effective per-transfer cap, from the settings cache when it has one. */
+    function uploadLimitBytes() {
+      const settings = settingsStore.value
+      const value = settings !== null && settings.transfer !== undefined ? settings.transfer.limitBytes : 0
+      return typeof value === 'number' && Number.isFinite(value) && value > 0 ? value : SETTINGS_FALLBACK.transfer.limitBytes
+    }
+
+    function uploadLimitLabel(bytes) {
+      const value = typeof bytes === 'number' && Number.isFinite(bytes) && bytes > 0 ? bytes : SETTINGS_FALLBACK.transfer.limitBytes
+      if (value >= 1024 * 1024 * 1024) return Math.round((value / (1024 * 1024 * 1024)) * 10) / 10 + ' GB'
+      return Math.round(value / (1024 * 1024)) + ' MB'
+    }
+
+    /** Draft <- stored settings (the form edits seconds and MiB, not ms and bytes). */
+    function settingsDraft(settings) {
+      const terminal = settings.terminal
+      const presets = TERMINAL_FONT_PRESETS.filter((preset) => preset.value !== null)
+      const match = presets.find((preset) => preset.value === terminal.fontFamily)
+      return {
+        fontId: match === undefined ? CUSTOM_FONT_ID : match.id,
+        fontFamily: terminal.fontFamily,
+        fontSize: terminal.fontSize,
+        lineHeight: terminal.lineHeight,
+        letterSpacing: terminal.letterSpacing,
+        monitor: settings.monitor,
+        limitMiB: Math.round(settings.transfer.limitBytes / (1024 * 1024)),
+      }
+    }
+
+    /** Draft -> POST /settings body, clamped exactly like the host clamps it. */
+    function settingsPayload(draft) {
+      const monitor = draft.monitor === undefined || draft.monitor === null ? MONITOR_FALLBACK : draft.monitor
+      const intervalSec = clampInt(Math.round(monitor.intervalMs / 1000), 10, 300, 30)
+      return {
+        terminal: {
+          fontFamily: sanitizeFontFamilyClient(draft.fontFamily),
+          fontSize: clampStep(draft.fontSize, FONT_SIZE_MIN, FONT_SIZE_MAX, FONT_SIZE_STEP, SETTINGS_FALLBACK.terminal.fontSize),
+          lineHeight: clampStep(draft.lineHeight, LINE_HEIGHT_MIN, LINE_HEIGHT_MAX, 0.05, SETTINGS_FALLBACK.terminal.lineHeight),
+          letterSpacing: clampStep(draft.letterSpacing, LETTER_SPACING_MIN, LETTER_SPACING_MAX, 0.1, SETTINGS_FALLBACK.terminal.letterSpacing),
+        },
+        monitor: {
+          enabled: monitor.enabled !== false,
+          intervalMs: intervalSec * 1000,
+          cpu: { enabled: monitor.cpu.enabled !== false, threshold: clampInt(monitor.cpu.threshold, 1, 100, MONITOR_FALLBACK.cpu.threshold) },
+          mem: { enabled: monitor.mem.enabled !== false, threshold: clampInt(monitor.mem.threshold, 1, 100, MONITOR_FALLBACK.mem.threshold) },
+          disk: { enabled: monitor.disk.enabled !== false, threshold: clampInt(monitor.disk.threshold, 1, 100, MONITOR_FALLBACK.disk.threshold) },
+        },
+        transfer: {
+          limitBytes: clampInt(draft.limitMiB, TRANSFER_LIMIT_MIN_MIB, TRANSFER_LIMIT_MAX_MIB, DEFAULT_TRANSFER_LIMIT_MIB) * 1024 * 1024,
+        },
+      }
+    }
+
+    /** One labelled row of the settings form. */
+    function settingsRow(label, control, hint) {
+      return h('div', { className: 'rd-set-row' },
+        h('span', { className: 'lb' }, label),
+        hint ? h('span', { className: 'hint' }, hint) : null,
+        control,
+      )
+    }
+
+    function settingsNumber(field, value, min, max, step, onChange, disabled) {
+      return h('input', {
+        type: 'number',
+        min,
+        max,
+        step,
+        'data-field': field,
+        value: String(value),
+        disabled: disabled === true,
+        onChange: (event) => onChange(event.target.value),
+      })
+    }
+
+    /** Monitoring fields, controlled: the settings page owns the single save. */
+    function MonitorFields(props) {
+      const setting = props.value === undefined || props.value === null ? MONITOR_FALLBACK : props.value
+      const onChange = typeof props.onChange === 'function' ? props.onChange : () => {}
+      // Functional updates: two fields edited in one React batch must not
+      // overwrite each other.
+      const patch = (changes) => onChange((current) => ({ ...(current === undefined || current === null ? MONITOR_FALLBACK : current), ...changes }))
+      const patchSection = (key, changes) => onChange((current) => {
+        const base = current === undefined || current === null ? MONITOR_FALLBACK : current
+        return { ...base, [key]: { ...base[key], ...changes } }
+      })
+      const off = setting.enabled === false
+      return h('div', { className: 'rd-set-fields' },
+        h('div', { className: 'rd-set-row' },
+          h('input', {
+            type: 'checkbox',
+            'data-field': 'monitor.enabled',
+            checked: setting.enabled !== false,
+            onChange: (event) => patch({ enabled: event.target.checked }),
+          }),
+          h('span', { className: 'lb' }, '启用服务器状态监控'),
+        ),
+        settingsRow('刷新间隔（秒，10–300）',
+          settingsNumber('monitor.intervalSec', Math.round(setting.intervalMs / 1000), 10, 300, 10, (value) => {
+            const seconds = clampInt(value, 10, 300, 30)
+            patch({ intervalMs: seconds * 1000 })
+          }, off),
+        ),
+        MONITOR_SECTIONS.map((section) => h('div', { key: section.key, className: 'rd-set-row' },
+          h('input', {
+            type: 'checkbox',
+            'data-field': 'monitor.' + section.key + '.enabled',
+            checked: setting[section.key].enabled !== false,
+            disabled: off,
+            onChange: (event) => patchSection(section.key, { enabled: event.target.checked }),
+          }),
+          h('span', { className: 'lb' }, section.label + ' 告警阈值（1–100）'),
+          settingsNumber('monitor.' + section.key + '.threshold', setting[section.key].threshold, 1, 100, 1, (value) => {
+            patchSection(section.key, { threshold: clampInt(value, 1, 100, MONITOR_FALLBACK[section.key].threshold) })
+          }, off || setting[section.key].enabled === false),
+        )),
+      )
+    }
+
+    /** The plugin's own section of the DSH settings page. */
+    function RemoteDeckSettings() {
+      const snapshot = useSettingsSnapshot()
+      const settings = snapshot === null ? SETTINGS_FALLBACK : snapshot
+      const [draft, setDraft] = React.useState(() => settingsDraft(settings))
+      const [saving, setSaving] = React.useState(false)
+      const [hint, setHint] = React.useState('')
+      React.useEffect(() => {
+        setDraft(settingsDraft(settings))
+      }, [settings])
+      const patch = (changes) => setDraft((current) => ({ ...current, ...changes }))
+      const pickFont = (id) => {
+        const preset = TERMINAL_FONT_PRESETS.find((row) => row.id === id)
+        if (preset === undefined) return
+        if (preset.value === null) {
+          patch({ fontId: CUSTOM_FONT_ID })
+          return
+        }
+        patch({ fontId: preset.id, fontFamily: preset.value })
+      }
+      const previewStyle = {
+        fontFamily: draft.fontFamily.length > 0 ? draft.fontFamily : FALLBACK_TERMINAL_FONT,
+        fontSize: clampStep(draft.fontSize, FONT_SIZE_MIN, FONT_SIZE_MAX, FONT_SIZE_STEP, SETTINGS_FALLBACK.terminal.fontSize) + 'px',
+        lineHeight: String(clampStep(draft.lineHeight, LINE_HEIGHT_MIN, LINE_HEIGHT_MAX, 0.05, SETTINGS_FALLBACK.terminal.lineHeight)),
+        letterSpacing: clampStep(draft.letterSpacing, LETTER_SPACING_MIN, LETTER_SPACING_MAX, 0.1, SETTINGS_FALLBACK.terminal.letterSpacing) + 'px',
+      }
+      const save = async () => {
+        setSaving(true)
+        setHint('')
+        try {
+          await saveSettings(settingsPayload(draft))
+          pushNotice('设置已保存')
+        } catch (failure) {
+          pushToast(failure)
+          setHint('保存失败，已保留当前值')
+        }
+        setSaving(false)
+      }
+      const reset = () => setDraft(settingsDraft(SETTINGS_FALLBACK))
+      return h('div', { className: 'rd-set' },
+        h('div', { className: 'rd-set-group' },
+          h('div', { className: 'rd-set-title' }, '终端外观'),
+          settingsRow('字体族',
+            h('div', { className: 'rd-set-font' },
+              h('select', {
+                'data-field': 'terminal.fontId',
+                value: draft.fontId,
+                onChange: (event) => pickFont(event.target.value),
+              }, TERMINAL_FONT_PRESETS.map((preset) => h('option', { key: preset.id, value: preset.id }, preset.label))),
+              draft.fontId === CUSTOM_FONT_ID
+                ? h('input', {
+                  type: 'text',
+                  className: 'rd-set-text',
+                  'data-field': 'terminal.fontFamily',
+                  placeholder: '例如 JetBrains Mono, Consolas, monospace',
+                  value: draft.fontFamily,
+                  onChange: (event) => patch({ fontFamily: event.target.value }),
+                })
+                : null,
+            ),
+          ),
+          settingsRow('字号（9–24）',
+            settingsNumber('terminal.fontSize', draft.fontSize, FONT_SIZE_MIN, FONT_SIZE_MAX, FONT_SIZE_STEP, (value) => patch({ fontSize: value })),
+          ),
+          settingsRow('行高（1.0–2.0）',
+            settingsNumber('terminal.lineHeight', draft.lineHeight, LINE_HEIGHT_MIN, LINE_HEIGHT_MAX, 0.05, (value) => patch({ lineHeight: value })),
+          ),
+          settingsRow('字距（−0.5–2）',
+            settingsNumber('terminal.letterSpacing', draft.letterSpacing, LETTER_SPACING_MIN, LETTER_SPACING_MAX, 0.1, (value) => patch({ letterSpacing: value })),
+          ),
+          h('div', { className: 'rd-set-preview', style: previewStyle, 'data-field': 'terminal.preview' }, 'zzs@ws:~$ ls -la'),
+        ),
+        h('div', { className: 'rd-set-group' },
+          h('div', { className: 'rd-set-title' }, '监控'),
+          h(MonitorFields, {
+            value: draft.monitor,
+            onChange: (updater) => setDraft((current) => ({
+              ...current,
+              monitor: typeof updater === 'function' ? updater(current.monitor) : updater,
+            })),
+          }),
+        ),
+        h('div', { className: 'rd-set-group' },
+          h('div', { className: 'rd-set-title' }, '传输'),
+          settingsRow('单次上限（MiB，1–8192）',
+            settingsNumber('transfer.limitMiB', draft.limitMiB, TRANSFER_LIMIT_MIN_MIB, TRANSFER_LIMIT_MAX_MIB, 1, (value) => patch({ limitMiB: value })),
+            '上传与目录打包都受此限制',
+          ),
+        ),
+        hint.length > 0 ? h('div', { className: 'rd-mon-err' }, hint) : null,
+        h('div', { className: 'rd-set-actions' },
+          h('button', { className: 'rd-btn primary', type: 'button', disabled: saving, onClick: () => { void save() } }, saving ? '保存中…' : '保存'),
+          h('button', { className: 'rd-btn', type: 'button', disabled: saving, onClick: reset }, '恢复默认'),
+        ),
       )
     }
 
@@ -3018,32 +3441,15 @@ window.__ModuleLoader__.load({
      * open and cached for every later one.
      */
     function useMonitor(remote, active) {
-      const [config, setConfig] = React.useState(null)
+      // The monitoring section lives in the DSH settings page now; the pill keeps
+      // showing status, and reads the same cached document the settings form saves.
+      const snapshot = useSettingsSnapshot()
+      const config = snapshot === null ? SETTINGS_FALLBACK.monitor : snapshot.monitor
       const [sample, setSample] = React.useState(null)
       const [failure, setFailure] = React.useState('')
       const [loading, setLoading] = React.useState(false)
-      const [token, setToken] = React.useState(0)
-      const configRef = React.useRef(null)
       const connectionId = remote ? String(remote.connectionId || '') : ''
       const dir = remote ? String(remote.path || '') : ''
-
-      React.useEffect(() => {
-        if (!active || connectionId === '' || configRef.current !== null) return undefined
-        let closed = false
-        void (async () => {
-          let next
-          try {
-            const body = await call('/monitor', { timeoutMs: 10000 })
-            next = normalizeMonitor(body ? body.config : null)
-          } catch {
-            next = normalizeMonitor(null)
-          }
-          if (closed) return
-          configRef.current = next
-          setConfig(next)
-        })()
-        return () => { closed = true }
-      }, [active, connectionId])
 
       // Another session may sit on another connection, or another folder whose
       // disk is a different storage body.
@@ -3052,8 +3458,8 @@ window.__ModuleLoader__.load({
         setFailure('')
       }, [connectionId, dir])
 
-      const live = config !== null && config.enabled !== false
-      const intervalMs = config === null ? 0 : config.intervalMs
+      const live = config.enabled !== false
+      const intervalMs = config.intervalMs
 
       React.useEffect(() => {
         if (!active || connectionId === '' || !live) return undefined
@@ -3089,18 +3495,9 @@ window.__ModuleLoader__.load({
           seq += 1
           clearInterval(timer)
         }
-      }, [active, connectionId, dir, live, intervalMs, token])
+      }, [active, connectionId, dir, live, intervalMs])
 
-      // Called after a successful save: the new thresholds apply to the sample
-      // already on screen, and the token re-runs the effect for a fresh one.
-      const applyConfig = React.useCallback((raw) => {
-        const next = normalizeMonitor(raw)
-        configRef.current = next
-        setConfig(next)
-        setToken((value) => value + 1)
-      }, [])
-
-      return { config, sample, failure, loading, applyConfig }
+      return { config, sample, failure, loading }
     }
 
     function SessionBadge({ sessionId }) {
@@ -3233,9 +3630,6 @@ window.__ModuleLoader__.load({
 
     // ---------------------------------------------------------------- files tab transfer
 
-    const UPLOAD_LIMIT_BYTES = 512 * 1024 * 1024
-    const UPLOAD_LIMIT_LABEL = '512MB'
-
     const NO_WORKSPACE_ROWS = []
 
     function useFilesTarget(props) {
@@ -3321,25 +3715,26 @@ window.__ModuleLoader__.load({
     }
 
     /** Directory archive direct link; the host streams a tar.gz. */
-    function startArchiveDownload(connectionId, dir, name) {
+    function startArchiveDownload(connectionId, dir, name, options) {
       const info = boot()
       if (info === null) return false
-      const file = typeof name === 'string' && name.length > 0 ? name : baseNameOf(dir) || 'download'
-      startAnchorDownload(
-        apiBase() + '/connections/' + encodeURIComponent(connectionId) + '/archive?path=' + encodeURIComponent(dir) + '&token=' + encodeURIComponent(info.token),
-        file + '.tar.gz',
-      )
+      const file = (typeof name === 'string' && name.length > 0 ? name : baseNameOf(dir) || 'download') + '.tar.gz'
+      const url = apiBase() + '/connections/' + encodeURIComponent(connectionId) + '/archive?path=' + encodeURIComponent(dir) + '&token=' + encodeURIComponent(info.token)
+      const tasks = options === undefined || options === null ? undefined : options.tasks
+      if (tasks !== undefined && tasks !== null) tasks.download(url, file, dir)
+      else startAnchorDownload(url, file)
       return true
     }
 
-    /** Single file direct link. */
-    function startFileDownload(connectionId, path, name) {
+    /** Single file direct link, or a streamed download when a task row owns it. */
+    function startFileDownload(connectionId, path, name, options) {
       const info = boot()
       if (info === null) return false
-      startAnchorDownload(
-        apiBase() + '/connections/' + encodeURIComponent(connectionId) + '/download?path=' + encodeURIComponent(path) + '&token=' + encodeURIComponent(info.token),
-        typeof name === 'string' && name.length > 0 ? name : baseNameOf(path),
-      )
+      const file = typeof name === 'string' && name.length > 0 ? name : baseNameOf(path)
+      const url = apiBase() + '/connections/' + encodeURIComponent(connectionId) + '/download?path=' + encodeURIComponent(path) + '&token=' + encodeURIComponent(info.token)
+      const tasks = options === undefined || options === null ? undefined : options.tasks
+      if (tasks !== undefined && tasks !== null) tasks.download(url, file, path)
+      else startAnchorDownload(url, file)
       return true
     }
 
@@ -3368,7 +3763,7 @@ window.__ModuleLoader__.load({
      * Directory download state machine: pre-flight scan, optional confirmation,
      * then the archive direct link. `run({ connectionId, path, name })`.
      */
-    function useArchiveDownload() {
+    function useArchiveDownload(tasks) {
       const [busy, setBusy] = React.useState(false)
       const [note, setNote] = React.useState('')
       const [prompt, setPrompt] = React.useState(null)
@@ -3425,7 +3820,7 @@ window.__ModuleLoader__.load({
           setBusy(false)
           if (scan === null || typeof scan !== 'object' || scan.ok === false) {
             flash('预检失败，已直接开始打包', 2500)
-            startArchiveDownload(connectionId, dir, target.name)
+            startArchiveDownload(connectionId, dir, target.name, { tasks })
             return
           }
           if (scanNeedsConfirm(scan)) {
@@ -3446,7 +3841,7 @@ window.__ModuleLoader__.load({
             }
           }
           flash('已开始打包', 1500)
-          startArchiveDownload(connectionId, dir, target.name)
+          startArchiveDownload(connectionId, dir, target.name, { tasks })
         } finally {
           runRef.current = false
         }
@@ -3459,7 +3854,7 @@ window.__ModuleLoader__.load({
      * upload one by one, and ask on every failure. `pick({ connectionId, path })`
      * opens the shared file input; `onFiles` is that input's change handler.
      */
-    function useDirectoryUpload() {
+    function useDirectoryUpload(tasks) {
       const inputRef = React.useRef(null)
       const [busy, setBusy] = React.useState(false)
       const [note, setNote] = React.useState('')
@@ -3467,6 +3862,8 @@ window.__ModuleLoader__.load({
       const decisionRef = React.useRef(null)
       const batchRef = React.useRef(false)
       const targetRef = React.useRef(null)
+      // No task strip (the console file page) still uploads; the sink is a no-op there.
+      const sink = tasks === undefined || tasks === null ? NO_TASKS : tasks
       React.useEffect(() => {
         if (note.length === 0) return undefined
         const timer = setTimeout(() => setNote(''), 6000)
@@ -3503,27 +3900,53 @@ window.__ModuleLoader__.load({
         setPrompt(null)
         if (resolve !== null) resolve(choice)
       }
-      const send = async (connectionId, dir, file, name) => {
+      const send = (connectionId, dir, file, name, taskId) => new Promise((resolve) => {
         const info = boot()
-        if (info === null) return { ok: false, message: 'remote-deck is not active yet; restart DSH' }
-        const url = apiBase() + '/connections/' + encodeURIComponent(connectionId) + '/upload?path=' + encodeURIComponent(dir) + '&name=' + encodeURIComponent(name)
-        try {
-          const response = await fetch(url, {
-            method: 'POST',
-            headers: { 'x-dsh-remote-token': info.token, 'content-type': 'application/octet-stream' },
-            body: file,
-          })
-          const payload = await response.json().catch(() => null)
-          if (response.ok && payload !== null && payload.ok !== false) return { ok: true, message: '' }
-          const code = payload && payload.code ? payload.code : ''
-          const message = payload && payload.message ? payload.message : 'HTTP ' + response.status
-          if (code === 'TRANSFER_TOO_LARGE') return { ok: false, message: '「' + name + '」超过远端 ' + UPLOAD_LIMIT_LABEL + ' 上限，未上传。' }
-          return { ok: false, message: code.length > 0 ? code + '：' + message : message }
-        } catch (failure) {
-          const message = failure instanceof Error ? failure.message : String(failure || '')
-          return { ok: false, message: message.length > 0 ? message : '网络中断，上传失败。' }
+        if (info === null) {
+          resolve({ ok: false, message: 'remote-deck is not active yet; restart DSH' })
+          return
         }
-      }
+        const url = apiBase() + '/connections/' + encodeURIComponent(connectionId) + '/upload?path=' + encodeURIComponent(dir) + '&name=' + encodeURIComponent(name)
+        const xhr = new XMLHttpRequest()
+        let settled = false
+        const settle = (result) => {
+          if (settled) return
+          settled = true
+          resolve(result)
+        }
+        xhr.open('POST', url)
+        xhr.setRequestHeader('x-dsh-remote-token', info.token)
+        xhr.setRequestHeader('content-type', 'application/octet-stream')
+        xhr.responseType = 'text'
+        if (taskId !== '' && xhr.upload !== undefined && xhr.upload !== null) {
+          xhr.upload.onprogress = (event) => {
+            if (event && event.lengthComputable === true) sink.progress(taskId, event.loaded, event.total)
+          }
+        }
+        xhr.onload = () => {
+          let payload = null
+          try {
+            payload = JSON.parse(xhr.responseText)
+          } catch {
+            payload = null
+          }
+          if (xhr.status >= 200 && xhr.status < 300 && payload !== null && payload.ok !== false) {
+            settle({ ok: true, message: '' })
+            return
+          }
+          const code = payload && payload.code ? payload.code : ''
+          const message = payload && payload.message ? payload.message : 'HTTP ' + xhr.status
+          if (code === 'TRANSFER_TOO_LARGE') {
+            settle({ ok: false, message: '「' + name + '」超过远端 ' + uploadLimitLabel(uploadLimitBytes()) + ' 上限，未上传。' })
+            return
+          }
+          settle({ ok: false, message: code.length > 0 ? code + '：' + message : message })
+        }
+        xhr.onerror = () => settle({ ok: false, message: '网络中断，上传失败。' })
+        xhr.onabort = () => settle({ ok: false, cancelled: true, message: '已取消' })
+        if (taskId !== '') sink.bind(taskId, xhr)
+        xhr.send(file)
+      })
       const runBatch = async (connectionId, dir, list) => {
         setBusy(true)
         setNote('上传中 0/' + list.length)
@@ -3540,14 +3963,23 @@ window.__ModuleLoader__.load({
             setNote('上传中 ' + (done + failed + skipped) + '/' + list.length)
             continue
           }
-          const result = file && typeof file.size === 'number' && file.size > UPLOAD_LIMIT_BYTES
-            ? { ok: false, message: '「' + name + '」超过 ' + UPLOAD_LIMIT_LABEL + ' 上限，未上传。' }
-            : await send(connectionId, dir, file, name)
+          const taskId = sink.begin('upload', name, dir + '/' + name, file && typeof file.size === 'number' ? file.size : 0)
+          const limit = uploadLimitBytes()
+          const result = file && typeof file.size === 'number' && file.size > limit
+            ? { ok: false, message: '「' + name + '」超过 ' + uploadLimitLabel(limit) + ' 上限，未上传。' }
+            : await send(connectionId, dir, file, name, taskId)
           if (result.ok) {
+            sink.done(taskId)
             done += 1
             setNote('上传中 ' + (done + failed + skipped) + '/' + list.length)
             continue
           }
+          if (result.cancelled === true) {
+            sink.cancelled(taskId)
+            stopped = true
+            break
+          }
+          sink.fail(taskId, result.message)
           failed += 1
           const choice = await ask({
             kind: 'upload',
@@ -3592,43 +4024,572 @@ window.__ModuleLoader__.load({
       return { busy, note, prompt, decide, pick, onFiles, inputRef }
     }
 
-    function DirDownloadAction(props) {
-      const found = useFilesTarget(props)
-      const connectionId = found === null ? '' : found.remote.connectionId
-      const dir = found === null ? '' : found.target
-      const download = useArchiveDownload()
-      if (found === null) return null
-      if (boot() === null) return null
-      return h('span', { className: 'rd-dl-wrap rd-tf-wrap' },
-        h('button', {
-          type: 'button',
-          className: 'rd-dl',
-          disabled: download.busy,
-          title: download.busy ? '正在扫描目录…' : '下载此目录（tar.gz）：' + dir,
-          'aria-label': '下载此目录（tar.gz）',
-          onClick: () => void download.run({ connectionId, path: dir }),
-        }, h(Icon, { name: 'download', size: 16 })),
-        download.note.length > 0 ? h('span', { className: 'rd-tf-note' }, download.note) : null,
-        download.prompt === null ? null : transferDialog(download.prompt, download.decide),
+    // --------------------------------------------------- remote files sidebar
+    // Our own right-sidebar page, so the remote POSIX path, the context menu
+    // (including delete) and the task strip all live in one place instead of
+    // being bolted onto DSH's built-in workspace files tab.
+
+    const REMOTE_FILES_ID = 'remote-deck-files'
+    const REMOTE_FILES_KIND = 'remote-deck-files'
+    const TASK_KEEP_DONE_MS = 4000
+    const TASK_MAX_ROWS = 6
+    const STREAM_DOWNLOAD_MAX_BYTES = 512 * 1024 * 1024
+
+    /** A transfer without a task strip (the console file page) still runs. */
+    const NO_TASKS = {
+      begin: () => '',
+      progress: () => {},
+      bind: () => {},
+      done: () => {},
+      fail: () => {},
+      cancelled: () => {},
+    }
+
+    /** The cursor menu, shared by every file surface that opens one. */
+    function contextMenuElement(menu, menuRef, items, close) {
+      if (menu === null) return null
+      return h('div', {
+        className: 'rd-ctx',
+        ref: menuRef,
+        role: 'menu',
+        style: ctxMenuStyle(menu.x, menu.y, items.length),
+        onContextMenu: (event) => event.preventDefault(),
+      }, items.map((item) => h('button', {
+        key: item.key,
+        type: 'button',
+        role: 'menuitem',
+        className: 'rd-ctx-i' + (item.danger === true ? ' danger' : ''),
+        disabled: item.disabled === true,
+        title: item.title,
+        onClick: item.disabled === true ? undefined : () => { close(); item.run() },
+      }, h(Icon, { name: item.icon, size: 13 }), item.label)))
+    }
+
+    /** Outside click, Esc and scrolling all dismiss the cursor menu. */
+    function useContextMenuDismiss(open, close, menuRef) {
+      React.useEffect(() => {
+        if (!open) return undefined
+        const onDown = (event) => {
+          const node = menuRef.current
+          if (node !== null && node.contains(event.target)) return
+          close()
+        }
+        const onKey = (event) => {
+          if (event.key === 'Escape') close()
+        }
+        const onLeave = () => close()
+        document.addEventListener('mousedown', onDown)
+        document.addEventListener('keydown', onKey)
+        window.addEventListener('resize', onLeave)
+        window.addEventListener('scroll', onLeave, true)
+        return () => {
+          document.removeEventListener('mousedown', onDown)
+          document.removeEventListener('keydown', onKey)
+          window.removeEventListener('resize', onLeave)
+          window.removeEventListener('scroll', onLeave, true)
+        }
+      }, [open, close, menuRef])
+    }
+
+    function taskIconName(kind) {
+      if (kind === 'upload') return 'upload'
+      if (kind === 'delete') return 'trash'
+      return 'download'
+    }
+
+    function taskKindLabel(kind) {
+      if (kind === 'upload') return '上传'
+      if (kind === 'delete') return '删除'
+      return '下载'
+    }
+
+    function taskStatusText(task) {
+      if (task.status === 'failed') return '失败'
+      if (task.status === 'cancelled') return '已取消'
+      if (task.status === 'done') return '已完成'
+      return '进行中'
+    }
+
+    function taskPercent(task) {
+      if (task.total > 0) return Math.min(100, Math.round((task.sent / task.total) * 100))
+      return task.status === 'done' ? 100 : 0
+    }
+
+    /**
+     * Stream one direct link into a Blob so the row can show bytes received and
+     * cancel. Without a readable body — or for a body too large to buffer — the
+     * plain anchor download takes over and the row says so.
+     */
+    async function streamDownload(url, name, onProgress, controller) {
+      const response = await fetch(url, controller === null ? {} : { signal: controller.signal })
+      if (!response.ok) throw new Error('HTTP ' + response.status)
+      const header = response.headers !== undefined && response.headers !== null && typeof response.headers.get === 'function'
+        ? response.headers.get('content-length')
+        : null
+      const total = countOf(Number(header))
+      const body = response.body
+      if (body === undefined || body === null || typeof body.getReader !== 'function' || total > STREAM_DOWNLOAD_MAX_BYTES) {
+        if (total > STREAM_DOWNLOAD_MAX_BYTES && controller !== null) controller.abort()
+        startAnchorDownload(url, name)
+        return { handedOff: true }
+      }
+      const reader = body.getReader()
+      const chunks = []
+      let received = 0
+      for (;;) {
+        const step = await reader.read()
+        if (step.done === true) break
+        if (step.value === undefined || step.value === null) continue
+        chunks.push(step.value)
+        received += step.value.length
+        if (typeof onProgress === 'function') onProgress(received, total)
+      }
+      const objectUrl = URL.createObjectURL(new Blob(chunks, { type: 'application/octet-stream' }))
+      startAnchorDownload(objectUrl, name)
+      setTimeout(() => {
+        try {
+          URL.revokeObjectURL(objectUrl)
+        } catch {
+          /* already released */
+        }
+      }, 30000)
+      return { bytes: received }
+    }
+
+    /**
+     * The task strip under the remote file list: one row per running transfer,
+     * cancellable through the controller that transfer binds to it. A finished
+     * row fades out, a failed row stays with its reason.
+     */
+    function useTransferTasks() {
+      const [tasks, setTasks] = React.useState([])
+      const box = React.useRef({ seq: 0, controllers: new Map(), timers: new Map() })
+      React.useEffect(() => () => {
+        for (const timer of box.current.timers.values()) clearTimeout(timer)
+        box.current.timers.clear()
+        for (const controller of box.current.controllers.values()) {
+          try {
+            controller.abort()
+          } catch {
+            /* already gone */
+          }
+        }
+        box.current.controllers.clear()
+      }, [])
+      const patch = React.useCallback((id, changes) => {
+        setTasks((list) => list.map((task) => (task.id === id ? { ...task, ...changes } : task)))
+      }, [])
+      const drop = React.useCallback((id) => {
+        setTasks((list) => list.filter((task) => task.id !== id))
+      }, [])
+      const begin = React.useCallback((kind, name, path, total) => {
+        box.current.seq += 1
+        const id = 'rd-task-' + box.current.seq
+        setTasks((list) => [...list, {
+          id, kind, name, path, sent: 0, total: countOf(total), status: 'running', error: '',
+        }].slice(-TASK_MAX_ROWS))
+        return id
+      }, [])
+      const progress = React.useCallback((id, sent, total) => {
+        if (id === '') return
+        patch(id, { sent: countOf(sent), total: countOf(total) })
+      }, [patch])
+      const bind = React.useCallback((id, controller) => {
+        if (id === '') return
+        box.current.controllers.set(id, controller)
+      }, [])
+      const settle = React.useCallback((id, status, extra) => {
+        if (id === '') return
+        box.current.controllers.delete(id)
+        patch(id, { status, ...(extra || {}) })
+        if (status !== 'done') return
+        const timer = setTimeout(() => {
+          box.current.timers.delete(id)
+          drop(id)
+        }, TASK_KEEP_DONE_MS)
+        box.current.timers.set(id, timer)
+      }, [patch, drop])
+      const done = React.useCallback((id, extra) => settle(id, 'done', extra), [settle])
+      const fail = React.useCallback((id, message) => settle(id, 'failed', { error: message }), [settle])
+      const cancelled = React.useCallback((id) => settle(id, 'cancelled', { error: '' }), [settle])
+      const cancel = React.useCallback((id) => {
+        const controller = box.current.controllers.get(id)
+        box.current.controllers.delete(id)
+        patch(id, { status: 'cancelled', error: '' })
+        if (controller === undefined) return
+        try {
+          controller.abort()
+        } catch {
+          /* already gone */
+        }
+      }, [patch])
+      const download = React.useCallback((url, name, path) => {
+        const id = begin('download', name, path || '', 0)
+        const controller = typeof AbortController === 'function' ? new AbortController() : null
+        if (controller !== null) bind(id, controller)
+        void (async () => {
+          try {
+            const result = await streamDownload(url, name, (sent, total) => progress(id, sent, total), controller)
+            done(id, result && result.handedOff === true ? { error: '' } : {})
+          } catch (failure) {
+            if (controller !== null && controller.signal.aborted) {
+              cancelled(id)
+              return
+            }
+            fail(id, failure instanceof Error ? failure.message : String(failure))
+          }
+        })()
+        return id
+      }, [begin, bind, done, cancelled, fail, progress])
+      return { tasks, begin, progress, bind, done, fail, cancelled, cancel, drop, download }
+    }
+
+    /** POST /connections/<id>/delete; a partial failure keeps the host's count. */
+    async function deleteRemoteEntry(connectionId, path, controller) {
+      const info = boot()
+      if (info === null) throw new Error('remote-deck is not active yet; restart DSH')
+      const payload = path === '/' || path === '' ? { path, force: true } : { path }
+      const response = await fetch(apiBase() + '/connections/' + encodeURIComponent(connectionId) + '/delete', {
+        method: 'POST',
+        headers: { 'x-dsh-remote-token': info.token, 'content-type': 'application/json' },
+        body: JSON.stringify(payload),
+        ...(controller === null ? {} : { signal: controller.signal }),
+      })
+      const body = await response.json().catch(() => null)
+      const deleted = body !== null && body.deleted !== undefined && body.deleted !== null ? body.deleted : null
+      if (response.ok && body !== null && body.ok !== false) return deleted || { files: 0, dirs: 0, bytes: 0 }
+      const reason = body !== null && (body.error || body.message) ? (body.error || body.message) : 'HTTP ' + response.status
+      const partial = deleted === null
+        ? ''
+        : '（已删除 ' + countOf(deleted.files) + ' 个文件、' + countOf(deleted.dirs) + ' 个目录）'
+      throw new Error(reason + partial)
+    }
+
+    /**
+     * The right-sidebar body. It owns breadcrumbs, the context menu, the delete
+     * confirmation and the task strip; transfers come from the shared hooks so
+     * the console file page and this page cannot drift apart.
+     */
+    // ------------------------------------------------------- guide card shadow
+    // The "工作区文件" guide card is DSH's own; since our page reads remote POSIX
+    // paths, a remote session should land there instead. A keyed registration at
+    // a lower priority shadows the built-in card, and the card itself picks the
+    // page per session.
+
+    const FILES_GUIDE_KEY = '@deepseek-ai/dsh-client-ui-sidebar-files'
+    const FILES_TAB_KIND = 'files'
+    const FILES_SHORTCUT_ID = 'workspace.files'
+
+    /** DSH's key caps component, when the primitives package is reachable. */
+    function loadShortcutKeys() {
+      try {
+        const primitives = require('@deepseek-ai/dsh-client-ui-primitives')
+        if (primitives !== null && primitives !== undefined && typeof primitives.ShortcutKeys === 'function') return primitives.ShortcutKeys
+      } catch {
+        /* primitives are optional for this card */
+      }
+      return null
+    }
+
+    const ShortcutKeys = loadShortcutKeys()
+
+    /** One capsule of the right-sidebar guide, for the workspace files type. */
+    function FilesOrRemoteCard(props) {
+      const owner = props === undefined || props === null ? {} : props
+      const useTabInfo = typeof owner.useTabInfo === 'function' ? owner.useTabInfo : null
+      const info = useTabInfo === null ? null : useTabInfo()
+      const tab = info !== null && info !== undefined && info.tab !== undefined && info.tab !== null ? info.tab : null
+      const sessionId = typeof owner.cardSessionId === 'string' ? owner.cardSessionId : ''
+      const remote = useRemote(sessionId)
+      const catalog = typeof owner.useShortcuts === 'function' ? owner.useShortcuts() : null
+      const title = typeof owner.title === 'string' && owner.title.length > 0 ? owner.title : '文件'
+      const description = typeof owner.description === 'string' ? owner.description : ''
+      const shortcut = Array.isArray(catalog) ? catalog.find((row) => row !== null && row !== undefined && row.id === FILES_SHORTCUT_ID) : undefined
+      const open = () => {
+        if (tab === null || tab.actions === undefined || tab.actions === null) return
+        if (typeof tab.actions.openTab !== 'function') return
+        tab.actions.openTab(remote !== null ? REMOTE_FILES_ID : FILES_TAB_KIND, { replaceTab: true })
+        // The reveal leaves the guide open; the guide's own cards close it too.
+        if (typeof tab.actions.close === 'function') tab.actions.close()
+      }
+      return h('button', {
+        type: 'button',
+        className: 'rd-gcard',
+        'data-sidebar-right-guide-entry': typeof owner.kind === 'string' && owner.kind.length > 0 ? owner.kind : FILES_TAB_KIND,
+        title: remote !== null ? title + ' · ' + remote.host : title,
+        onClick: open,
+      },
+        h('span', { className: 'rd-gcard-icon' },
+          h(Icon, { name: 'folder', size: description.length > 0 ? 24 : 22 }),
+          remote !== null ? h('i', { className: 'rd-gcard-tag' }, '远') : null,
+        ),
+        h('span', { className: 'rd-gcard-text' },
+          h('span', { className: 'rd-gcard-title' }, title),
+          description.length > 0 ? h('span', { className: 'rd-gcard-desc' }, description) : null,
+        ),
+        shortcut !== undefined && ShortcutKeys !== null
+          ? h(ShortcutKeys, { keys: shortcut.keys, className: 'rd-gcard-keys' })
+          : null,
       )
     }
 
-    function DirUploadAction(props) {
-      const found = useFilesTarget(props)
-      const connectionId = found === null ? '' : found.remote.connectionId
-      const dir = found === null ? '' : found.target
-      const upload = useDirectoryUpload()
-      if (found === null) return null
-      if (boot() === null) return null
-      return h('span', { className: 'rd-dl-wrap rd-tf-wrap' },
-        h('button', {
-          type: 'button',
-          className: 'rd-dl',
-          disabled: upload.busy,
-          title: upload.busy ? '正在上传…' : '上传到此处：' + dir,
-          'aria-label': '上传到此处',
-          onClick: () => upload.pick({ connectionId, path: dir }),
-        }, h(Icon, { name: 'upload', size: 16 })),
+    function RemoteFilesBody(props) {
+      const sessionId = props && typeof props.sessionId === 'string' ? props.sessionId : ''
+      const remote = useRemote(sessionId)
+      const connectionId = remote === null ? '' : String(remote.connectionId || '')
+      const rootPath = remote === null ? '' : String(remote.path || '')
+      const stateWorkspaces = (store.state && store.state.workspaces) || []
+      const [path, setPath] = React.useState('')
+      const [entries, setEntries] = React.useState([])
+      const [loading, setLoading] = React.useState(false)
+      const [error, setError] = React.useState('')
+      const [selected, setSelected] = React.useState('')
+      const [menu, setMenu] = React.useState(null)
+      const [confirming, setConfirming] = React.useState(null)
+      const menuRef = React.useRef(null)
+      const closeMenu = React.useCallback(() => setMenu(null), [])
+      const tasks = useTransferTasks()
+      const upload = useDirectoryUpload(tasks)
+      const archive = useArchiveDownload(tasks)
+      useContextMenuDismiss(menu !== null, closeMenu, menuRef)
+
+      const load = React.useCallback(async (dir) => {
+        if (connectionId === '') return
+        setLoading(true)
+        setError('')
+        try {
+          const data = await call('/connections/' + encodeURIComponent(connectionId) + '/files?path=' + encodeURIComponent(dir))
+          setPath(typeof data.path === 'string' ? data.path : dir)
+          setEntries(Array.isArray(data.entries) ? data.entries : [])
+          setSelected('')
+        } catch (failure) {
+          setError(failure instanceof Error ? failure.message : String(failure))
+        } finally {
+          setLoading(false)
+        }
+      }, [connectionId])
+
+      React.useEffect(() => {
+        setPath('')
+        setEntries([])
+        setError('')
+        if (connectionId === '' || rootPath === '') return
+        void load(rootPath)
+      }, [connectionId, rootPath])
+
+      React.useEffect(() => {
+        if (confirming === null) return undefined
+        const onKey = (event) => {
+          if (event.key === 'Escape') setConfirming(null)
+        }
+        document.addEventListener('keydown', onKey)
+        return () => document.removeEventListener('keydown', onKey)
+      }, [confirming !== null])
+
+      if (remote === null) {
+        return h('div', { className: 'rd-rfiles' },
+          h('div', { className: 'rd-rfiles-empty' },
+            h('div', { className: 'nm' }, '此会话不在远端工作区'),
+            h('span', { className: 'sub' }, '这个页面只浏览远端文件；在远程工作区的会话里打开它。')))
+      }
+
+      const currentDir = path || rootPath
+      const host = ((store.state && store.state.connections) || []).find((row) => row.id === connectionId)
+      const status = host ? host.status : 'disconnected'
+      const crumbs = [{ label: '/', value: '/' }]
+      let walked = ''
+      for (const part of currentDir.split('/').filter(Boolean)) {
+        walked += '/' + part
+        crumbs.push({ label: part, value: walked })
+      }
+      const visible = entries
+
+      const openEntryMenu = (event, entry) => {
+        event.preventDefault()
+        event.stopPropagation()
+        setSelected(entry.path)
+        setMenu({ x: Number(event.clientX) || 0, y: Number(event.clientY) || 0, entry })
+      }
+      const openBlankMenu = (event) => {
+        event.preventDefault()
+        setMenu({ x: Number(event.clientX) || 0, y: Number(event.clientY) || 0, entry: null })
+      }
+      const enter = (entry) => {
+        if (entry.type !== 'dir') return
+        void load(entry.path)
+      }
+      const openWorkspace = async (dir) => {
+        try {
+          await addRemoteWorkspace(connectionId, dir, { notice: true })
+        } catch (failure) {
+          pushToast(failure)
+        }
+      }
+      const startDownload = (entry) => {
+        if (entry.type === 'dir') void archive.run({ connectionId, path: entry.path, name: entry.name })
+        else startFileDownload(connectionId, entry.path, entry.name, { tasks })
+      }
+      const runDelete = async (target) => {
+        const id = tasks.begin('delete', target.name, target.path, 0)
+        const controller = typeof AbortController === 'function' ? new AbortController() : null
+        if (controller !== null) tasks.bind(id, controller)
+        try {
+          const deleted = await deleteRemoteEntry(connectionId, target.path, controller)
+          if (controller !== null && controller.signal.aborted) {
+            tasks.cancelled(id)
+            return
+          }
+          tasks.done(id)
+          pushNotice('已永久删除 ' + target.name, countOf(deleted.files) + ' 个文件、' + countOf(deleted.dirs) + ' 个目录')
+          await load(currentDir)
+        } catch (failure) {
+          if (controller !== null && controller.signal.aborted) {
+            tasks.cancelled(id)
+            return
+          }
+          tasks.fail(id, failure instanceof Error ? failure.message : String(failure))
+        }
+      }
+      const menuItemsFor = () => {
+        if (menu === null) return []
+        const entry = menu.entry
+        if (entry !== null && entry !== undefined) {
+          const isDir = entry.type === 'dir'
+          const taken = isDir && workspaceAt(stateWorkspaces, connectionId, entry.path) !== null
+          const items = [
+            {
+              key: 'download',
+              icon: 'download',
+              label: '下载',
+              title: isDir ? '打包下载此目录（tar.gz）：' + entry.path : '下载此文件：' + entry.path,
+              run: () => startDownload(entry),
+            },
+          ]
+          if (isDir) {
+            items.push({
+              key: 'upload',
+              icon: 'upload',
+              label: '上传到此处',
+              title: '上传文件到 ' + entry.path,
+              run: () => upload.pick({ connectionId, path: entry.path }),
+            })
+          }
+          items.push({
+            key: 'delete',
+            icon: 'trash',
+            label: '删除',
+            danger: true,
+            title: '永久删除 ' + entry.path,
+            run: () => setConfirming({ path: entry.path, name: entry.name, type: entry.type }),
+          })
+          if (isDir) {
+            items.push({
+              key: 'workspace',
+              icon: 'folder',
+              label: '打开为工作区',
+              title: taken ? '该目录已经是工作区' : '把 ' + entry.path + ' 添加为 DSH 工作区',
+              disabled: taken,
+              run: () => { void openWorkspace(entry.path) },
+            })
+          }
+          return items
+        }
+        return [
+          {
+            key: 'upload',
+            icon: 'upload',
+            label: '上传到此处',
+            title: '上传文件到 ' + currentDir,
+            run: () => upload.pick({ connectionId, path: currentDir }),
+          },
+          {
+            key: 'download',
+            icon: 'download',
+            label: '下载此目录',
+            title: '打包下载 ' + currentDir + '（tar.gz）',
+            run: () => void archive.run({ connectionId, path: currentDir, name: '' }),
+          },
+          {
+            key: 'refresh',
+            icon: 'refresh',
+            label: '刷新',
+            title: '重新读取 ' + currentDir,
+            run: () => { void load(currentDir) },
+          },
+        ]
+      }
+      const menuItems = menuItemsFor()
+      const deletePrompt = confirming === null ? null : {
+        title: confirming.type === 'dir' ? '永久删除这个目录？' : '永久删除这个文件？',
+        subtitle: confirming.name,
+        body: h('div', null,
+          h('div', null, confirming.type === 'dir'
+            ? '将递归删除其下全部内容，永久删除、不可恢复。'
+            : '永久删除、不可恢复。'),
+          h('div', { className: 'rd-tf-path' }, confirming.path)),
+        actions: [
+          { value: 'delete', label: '永久删除', tone: 'danger' },
+          { value: 'cancel', label: '取消', tone: 'ghost' },
+        ],
+      }
+
+      return h('div', { className: 'rd-rfiles' },
+        h('div', { className: 'rd-rfiles-head' },
+          h(Dot, { state: status }),
+          h('span', { className: 'nm', title: remote.path }, remote.host + ' · ' + (remote.folder || remote.title)),
+          h('button', {
+            className: 'rd-ibtn',
+            type: 'button',
+            title: '刷新远端目录',
+            onClick: () => void load(currentDir),
+          }, h(Icon, { name: 'refresh', size: 13 })),
+        ),
+        h('div', { className: 'rd-rfiles-crumbs' },
+          crumbs.map((crumb, index) => h('button', {
+            key: crumb.value,
+            type: 'button',
+            className: 'rd-crumb' + (index === crumbs.length - 1 ? ' on' : ''),
+            title: crumb.value,
+            onClick: () => void load(crumb.value),
+          }, crumb.label))),
+        error.length > 0 ? h('div', { className: 'rd-err' }, friendlyText(error)) : null,
+        loading && visible.length === 0 ? h('div', { className: 'rd-rfiles-empty' }, '正在读取远端目录…') : null,
+        !loading && error.length === 0 && visible.length === 0 ? h('div', { className: 'rd-rfiles-empty' }, '这个目录是空的。') : null,
+        h('div', {
+          className: 'rd-rfiles-list',
+          onContextMenu: openBlankMenu,
+        },
+          visible.map((entry) => h('div', {
+            key: entry.path,
+            className: 'rd-rfiles-row' + (entry.type === 'dir' ? ' dir' : '') + (selected === entry.path ? ' sel' : ''),
+            'data-type': entry.type,
+            onClick: () => setSelected(entry.path),
+            onDoubleClick: entry.type === 'dir' ? () => enter(entry) : undefined,
+            onContextMenu: (event) => openEntryMenu(event, entry),
+          },
+            h(Icon, { name: entry.type === 'dir' ? 'folder' : 'file', size: 13 }),
+            h('span', { className: 'nm', title: entry.name }, entry.name),
+            h('span', { className: 'sz' }, entry.type === 'dir' ? '' : formatBytes(entry.size)),
+          ))),
+        tasks.tasks.length > 0 ? h('div', { className: 'rd-tasks' },
+          tasks.tasks.map((task) => h('div', { key: task.id, className: 'rd-task', 'data-state': task.status },
+            h(Icon, { name: taskIconName(task.kind), size: 12 }),
+            h('div', { className: 'rd-task-main' },
+              h('div', { className: 'rd-task-top' },
+                h('span', { className: 'nm', title: task.path || task.name }, taskKindLabel(task.kind) + ' · ' + task.name),
+                h('span', { className: 'st' }, taskStatusText(task)),
+                task.status === 'running'
+                  ? h('button', { className: 'rd-task-x', type: 'button', title: '取消', onClick: () => tasks.cancel(task.id) }, '取消')
+                  : h('button', { className: 'rd-task-x', type: 'button', title: '移除', onClick: () => tasks.drop(task.id) }, h(Icon, { name: 'x', size: 10 })),
+              ),
+              h('div', {
+                className: 'rd-task-bar' + (task.status === 'running' && task.total === 0 ? ' pending' : ''),
+              }, h('i', { style: { width: taskPercent(task) + '%' } })),
+              task.status === 'running' && task.total > 0
+                ? h('div', { className: 'rd-task-sub' }, formatBytes(task.sent) + ' / ' + formatBytes(task.total))
+                : null,
+              task.error.length > 0 ? h('div', { className: 'rd-task-err' }, task.error) : null,
+            )))) : null,
         h('input', {
           ref: upload.inputRef,
           type: 'file',
@@ -3636,8 +4597,18 @@ window.__ModuleLoader__.load({
           style: { display: 'none' },
           onChange: upload.onFiles,
         }),
-        upload.note.length > 0 ? h('span', { className: 'rd-tf-note' }, upload.note) : null,
         upload.prompt === null ? null : transferDialog(upload.prompt, upload.decide),
+        archive.prompt === null ? null : transferDialog(archive.prompt, archive.decide),
+        deletePrompt === null ? null : transferDialog(deletePrompt, (choice) => {
+          if (choice !== 'delete') {
+            setConfirming(null)
+            return
+          }
+          const target = confirming
+          setConfirming(null)
+          if (target !== null) void runDelete(target)
+        }),
+        contextMenuElement(menu, menuRef, menuItems, closeMenu),
       )
     }
 
@@ -3762,108 +4733,6 @@ window.__ModuleLoader__.load({
       )
     }
 
-    function monitorDraft(config) {
-      const source = config === null ? MONITOR_FALLBACK : config
-      const part = (key) => {
-        const setting = source[key] === undefined || source[key] === null ? MONITOR_FALLBACK[key] : source[key]
-        return { enabled: setting.enabled !== false, threshold: setting.threshold }
-      }
-      return {
-        enabled: source.enabled !== false,
-        intervalSec: Math.round(source.intervalMs / 1000),
-        cpu: part('cpu'),
-        mem: part('mem'),
-        disk: part('disk'),
-      }
-    }
-
-    function MonitorSettings(props) {
-      const { config, onApply } = props
-      const [draft, setDraft] = React.useState(() => monitorDraft(config))
-      const [saving, setSaving] = React.useState(false)
-      const [hint, setHint] = React.useState('')
-
-      // The form follows the cached config until a save replaces it; a failed
-      // save keeps the edited values.
-      React.useEffect(() => { setDraft(monitorDraft(config)) }, [config])
-
-      const patch = (key, value) => {
-        setDraft((current) => ({ ...current, [key]: value }))
-      }
-      const patchSection = (key, value) => {
-        setDraft((current) => ({ ...current, [key]: { ...current[key], ...value } }))
-      }
-      const save = async () => {
-        const payload = {
-          enabled: draft.enabled !== false,
-          intervalMs: clampInt(draft.intervalSec, 10, 300, 30) * 1000,
-          cpu: { enabled: draft.cpu.enabled !== false, threshold: clampInt(draft.cpu.threshold, 1, 100, MONITOR_FALLBACK.cpu.threshold) },
-          mem: { enabled: draft.mem.enabled !== false, threshold: clampInt(draft.mem.threshold, 1, 100, MONITOR_FALLBACK.mem.threshold) },
-          disk: { enabled: draft.disk.enabled !== false, threshold: clampInt(draft.disk.threshold, 1, 100, MONITOR_FALLBACK.disk.threshold) },
-        }
-        setSaving(true)
-        setHint('')
-        try {
-          const body = await call('/monitor', { method: 'POST', body: payload, timeoutMs: 10000 })
-          onApply(body && body.config ? body.config : payload)
-          pushNotice('监控设置已保存')
-        } catch (error) {
-          pushToast(error)
-          setHint('保存失败，已保留原值')
-        }
-        setSaving(false)
-      }
-      const numberField = (field, value, min, max, step, disabled, onChange) => h('input', {
-        type: 'number',
-        min,
-        max,
-        step,
-        'data-field': field,
-        value: String(value),
-        disabled,
-        onChange: (event) => onChange(event.target.value),
-      })
-      return h('div', { className: 'rd-mon-form' },
-        h('div', { className: 'rd-mon-frow' },
-          h('input', {
-            type: 'checkbox',
-            'data-field': 'enabled',
-            checked: draft.enabled !== false,
-            onChange: (event) => patch('enabled', event.target.checked),
-          }),
-          h('span', { className: 'lb' }, '启用服务器状态监控'),
-        ),
-        h('div', { className: 'rd-mon-frow' },
-          h('span', { className: 'lb' }, '刷新间隔（秒，10–300）'),
-          numberField('intervalSec', draft.intervalSec, 10, 300, 10, draft.enabled === false, (value) => patch('intervalSec', value)),
-        ),
-        MONITOR_SECTIONS.map((section) => h('div', { key: section.key, className: 'rd-mon-frow' },
-          h('input', {
-            type: 'checkbox',
-            'data-field': section.key + '.enabled',
-            checked: draft[section.key].enabled !== false,
-            disabled: draft.enabled === false,
-            onChange: (event) => patchSection(section.key, { enabled: event.target.checked }),
-          }),
-          h('span', { className: 'lb' }, section.label + ' 告警阈值'),
-          numberField(
-            section.key + '.threshold',
-            draft[section.key].threshold,
-            1,
-            100,
-            1,
-            draft.enabled === false || draft[section.key].enabled === false,
-            (value) => patchSection(section.key, { threshold: value }),
-          ),
-        )),
-        hint.length > 0 ? h('div', { className: 'rd-mon-err' }, hint) : null,
-        h('div', { className: 'rd-mon-acts' },
-          h('button', { className: 'rd-btn', disabled: saving, onClick: () => { void save() } }, saving ? '保存中…' : '保存'),
-          h('button', { className: 'rd-btn', disabled: saving, onClick: () => setDraft(monitorDraft(config)) }, '重置'),
-        ),
-      )
-    }
-
     function HeaderPill(props) {
       const { sessionId } = props
       const remote = useRemote(sessionId)
@@ -3871,7 +4740,6 @@ window.__ModuleLoader__.load({
       const [menu, setMenu] = React.useState(null)
       const [busy, setBusy] = React.useState('')
       const anchor = React.useRef(null)
-      const [settingsOpen, setSettingsOpen] = React.useState(false)
       const monitor = useMonitor(remote, menu !== null)
       const alerts = monitorAlerts(monitor.config, monitor.sample)
 
@@ -3913,7 +4781,6 @@ window.__ModuleLoader__.load({
       const toggle = () => {
         if (menu !== null) {
           setMenu(null)
-          setSettingsOpen(false)
           return
         }
         void refresh()
@@ -3994,13 +4861,6 @@ window.__ModuleLoader__.load({
                 onClick: () => { setMenu(null); openConsole(remote.connectionId, 'terminal') },
               }, h(Icon, { name: 'term', size: 13 }), '远端终端'),
             ),
-            h('button', {
-              className: 'rd-mon-set',
-              onClick: () => setSettingsOpen((value) => !value),
-            }, h(Icon, { name: 'edit', size: 12 }), settingsOpen ? '收起监控设置' : '监控设置'),
-            settingsOpen
-              ? h(MonitorSettings, { config: monitor.config, onApply: monitor.applyConfig })
-              : null,
           ),
       )
     }
@@ -4026,6 +4886,7 @@ window.__ModuleLoader__.load({
       const start = () => {
         readClientServices(ctx)
         void refresh()
+        void loadSettings()
         const syncTheme = () => {
           try {
             const themeService = ctx.get('theme')
@@ -4112,11 +4973,38 @@ window.__ModuleLoader__.load({
       offs.push(ctx.slots.inject('sidebar.right.tab.document.actions', () =>
         ctx.slots.register({ name: 'sidebar.right.tab.document.actions', id: 'remote-deck-download-stream', order: 19 }, PreviewStreamDownloadAction),
       ))
-      offs.push(ctx.slots.inject('sidebar.right.tab.files.actions', () =>
-        ctx.slots.register({ name: 'sidebar.right.tab.files.actions', id: 'remote-deck-dir-download', order: 20 }, DirDownloadAction),
+      offs.push(ctx.slots.inject('sidebar.right.pane.tab', () =>
+        ctx.slots.register({ name: 'sidebar.right.pane.tab', key: REMOTE_FILES_ID }, RemoteFilesBody),
       ))
-      offs.push(ctx.slots.inject('sidebar.right.tab.files.actions', () =>
-        ctx.slots.register({ name: 'sidebar.right.tab.files.actions', id: 'remote-deck-dir-upload', order: 21 }, DirUploadAction),
+      // keyed seat: same key as the built-in files card, lower priority wins.
+      // Escape hatch for the one part of this feature that cannot be verified
+      // from the repository: setting `localStorage['rd-guide-takeover'] = '0'`
+      // (then reloading) leaves DSH's own card and its own behaviour in place.
+      let guideTakeover = true
+      try {
+        guideTakeover = !(typeof localStorage !== 'undefined' && localStorage.getItem('rd-guide-takeover') === '0')
+      } catch {
+        guideTakeover = true
+      }
+      const shadowFilesCard = () => ctx.slots.inject('sidebar.right.tab.guide.entry', () =>
+        ctx.slots.register({
+          name: 'sidebar.right.tab.guide.entry',
+          key: FILES_GUIDE_KEY,
+          priority: -1,
+          inject: (sessionId) => {
+            const shortcutCatalog = ctxRef !== null && ctxRef.shortcuts !== undefined && ctxRef.shortcuts !== null
+              ? ctxRef.shortcuts.catalog
+              : null
+            return {
+              ...(shortcutCatalog === undefined || shortcutCatalog === null ? {} : { hooks: { shortcuts: shortcutCatalog } }),
+              cardSessionId: typeof sessionId === 'string' ? sessionId : '',
+            }
+          },
+        }, FilesOrRemoteCard),
+      )
+      if (guideTakeover) offs.push(shadowFilesCard())
+      offs.push(ctx.slots.inject('settings.section', () =>
+        ctx.slots.register({ name: 'settings.section', id: 'remote-deck', order: 30, label: () => '远端工作台' }, RemoteDeckSettings),
       ))
       offs.push(ctx.slots.inject('main', () =>
         ctx.slots.register({ name: 'main', key: 'remote-deck' }, Console),
@@ -4124,6 +5012,26 @@ window.__ModuleLoader__.load({
       ctx.effect(() => () => {
         for (const off of offs) off()
       }, 'remote-deck: slots')
+
+      // The tab type is what makes the pane above reachable: DSH lists a guide
+      // card for every registered type. Injected dynamically so a DSH without
+      // the sidebar services still gets every other surface.
+      if (typeof ctx.inject === 'function') {
+        ctx.inject(['sidebarRightTabs'], (scope) => {
+          scope.effect(() => scope.sidebarRightTabs.register({
+            id: REMOTE_FILES_ID,
+            kind: REMOTE_FILES_KIND,
+            multiple: false,
+            title: () => '远端文件',
+            guide: [{
+              id: 'browse',
+              order: 30,
+              title: () => '远端文件',
+              description: () => '浏览、上传、下载与删除远端文件',
+            }],
+          }), 'remote-deck: files tab type')
+        })
+      }
 
       ctx.effect(() => () => {
         const node = document.querySelector('style[data-remote-deck]')
