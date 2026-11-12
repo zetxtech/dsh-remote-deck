@@ -23,7 +23,7 @@ const LINUX = [
 ].join('\n')
 
 test('topLevelDir keeps the first segment of the session directory', () => {
-  assert.equal(topLevelDir('/home/zzs/project'), '/home')
+  assert.equal(topLevelDir('/home/demo/project'), '/home')
   assert.equal(topLevelDir('/var'), '/var')
   assert.equal(topLevelDir('/'), '/')
   assert.equal(topLevelDir('relative/path'), null)
@@ -44,7 +44,7 @@ test('metricsCommand never relies on shell word splitting', () => {
   // Regression: the remote login shell may be zsh, which does not split an
   // unquoted expansion. `set -- $fields` therefore left $2 empty and the memory
   // reading silently vanished on a real host.
-  const script = metricsCommand('/home/zzs')
+  const script = metricsCommand('/home/demo')
   assert.ok(!/\bset --\s+\$/.test(script), 'no positional-parameter splitting')
   assert.ok(script.includes('${__rd_fields%% *}'), 'memory fields must be split with parameter expansion')
 })
@@ -103,8 +103,8 @@ test('MetricsManager caches a reading inside the TTL and keeps the cpu sample', 
     },
   }
   const manager = new MetricsManager({ hostFor: () => host, onLog: () => {} })
-  const first = await manager.read('c1', '/home/zzs')
-  const second = await manager.read('c1', '/home/zzs')
+  const first = await manager.read('c1', '/home/demo')
+  const second = await manager.read('c1', '/home/demo')
   assert.equal(calls, 1, 'the second read must come from the cache')
   assert.equal(second.mem.percent, first.mem.percent)
   assert.deepEqual(manager.sampleFor('c1'), { idle: 400, total: 1000 })

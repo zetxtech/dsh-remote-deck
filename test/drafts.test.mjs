@@ -14,7 +14,7 @@ import { DRAFT_DIR_NAME, DRAFT_MAX_AGE_MS, DRAFT_TEMP_MAX_AGE_MS, draftFileName 
 
 const TOKEN = 'test-token'
 const TOKEN_HEADER = 'x-dsh-remote-token'
-const RECORD = { id: 'c1', name: 'ws', host: 'example.test', port: 22, username: 'zzs', authType: 'key', privateKeyPath: '/k', color: 'blue' }
+const RECORD = { id: 'c1', name: 'ws', host: 'example.test', port: 22, username: 'demo', authType: 'key', privateKeyPath: '/k', color: 'blue' }
 
 async function startApi() {
   const dataDir = mkdtempSync(join(tmpdir(), 'rd-drafts-'))

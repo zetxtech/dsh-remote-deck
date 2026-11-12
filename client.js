@@ -1022,7 +1022,7 @@ window.__ModuleLoader__.load({
       .rd-set-font { display:flex;align-items:center;gap:12px;max-width:380px }
       .rd-set-font select { min-width:180px }
       .rd-set-text { flex:1;min-width:0 }
-      .rd-set-previewrow { padding:16px 0 4px }
+      .rd-set-previewrow { display:flex;flex-direction:column;gap:8px;padding:16px 0 4px }
       .rd-set-preview { padding:12px 14px;border:0;border-radius:var(--dsw-radius-md,12px);background:var(--dsw-alias-bg-module-platform,var(--dsw-alias-bg-layer-2,rgba(15,23,42,.04)));color:var(--dsw-alias-label-primary,#1f2329);overflow:auto;white-space:pre;font-variant-ligatures:none }
       .rd-set-foot { padding:16px 0 0 }
       .rd-set-textbtn { height:36px;padding:0 14px;border:0;border-radius:var(--dsw-radius-md,12px);background:transparent;color:var(--dsw-alias-label-secondary,#8f959e);font:inherit;font-size:14px;line-height:22px;cursor:pointer }
@@ -3463,7 +3463,14 @@ window.__ModuleLoader__.load({
             settingsNumber('terminal.letterSpacing', draft.letterSpacing, LETTER_SPACING_MIN, LETTER_SPACING_MAX, 0.1, (value) => patch({ letterSpacing: value })),
           ),
           h('div', { className: 'rd-set-previewrow' },
-            h('div', { className: 'rd-set-preview', style: previewStyle, 'data-field': 'terminal.preview' }, 'zzs@ws:~$ ls -la'),
+            h('div', { className: 'rd-set-desc' }, '字体预览：以下文本按当前设置渲染，不是真实终端输出'),
+            h('div', {
+              className: 'rd-set-preview',
+              style: previewStyle,
+              'data-field': 'terminal.preview',
+              role: 'img',
+              'aria-label': '终端字体预览',
+            }, 'user@host:~$ ls -la'),
           ),
         ),
         h('div', { className: 'rd-set-group' },

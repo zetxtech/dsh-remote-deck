@@ -33,7 +33,7 @@ const RECORD = {
   name: 'ws',
   host: 'chml-ssh.zetx.tech',
   port: 10680,
-  username: 'zzs',
+  username: 'demo',
   authType: 'key',
   privateKeyPath: 'C:\\Users\\Jack\\.ssh\\id_rsa',
 }

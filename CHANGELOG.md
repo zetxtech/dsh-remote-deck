@@ -11,6 +11,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - v1.1.0: full xterm.js terminal, i18n (zh/en), explicit debug switch, virtualized large folders.
 
+## [1.18.4] - 2026-11-13
+
+### Fixed
+
+- The terminal font preview in Settings showed a real prompt (`<user>@<host>:~$ ls -la`) that leaked the operator's
+  user name and host name into a page that gets screenshotted. It now reads `user@host:~$ ls -la`, is labelled as a
+  rendering preview rather than real terminal output, and carries an accessible name.
+- Redacted the same identifiers from test fixtures and code comments (a user name and a home directory in
+  `lib/metrics.js`, `lib/transfer.js` and eleven test files).
+
 ## [1.18.3] - 2026-11-13
 
 ### Fixed

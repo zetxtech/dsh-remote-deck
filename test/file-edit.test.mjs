@@ -28,7 +28,7 @@ import {
 
 const TOKEN = 'test-token'
 const TOKEN_HEADER = 'x-dsh-remote-token'
-const RECORD = { id: 'c1', name: 'ws', host: 'example.test', port: 22, username: 'zzs', authType: 'key', privateKeyPath: '/k', color: 'blue' }
+const RECORD = { id: 'c1', name: 'ws', host: 'example.test', port: 22, username: 'demo', authType: 'key', privateKeyPath: '/k', color: 'blue' }
 
 const MODES = { dir: 0o040755, file: 0o100644, link: 0o120777, fifo: 0o010644, socket: 0o140755, char: 0o020666, block: 0o060660 }
 

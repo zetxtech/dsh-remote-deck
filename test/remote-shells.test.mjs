@@ -458,7 +458,7 @@ test('the stock method keeps its receiver when it is reached through the patch',
 
 // ------------------------------------------------- the terminal command
 
-const RECORD = { id: 'conn1', name: 'ws', host: 'example.test', port: 22, username: 'zzs', authType: 'key', privateKeyPath: '/k' }
+const RECORD = { id: 'conn1', name: 'ws', host: 'example.test', port: 22, username: 'demo', authType: 'key', privateKeyPath: '/k' }
 
 function sidebarSpec(argv, cwd = '/data/ws') {
   return {

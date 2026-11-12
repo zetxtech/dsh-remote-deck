@@ -168,7 +168,7 @@ test('a tar without --null still archives the whole selection in one call', { sk
 
 const TOKEN = 'test-token'
 const TOKEN_HEADER = 'x-dsh-remote-token'
-const RECORD = { id: 'c1', name: 'ws', host: 'example.test', port: 22, username: 'zzs', authType: 'key', privateKeyPath: '/k', color: 'blue' }
+const RECORD = { id: 'c1', name: 'ws', host: 'example.test', port: 22, username: 'demo', authType: 'key', privateKeyPath: '/k', color: 'blue' }
 
 async function startApi({ archiveBytes = 'FAKEGZIP', isDirectory = () => true } = {}) {
   const calls = { stream: [], stat: [] }

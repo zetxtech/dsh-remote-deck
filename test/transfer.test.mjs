@@ -20,7 +20,7 @@ const RECORD = {
   name: 'ws',
   host: 'example.test',
   port: 22,
-  username: 'zzs',
+  username: 'demo',
   authType: 'key',
   privateKeyPath: '/k',
   color: 'blue',

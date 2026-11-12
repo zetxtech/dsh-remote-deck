@@ -19,7 +19,7 @@ const CODEMIRROR_DIR = join(root, 'vendor', 'codemirror')
 const XTERM_FILES = ['xterm.js', 'xterm.css', 'addon-fit.js']
 const TOKEN = 'test-token'
 
-const RECORD = { id: 'c1', name: 'ws', host: 'example.test', port: 22, username: 'zzs', authType: 'key', privateKeyPath: '/k', color: 'blue' }
+const RECORD = { id: 'c1', name: 'ws', host: 'example.test', port: 22, username: 'demo', authType: 'key', privateKeyPath: '/k', color: 'blue' }
 
 async function startApi() {
   const server = createApi({

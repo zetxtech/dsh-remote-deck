@@ -15,7 +15,7 @@ import { createApi } from '../lib/api.js'
 
 const TOKEN = 'test-token'
 const TOKEN_HEADER = 'x-dsh-remote-token'
-const RECORD = { id: 'c1', name: 'ws', host: 'example.test', port: 22, username: 'zzs', authType: 'key', privateKeyPath: '/k', color: 'blue' }
+const RECORD = { id: 'c1', name: 'ws', host: 'example.test', port: 22, username: 'demo', authType: 'key', privateKeyPath: '/k', color: 'blue' }
 
 /**
  * Attrs carrying only the predicates a test names, like an ssh2 reply.
