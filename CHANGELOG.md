@@ -11,6 +11,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - v1.1.0: full xterm.js terminal, i18n (zh/en), explicit debug switch, virtualized large folders.
 
+## [1.18.1] - 2026-11-12
+
+### Fixed
+
+- The draft routes the editor actually calls are the connection-scoped ones (`/connections/:id/draft` for POST, GET
+  and DELETE), and they were missing: a draft would have 404'd against a real Host, so auto-save's safety net would
+  never have written anything. Both shapes now share one store and one handler, and a test pins the connection form.
+  The draft JSON body limit follows the write limit too, so a large buffer is not truncated into malformed JSON.
+
 ## [1.18.0] - 2026-11-12
 
 ### Added

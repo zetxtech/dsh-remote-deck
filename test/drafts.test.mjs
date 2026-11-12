@@ -20,7 +20,9 @@ async function startApi() {
   const dataDir = mkdtempSync(join(tmpdir(), 'rd-drafts-'))
   const server = createApi({
     token: TOKEN,
-    store: { get: () => undefined, list: () => [] },
+    // The connection-scoped draft route resolves its connection like every
+    // other route under `/connections/<id>` does.
+    store: { get: (id) => (id === RECORD.id ? RECORD : undefined), list: () => [RECORD] },
     secrets: { describe: async () => ({}) },
     hostFor: () => undefined,
     listHosts: () => [],
@@ -169,6 +171,39 @@ test('the listing carries metadata for every draft and no content', async () => 
     // Newest first.
     const times = body.drafts.map((row) => row.savedAt)
     assert.deepEqual(times, [...times].sort((a, b) => b - a))
+  } finally {
+    await api.close()
+  }
+})
+
+test('the editor’s connection-scoped routes share the same store', async () => {
+  const api = await startApi()
+  try {
+    const scoped = (suffix, init = {}) => fetch(`${api.base}/connections/c1/draft${suffix}`, { headers: headers(), ...init })
+    const post = await scoped('', {
+      method: 'POST',
+      body: JSON.stringify({ path: '/d/a.txt', content: 'live text', baseMtime: 99 }),
+    })
+    const posted = await post.json()
+    assert.equal(post.status, 200)
+    assert.equal(posted.ok, true)
+    // The file is keyed by the connection from the URL, not by the body.
+    assert.deepEqual(draftFiles(api), [draftFileName('c1', '/d/a.txt')])
+
+    const read = await scoped(`?path=${encodeURIComponent('/d/a.txt')}`)
+    assert.deepEqual((await read.json()).draft, {
+      path: '/d/a.txt',
+      content: 'live text',
+      baseMtime: 99,
+      savedAt: posted.savedAt,
+    })
+    // A flat request without a connection is a different namespace.
+    assert.equal((await (await getDraft(api, '/d/a.txt')).json()).draft, null)
+
+    const drop = await scoped(`?path=${encodeURIComponent('/d/a.txt')}`, { method: 'DELETE' })
+    assert.deepEqual(await drop.json(), { ok: true })
+    assert.equal((await (await scoped(`?path=${encodeURIComponent('/d/a.txt')}`)).json()).draft, null)
+    assert.deepEqual(draftFiles(api), [])
   } finally {
     await api.close()
   }
