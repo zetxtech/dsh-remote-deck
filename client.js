@@ -610,17 +610,6 @@ window.__ModuleLoader__.load({
       .rd-set-preview { padding:9px 12px;border-radius:8px;border:1px solid #1c232c;background:#0f1216;color:#c9d1d9;overflow:auto;white-space:pre;font-variant-ligatures:none }
       .rd-set-actions { display:flex;gap:8px }
       [data-rd-theme="dark"] .rd-set-row input[type="number"], [data-rd-theme="dark"] .rd-set-text, [data-rd-theme="dark"] .rd-set-font select { background:var(--dsw-alias-bg-layer-1,#1b1e23);border-color:#2c3138 }
-      .rd-gcard { display:flex;align-items:center;gap:10px;width:100%;box-sizing:border-box;padding:10px 12px;border:0;border-radius:20px;background:transparent;color:var(--dsw-alias-label-primary,#1f2329);font:inherit;text-align:left;cursor:pointer }
-      .rd-gcard:hover { background:var(--dsw-alias-bg-layer-2,rgba(15,23,42,.05)) }
-      .rd-gcard-icon { position:relative;flex:none;display:grid;place-items:center;width:32px;height:32px }
-      .rd-gcard-icon svg { color:#e8b339 }
-      .rd-gcard-tag { position:absolute;right:-3px;bottom:-2px;font-style:normal;font-size:8px;line-height:1;padding:2px 3px;border-radius:5px;background:rgba(47,125,221,.16);color:#1d6fc4 }
-      .rd-gcard-text { flex:1;min-width:0;display:flex;flex-direction:column;gap:2px }
-      .rd-gcard-title { font-size:12.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap }
-      .rd-gcard-desc { font-size:10.5px;color:var(--dsw-alias-label-secondary,#8f959e);overflow:hidden;text-overflow:ellipsis;white-space:nowrap }
-      .rd-gcard-keys { flex:none;background:transparent;padding:0;color:var(--dsw-alias-label-tertiary,#8f959e) }
-      [data-rd-theme="dark"] .rd-gcard:hover { background:rgba(255,255,255,.06) }
-      [data-rd-theme="dark"] .rd-gcard-tag { background:rgba(47,125,221,.24);color:#8cc6ff }
       .rd-rf { display:flex;flex-direction:column;height:100%;min-height:0;font-size:12px;color:var(--dsw-alias-label-primary,#1f2329) }
       .rd-rf-head { flex:none;display:flex;align-items:center;gap:8px;padding:10px 10px 6px;min-width:0 }
       .rd-rf-title { flex:1;min-width:0;display:flex;align-items:center;gap:7px }
@@ -4289,69 +4278,6 @@ window.__ModuleLoader__.load({
      * confirmation and the task strip; transfers come from the shared hooks so
      * the console file page and this page cannot drift apart.
      */
-    // ------------------------------------------------------- guide card shadow
-    // The "工作区文件" guide card is DSH's own; since our page reads remote POSIX
-    // paths, a remote session should land there instead. A keyed registration at
-    // a lower priority shadows the built-in card, and the card itself picks the
-    // page per session.
-
-    const FILES_GUIDE_KEY = '@deepseek-ai/dsh-client-ui-sidebar-files'
-    const FILES_TAB_KIND = 'files'
-    const FILES_SHORTCUT_ID = 'workspace.files'
-
-    /** DSH's key caps component, when the primitives package is reachable. */
-    function loadShortcutKeys() {
-      try {
-        const primitives = require('@deepseek-ai/dsh-client-ui-primitives')
-        if (primitives !== null && primitives !== undefined && typeof primitives.ShortcutKeys === 'function') return primitives.ShortcutKeys
-      } catch {
-        /* primitives are optional for this card */
-      }
-      return null
-    }
-
-    const ShortcutKeys = loadShortcutKeys()
-
-    /** One capsule of the right-sidebar guide, for the workspace files type. */
-    function FilesOrRemoteCard(props) {
-      const owner = props === undefined || props === null ? {} : props
-      const useTabInfo = typeof owner.useTabInfo === 'function' ? owner.useTabInfo : null
-      const info = useTabInfo === null ? null : useTabInfo()
-      const tab = info !== null && info !== undefined && info.tab !== undefined && info.tab !== null ? info.tab : null
-      const sessionId = typeof owner.cardSessionId === 'string' ? owner.cardSessionId : ''
-      const remote = useRemote(sessionId)
-      const catalog = typeof owner.useShortcuts === 'function' ? owner.useShortcuts() : null
-      const title = typeof owner.title === 'string' && owner.title.length > 0 ? owner.title : '文件'
-      const description = typeof owner.description === 'string' ? owner.description : ''
-      const shortcut = Array.isArray(catalog) ? catalog.find((row) => row !== null && row !== undefined && row.id === FILES_SHORTCUT_ID) : undefined
-      const open = () => {
-        if (tab === null || tab.actions === undefined || tab.actions === null) return
-        if (typeof tab.actions.openTab !== 'function') return
-        tab.actions.openTab(remote !== null ? REMOTE_FILES_ID : FILES_TAB_KIND, { replaceTab: true })
-        // The reveal leaves the guide open; the guide's own cards close it too.
-        if (typeof tab.actions.close === 'function') tab.actions.close()
-      }
-      return h('button', {
-        type: 'button',
-        className: 'rd-gcard',
-        'data-sidebar-right-guide-entry': typeof owner.kind === 'string' && owner.kind.length > 0 ? owner.kind : FILES_TAB_KIND,
-        title: remote !== null ? title + ' · ' + remote.host : title,
-        onClick: open,
-      },
-        h('span', { className: 'rd-gcard-icon' },
-          h(Icon, { name: 'folder', size: description.length > 0 ? 24 : 22 }),
-          remote !== null ? h('i', { className: 'rd-gcard-tag' }, '远') : null,
-        ),
-        h('span', { className: 'rd-gcard-text' },
-          h('span', { className: 'rd-gcard-title' }, title),
-          description.length > 0 ? h('span', { className: 'rd-gcard-desc' }, description) : null,
-        ),
-        shortcut !== undefined && ShortcutKeys !== null
-          ? h(ShortcutKeys, { keys: shortcut.keys, className: 'rd-gcard-keys' })
-          : null,
-      )
-    }
-
     /** Directories first, then names in natural order. */
     function compareRemoteEntries(left, right) {
       const leftRank = left !== null && left !== undefined && left.type === 'dir' ? 0 : 1
@@ -5077,33 +5003,6 @@ window.__ModuleLoader__.load({
       offs.push(ctx.slots.inject('sidebar.right.pane.tab', () =>
         ctx.slots.register({ name: 'sidebar.right.pane.tab', key: REMOTE_FILES_ID }, RemoteFilesBody),
       ))
-      // keyed seat: same key as the built-in files card, lower priority wins.
-      // Escape hatch for the one part of this feature that cannot be verified
-      // from the repository: setting `localStorage['rd-guide-takeover'] = '0'`
-      // (then reloading) leaves DSH's own card and its own behaviour in place.
-      let guideTakeover = true
-      try {
-        guideTakeover = !(typeof localStorage !== 'undefined' && localStorage.getItem('rd-guide-takeover') === '0')
-      } catch {
-        guideTakeover = true
-      }
-      const shadowFilesCard = () => ctx.slots.inject('sidebar.right.tab.guide.entry', () =>
-        ctx.slots.register({
-          name: 'sidebar.right.tab.guide.entry',
-          key: FILES_GUIDE_KEY,
-          priority: -1,
-          inject: (sessionId) => {
-            const shortcutCatalog = ctxRef !== null && ctxRef.shortcuts !== undefined && ctxRef.shortcuts !== null
-              ? ctxRef.shortcuts.catalog
-              : null
-            return {
-              ...(shortcutCatalog === undefined || shortcutCatalog === null ? {} : { hooks: { shortcuts: shortcutCatalog } }),
-              cardSessionId: typeof sessionId === 'string' ? sessionId : '',
-            }
-          },
-        }, FilesOrRemoteCard),
-      )
-      if (guideTakeover) offs.push(shadowFilesCard())
       offs.push(ctx.slots.inject('settings.section', () =>
         ctx.slots.register({ name: 'settings.section', id: 'remote-deck', order: 30, label: () => '远端工作台' }, RemoteDeckSettings),
       ))

@@ -11,6 +11,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - v1.1.0: full xterm.js terminal, i18n (zh/en), explicit debug switch, virtualized large folders.
 
+## [1.13.3] - 2026-11-12
+
+### Fixed
+
+- The workspace-files card disappeared from the guide in every Session after 1.13.2. Shadowing another
+  provider's guide entry — a keyed registration on its definition id at a lower priority — suppresses the
+  built-in card in this build without rendering a replacement, and the documented custom-card path only
+  applies to a provider's own definition id. The takeover is gone: the guide lists DSH's own cards again,
+  unchanged, in local and remote workspaces alike.
+
+### Notes
+
+- The remote file page is still available from the sidebar's add-tab control (the `remote-deck-files` type
+  stays registered) and from the plugin console. Per-Session card behaviour is not reachable through the
+  guide without a slot this build does not expose to a third party.
+
 ## [1.13.2] - 2026-11-12
 
 ### Fixed
