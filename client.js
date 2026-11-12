@@ -899,6 +899,81 @@ window.__ModuleLoader__.load({
       [data-rd-theme="dark"] .rd-card .foot2 .go2,[data-rd-theme="dark"] .rd-link,[data-rd-theme="dark"] .rd-sect .r { color:#7cc4ff }
       [data-rd-theme="dark"] .rd-sess:hover,[data-rd-theme="dark"] .rd-card:hover,[data-rd-theme="dark"] .rd-wsrow2:hover { background:rgba(255,255,255,.04) }
       [data-rd-theme="dark"] .rd-wsrow2.sel { background:rgba(47,125,221,.16) }
+
+      /* ---- settings: DSH-native rhythm (values copied from the native settings CSS) ---- */
+      .rd-set { display:flex;flex-direction:column;gap:0;font-size:13px;color:var(--dsw-alias-label-primary,#1f2329);max-width:640px }
+      .rd-set-head { display:flex;align-items:flex-start;gap:12px;padding:0 0 4px }
+      .rd-set-headtext { flex:1;min-width:0;display:flex;flex-direction:column;gap:4px }
+      .rd-set-headtitle { font-size:13px;font-weight:600;line-height:20px }
+      .rd-set-desc { font-size:12px;font-weight:400;line-height:18px;color:var(--dsw-alias-label-secondary,#8f959e) }
+      .rd-set-status { flex:none;font-size:12px;line-height:20px;color:var(--dsw-alias-label-tertiary,#8f959e) }
+      .rd-set-status[data-state="failed"] { color:var(--dsw-alias-state-error-primary,#c0392b) }
+      .rd-set-group { display:flex;flex-direction:column }
+      .rd-set-title { padding:16px 0 6px;font-size:13px;font-weight:600;line-height:20px }
+      .rd-set-fields { display:flex;flex-direction:column }
+      .rd-set-row { display:flex;align-items:center;gap:8px;padding:16px 0;border-bottom:.5px solid var(--dsw-alias-border-l2,#e8e8ec) }
+      .rd-set-textcol { flex:1;min-width:0;display:flex;flex-direction:column;gap:4px }
+      .rd-set-label { font-size:13px;font-weight:500;line-height:20px }
+      .rd-set-control { flex:none;display:flex;align-items:center;gap:8px }
+      .rd-set-pair { display:flex;align-items:center;gap:8px }
+      .rd-set-row input[type="number"], .rd-set-text, .rd-set-font select { height:28px;box-sizing:border-box;padding:0 8px;border:.5px solid var(--dsw-alias-border-l2,#e8e8ec);border-radius:var(--dsw-radius-sm,8px);background:var(--dsw-alias-bg-layer-1,#fff);color:var(--dsw-alias-label-primary,#1f2329);font:inherit;font-size:13px;font-variant-numeric:tabular-nums }
+      .rd-set-row input[type="number"] { width:76px }
+      .rd-set-row input[type="number"]:hover, .rd-set-text:hover, .rd-set-font select:hover { border-color:var(--dsw-alias-border-l1,#d8d8de) }
+      .rd-set-row input[type="number"]:focus, .rd-set-text:focus, .rd-set-font select:focus { outline:none;border-color:var(--dsw-alias-state-business-primary,#1d6fc4) }
+      .rd-set-row input[type="number"][disabled] { opacity:.5 }
+      .rd-set-check { width:16px;height:16px;flex:none;margin:0;accent-color:var(--dsw-alias-state-business-primary,#1d6fc4) }
+      .rd-set-font { display:flex;align-items:center;gap:8px;max-width:360px }
+      .rd-set-font select { min-width:170px }
+      .rd-set-text { flex:1;min-width:0 }
+      .rd-set-previewrow { padding:16px 0 4px }
+      .rd-set-preview { padding:8px 12px;border:.5px solid var(--dsw-alias-border-l2,#e8e8ec);border-radius:var(--dsw-radius-sm,8px);background:var(--dsw-alias-bg-layer-2,rgba(15,23,42,.03));color:var(--dsw-alias-label-primary,#1f2329);overflow:auto;white-space:pre;font-variant-ligatures:none }
+      .rd-set-foot { padding:16px 0 0 }
+      .rd-set-textbtn { border:0;background:transparent;color:var(--dsw-alias-label-secondary,#8f959e);font:inherit;font-size:12px;line-height:20px;padding:1px 6px;margin-left:-6px;border-radius:var(--dsw-radius-sm,8px);cursor:pointer }
+      .rd-set-textbtn:hover { background:var(--dsw-alias-interactive-bg-hover,rgba(15,23,42,.05));color:var(--dsw-alias-label-primary,#1f2329) }
+      [data-rd-theme="dark"] .rd-set-row, [data-rd-theme="dark"] .rd-set-preview { border-color:#2c3138 }
+      [data-rd-theme="dark"] .rd-set-row input[type="number"], [data-rd-theme="dark"] .rd-set-text, [data-rd-theme="dark"] .rd-set-font select { background:var(--dsw-alias-bg-layer-1,#1b1e23);border-color:#2c3138 }
+      [data-rd-theme="dark"] .rd-set-textbtn:hover { background:rgba(255,255,255,.07) }
+
+      /* ---- console: one surface, native tool-panel rhythm ---- */
+      .rd-console { background:var(--dsw-alias-bg-layer-1,#fff) }
+      .rd-ctop { height:48px;padding:0 16px;gap:12px;border-bottom:.5px solid var(--dsw-alias-border-l2,#e8e8ec) }
+      .rd-ctop .t { font-size:13px;font-weight:600 }
+      .rd-ctop .s { font-size:12px }
+      .rd-rail2 { width:232px;background:transparent;padding:12px 8px;gap:2px;border-right:.5px solid var(--dsw-alias-border-l2,#e8e8ec) }
+      .rd-rail2 .rh2 { padding:6px 8px;font-size:11.5px;font-weight:600;letter-spacing:0 }
+      .rd-rail2 .sep2 { margin:8px 6px;background:var(--dsw-alias-border-l2,#e8e8ec) }
+      .rd-rail2 .railfoot2 { border-top:.5px solid var(--dsw-alias-border-l2,#e8e8ec);font-size:11.5px }
+      .rd-host2 { padding:7px 8px;border-radius:8px;gap:8px }
+      .rd-host2:hover { background:var(--dsw-alias-interactive-bg-hover,rgba(15,23,42,.05)) }
+      .rd-host2[data-active="true"] { background:var(--dsw-alias-interactive-bg-hover,rgba(15,23,42,.06));border-color:transparent;box-shadow:none }
+      .rd-host2 .ico2 { width:24px;height:24px;border-radius:8px;background:var(--dsw-alias-bg-layer-2,rgba(15,23,42,.05)) !important;color:var(--dsw-alias-label-secondary,#5f6672) !important }
+      .rd-host2 .nm2 { font-size:13px;font-weight:600 }
+      .rd-host2 .meta2, .rd-host2 .lat2 { font-family:inherit;font-size:11.5px;color:var(--dsw-alias-label-secondary,#8f959e) }
+      .rd-cpane { padding:16px 16px 24px }
+      .rd-tabs { gap:4px;margin:0 0 16px;border-bottom:.5px solid var(--dsw-alias-border-l2,#e8e8ec) }
+      .rd-tab { padding:6px 10px;font-size:12.5px;border-radius:8px 8px 0 0 }
+      .rd-tab:hover { background:var(--dsw-alias-interactive-bg-hover,rgba(15,23,42,.05)) }
+      .rd-cards { gap:12px }
+      .rd-card { border:.5px solid var(--dsw-alias-border-l2,#e8e8ec);border-radius:12px;padding:12px;box-shadow:none }
+      .rd-card:hover { border-color:var(--dsw-alias-border-l1,#d8d8de);box-shadow:none }
+      .rd-card .stripe2 { display:none }
+      .rd-card .nm3 { font-size:13px;font-weight:600 }
+      .rd-card .path2 { background:transparent;border:.5px solid var(--dsw-alias-border-l2,#e8e8ec);border-radius:8px;color:var(--dsw-alias-label-secondary,#8f959e) }
+      .rd-card .foot2 { gap:8px;font-size:11.5px }
+      .rd-card .foot2 .go2 { color:var(--dsw-alias-label-primary,#1f2329);font-weight:600 }
+      .rd-card.add2 { border-radius:12px;min-height:88px }
+      .rd-chead .rd-cavatar { width:36px;height:36px;border-radius:8px;background:var(--dsw-alias-bg-layer-2,rgba(15,23,42,.05)) !important;color:var(--dsw-alias-label-secondary,#5f6672) !important }
+      .rd-ctitle { font-size:13px;font-weight:600 }
+      .rd-ws .fi, .rd-host .box { background:var(--dsw-alias-bg-layer-2,rgba(15,23,42,.05)) !important;color:var(--dsw-alias-label-secondary,#5f6672) !important }
+      .rd-btn { border-radius:var(--dsw-radius-sm,8px) }
+      .rd-input, .rd-wtable, .rd-fsearch { border-radius:var(--dsw-radius-sm,8px) }
+      .rd-panel, .rd-hmenu, .rd-ctx { border-radius:var(--dsw-radius-md,12px) }
+      [data-rd-theme="dark"] .rd-console { background:var(--dsw-alias-bg-layer-1,#1b1e23) }
+      [data-rd-theme="dark"] .rd-ctop, [data-rd-theme="dark"] .rd-rail2, [data-rd-theme="dark"] .rd-tabs { border-color:#2c3138 }
+      [data-rd-theme="dark"] .rd-card { border-color:#2c3138 }
+      [data-rd-theme="dark"] .rd-card .path2 { border-color:#2c3138 }
+      [data-rd-theme="dark"] .rd-host2 .ico2, [data-rd-theme="dark"] .rd-chead .rd-cavatar { background:rgba(255,255,255,.06) !important;color:var(--dsw-alias-label-secondary,#a8b0bb) !important }
+      [data-rd-theme="dark"] .rd-tab:hover, [data-rd-theme="dark"] .rd-host2:hover { background:rgba(255,255,255,.07) }
     `
 
     let styleInjected = false
@@ -3003,11 +3078,14 @@ window.__ModuleLoader__.load({
     }
 
     /** One labelled row of the settings form. */
+    /** Native settings row: label + optional description on the left, control right. */
     function settingsRow(label, control, hint) {
       return h('div', { className: 'rd-set-row' },
-        h('span', { className: 'lb' }, label),
-        hint ? h('span', { className: 'hint' }, hint) : null,
-        control,
+        h('div', { className: 'rd-set-textcol' },
+          h('span', { className: 'rd-set-label' }, label),
+          hint ? h('span', { className: 'rd-set-desc' }, hint) : null,
+        ),
+        h('div', { className: 'rd-set-control' }, control),
       )
     }
 
@@ -3024,12 +3102,66 @@ window.__ModuleLoader__.load({
       })
     }
 
-    /** Monitoring fields, controlled: the settings page owns the single save. */
+    function settingsCheckbox(field, checked, onChange, disabled) {
+      return h('input', {
+        type: 'checkbox',
+        className: 'rd-set-check',
+        'data-field': field,
+        checked: checked === true,
+        disabled: disabled === true,
+        onChange: (event) => onChange(event.target.checked),
+      })
+    }
+
+    const SETTINGS_APPLY_DELAY_MS = 400
+
+    /** Only the leaves that differ from what the host already accepted. */
+    function settingsPatchFor(next, base) {
+      const patch = {}
+      const terminal = {}
+      let terminalChanged = false
+      for (const key of ['fontFamily', 'fontSize', 'lineHeight', 'letterSpacing']) {
+        if (next.terminal[key] !== base.terminal[key]) {
+          terminal[key] = next.terminal[key]
+          terminalChanged = true
+        }
+      }
+      if (terminalChanged) patch.terminal = terminal
+      const monitor = {}
+      let monitorChanged = false
+      if (next.monitor.enabled !== base.monitor.enabled) {
+        monitor.enabled = next.monitor.enabled
+        monitorChanged = true
+      }
+      if (next.monitor.intervalMs !== base.monitor.intervalMs) {
+        monitor.intervalMs = next.monitor.intervalMs
+        monitorChanged = true
+      }
+      for (const key of ['cpu', 'mem', 'disk']) {
+        const section = {}
+        let changed = false
+        if (next.monitor[key].enabled !== base.monitor[key].enabled) {
+          section.enabled = next.monitor[key].enabled
+          changed = true
+        }
+        if (next.monitor[key].threshold !== base.monitor[key].threshold) {
+          section.threshold = next.monitor[key].threshold
+          changed = true
+        }
+        if (changed) {
+          monitor[key] = section
+          monitorChanged = true
+        }
+      }
+      if (monitorChanged) patch.monitor = monitor
+      if (next.transfer.limitBytes !== base.transfer.limitBytes) patch.transfer = { limitBytes: next.transfer.limitBytes }
+      return patch
+    }
+
+    /** Monitoring fields, controlled by the settings draft. */
     function MonitorFields(props) {
       const setting = props.value === undefined || props.value === null ? MONITOR_FALLBACK : props.value
       const onChange = typeof props.onChange === 'function' ? props.onChange : () => {}
-      // Functional updates: two fields edited in one React batch must not
-      // overwrite each other.
       const patch = (changes) => onChange((current) => ({ ...(current === undefined || current === null ? MONITOR_FALLBACK : current), ...changes }))
       const patchSection = (key, changes) => onChange((current) => {
         const base = current === undefined || current === null ? MONITOR_FALLBACK : current
@@ -3037,48 +3169,113 @@ window.__ModuleLoader__.load({
       })
       const off = setting.enabled === false
       return h('div', { className: 'rd-set-fields' },
-        h('div', { className: 'rd-set-row' },
-          h('input', {
-            type: 'checkbox',
-            'data-field': 'monitor.enabled',
-            checked: setting.enabled !== false,
-            onChange: (event) => patch({ enabled: event.target.checked }),
-          }),
-          h('span', { className: 'lb' }, '启用服务器状态监控'),
+        settingsRow('启用服务器状态监控',
+          settingsCheckbox('monitor.enabled', setting.enabled !== false, (checked) => patch({ enabled: checked })),
+          '关闭后头部胶囊只保留最后一次采样，不再轮询',
         ),
         settingsRow('刷新间隔（秒，10–300）',
           settingsNumber('monitor.intervalSec', Math.round(setting.intervalMs / 1000), 10, 300, 10, (value) => {
-            const seconds = clampInt(value, 10, 300, 30)
-            patch({ intervalMs: seconds * 1000 })
+            patch({ intervalMs: clampInt(value, 10, 300, 30) * 1000 })
           }, off),
         ),
-        MONITOR_SECTIONS.map((section) => h('div', { key: section.key, className: 'rd-set-row' },
-          h('input', {
-            type: 'checkbox',
-            'data-field': 'monitor.' + section.key + '.enabled',
-            checked: setting[section.key].enabled !== false,
-            disabled: off,
-            onChange: (event) => patchSection(section.key, { enabled: event.target.checked }),
-          }),
-          h('span', { className: 'lb' }, section.label + ' 告警阈值（1–100）'),
-          settingsNumber('monitor.' + section.key + '.threshold', setting[section.key].threshold, 1, 100, 1, (value) => {
-            patchSection(section.key, { threshold: clampInt(value, 1, 100, MONITOR_FALLBACK[section.key].threshold) })
-          }, off || setting[section.key].enabled === false),
+        MONITOR_SECTIONS.map((section) => settingsRow(section.label + ' 告警阈值（1–100）',
+          h('div', { className: 'rd-set-pair' },
+            settingsCheckbox('monitor.' + section.key + '.enabled', setting[section.key].enabled !== false,
+              (checked) => patchSection(section.key, { enabled: checked }), off),
+            settingsNumber('monitor.' + section.key + '.threshold', setting[section.key].threshold, 1, 100, 1, (value) => {
+              patchSection(section.key, { threshold: clampInt(value, 1, 100, MONITOR_FALLBACK[section.key].threshold) })
+            }, off || setting[section.key].enabled === false),
+          ),
         )),
       )
     }
 
-    /** The plugin's own section of the DSH settings page. */
+    /**
+     * The plugin's own section of the DSH settings page. There is no save
+     * button: an edit is previewed at once and persisted ~400ms later, with the
+     * control rolled back if the host refuses it.
+     */
     function RemoteDeckSettings() {
       const snapshot = useSettingsSnapshot()
       const settings = snapshot === null ? SETTINGS_FALLBACK : snapshot
       const [draft, setDraft] = React.useState(() => settingsDraft(settings))
-      const [saving, setSaving] = React.useState(false)
-      const [hint, setHint] = React.useState('')
+      const [status, setStatus] = React.useState('idle')
+      const draftRef = React.useRef(draft)
+      const savedRef = React.useRef(settings)
+      const previewRef = React.useRef(null)
+      const timerRef = React.useRef(null)
+      const sendingRef = React.useRef(false)
+      const mountedRef = React.useRef(true)
+
+      React.useEffect(() => () => {
+        mountedRef.current = false
+        if (timerRef.current !== null) clearTimeout(timerRef.current)
+      }, [])
+
+      // A document from elsewhere (first load, another window) wins only when
+      // nothing is pending locally. Our own optimistic preview is ignored: the
+      // "last accepted" document is only ever the host's answer.
       React.useEffect(() => {
-        setDraft(settingsDraft(settings))
+        if (previewRef.current !== null && settings === previewRef.current) return
+        previewRef.current = null
+        savedRef.current = settings
+        if (sendingRef.current || timerRef.current !== null) return
+        const next = settingsDraft(settings)
+        draftRef.current = next
+        setDraft(next)
       }, [settings])
-      const patch = (changes) => setDraft((current) => ({ ...current, ...changes }))
+
+      const previewNow = (content) => {
+        previewRef.current = content
+        settingsStore.value = content
+        applyTerminalAppearance(content.terminal)
+        emitSettings()
+      }
+
+      const flush = async () => {
+        if (sendingRef.current) return
+        const next = settingsPayload(draftRef.current)
+        const patch = settingsPatchFor(next, savedRef.current)
+        if (Object.keys(patch).length === 0) {
+          if (mountedRef.current) setStatus('saved')
+          return
+        }
+        sendingRef.current = true
+        try {
+          const saved = await saveSettings(patch)
+          savedRef.current = saved
+          if (!mountedRef.current) return
+          setStatus('saved')
+        } catch (failure) {
+          if (!mountedRef.current) return
+          // Roll the whole form back to the document the host still holds.
+          const rollback = settingsDraft(savedRef.current)
+          draftRef.current = rollback
+          previewNow(savedRef.current)
+          setDraft(rollback)
+          setStatus('failed')
+          pushToast(failure)
+        } finally {
+          sendingRef.current = false
+        }
+      }
+
+      const applyNow = (next) => {
+        draftRef.current = next
+        setDraft(next)
+        setStatus('pending')
+        previewNow(settingsPayload(next))
+        if (timerRef.current !== null) clearTimeout(timerRef.current)
+        timerRef.current = setTimeout(() => {
+          timerRef.current = null
+          void flush()
+        }, SETTINGS_APPLY_DELAY_MS)
+      }
+
+      const patch = (changes) => {
+        const current = draftRef.current
+        applyNow(typeof changes === 'function' ? changes(current) : { ...current, ...changes })
+      }
       const pickFont = (id) => {
         const preset = TERMINAL_FONT_PRESETS.find((row) => row.id === id)
         if (preset === undefined) return
@@ -3088,26 +3285,34 @@ window.__ModuleLoader__.load({
         }
         patch({ fontId: preset.id, fontFamily: preset.value })
       }
+      const reset = () => {
+        if (timerRef.current !== null) {
+          clearTimeout(timerRef.current)
+          timerRef.current = null
+        }
+        draftRef.current = settingsDraft(SETTINGS_FALLBACK)
+        setDraft(draftRef.current)
+        setStatus('pending')
+        previewNow(settingsPayload(draftRef.current))
+        void flush()
+      }
       const previewStyle = {
         fontFamily: draft.fontFamily.length > 0 ? draft.fontFamily : FALLBACK_TERMINAL_FONT,
         fontSize: clampStep(draft.fontSize, FONT_SIZE_MIN, FONT_SIZE_MAX, FONT_SIZE_STEP, SETTINGS_FALLBACK.terminal.fontSize) + 'px',
         lineHeight: String(clampStep(draft.lineHeight, LINE_HEIGHT_MIN, LINE_HEIGHT_MAX, 0.05, SETTINGS_FALLBACK.terminal.lineHeight)),
         letterSpacing: clampStep(draft.letterSpacing, LETTER_SPACING_MIN, LETTER_SPACING_MAX, 0.1, SETTINGS_FALLBACK.terminal.letterSpacing) + 'px',
       }
-      const save = async () => {
-        setSaving(true)
-        setHint('')
-        try {
-          await saveSettings(settingsPayload(draft))
-          pushNotice('设置已保存')
-        } catch (failure) {
-          pushToast(failure)
-          setHint('保存失败，已保留当前值')
-        }
-        setSaving(false)
-      }
-      const reset = () => setDraft(settingsDraft(SETTINGS_FALLBACK))
+      const statusText = status === 'failed' ? '保存失败' : status === 'pending' ? '保存中…' : status === 'saved' ? '已保存' : ''
       return h('div', { className: 'rd-set' },
+        h('div', { className: 'rd-set-head' },
+          h('div', { className: 'rd-set-headtext' },
+            h('div', { className: 'rd-set-headtitle' }, '远端工作台'),
+            h('div', { className: 'rd-set-desc' }, '终端外观、服务器状态监控与传输上限；改动即时生效。'),
+          ),
+          statusText.length > 0
+            ? h('span', { className: 'rd-set-status', 'data-state': status, role: 'status' }, statusText)
+            : null,
+        ),
         h('div', { className: 'rd-set-group' },
           h('div', { className: 'rd-set-title' }, '终端外观'),
           settingsRow('字体族',
@@ -3122,12 +3327,13 @@ window.__ModuleLoader__.load({
                   type: 'text',
                   className: 'rd-set-text',
                   'data-field': 'terminal.fontFamily',
-                  placeholder: '例如 JetBrains Mono, Consolas, monospace',
+                  placeholder: 'JetBrains Mono, Consolas, monospace',
                   value: draft.fontFamily,
                   onChange: (event) => patch({ fontFamily: event.target.value }),
                 })
                 : null,
             ),
+            '留空即使用 DSH 内置等宽字体',
           ),
           settingsRow('字号（9–24）',
             settingsNumber('terminal.fontSize', draft.fontSize, FONT_SIZE_MIN, FONT_SIZE_MAX, FONT_SIZE_STEP, (value) => patch({ fontSize: value })),
@@ -3138,13 +3344,15 @@ window.__ModuleLoader__.load({
           settingsRow('字距（−0.5–2）',
             settingsNumber('terminal.letterSpacing', draft.letterSpacing, LETTER_SPACING_MIN, LETTER_SPACING_MAX, 0.1, (value) => patch({ letterSpacing: value })),
           ),
-          h('div', { className: 'rd-set-preview', style: previewStyle, 'data-field': 'terminal.preview' }, 'zzs@ws:~$ ls -la'),
+          h('div', { className: 'rd-set-previewrow' },
+            h('div', { className: 'rd-set-preview', style: previewStyle, 'data-field': 'terminal.preview' }, 'zzs@ws:~$ ls -la'),
+          ),
         ),
         h('div', { className: 'rd-set-group' },
           h('div', { className: 'rd-set-title' }, '监控'),
           h(MonitorFields, {
             value: draft.monitor,
-            onChange: (updater) => setDraft((current) => ({
+            onChange: (updater) => patch((current) => ({
               ...current,
               monitor: typeof updater === 'function' ? updater(current.monitor) : updater,
             })),
@@ -3157,10 +3365,8 @@ window.__ModuleLoader__.load({
             '上传与目录打包都受此限制',
           ),
         ),
-        hint.length > 0 ? h('div', { className: 'rd-mon-err' }, hint) : null,
-        h('div', { className: 'rd-set-actions' },
-          h('button', { className: 'rd-btn primary', type: 'button', disabled: saving, onClick: () => { void save() } }, saving ? '保存中…' : '保存'),
-          h('button', { className: 'rd-btn', type: 'button', disabled: saving, onClick: reset }, '恢复默认'),
+        h('div', { className: 'rd-set-foot' },
+          h('button', { className: 'rd-set-textbtn', type: 'button', onClick: reset }, '恢复默认'),
         ),
       )
     }
@@ -4067,6 +4273,8 @@ window.__ModuleLoader__.load({
     const TASK_KEEP_DONE_MS = 4000
     const TASK_MAX_ROWS = 6
     const STREAM_DOWNLOAD_MAX_BYTES = 512 * 1024 * 1024
+    /** The host archives one flat tar.gz per request, up to this many entries. */
+    const ARCHIVE_SELECTION_MAX = 200
 
     /** A transfer without a task strip (the console file page) still runs. */
     const NO_TASKS = {
@@ -4652,6 +4860,10 @@ window.__ModuleLoader__.load({
               run: () => {
                 if (multi) {
                   const paths = targets.map((target) => target.path)
+                  if (paths.length > ARCHIVE_SELECTION_MAX) {
+                    pushNotice('一次最多打包 ' + ARCHIVE_SELECTION_MAX + ' 项', '请减少选择后重试')
+                    return
+                  }
                   void archive.run({ connectionId, paths, name: 'selection-' + paths.length + '-items' })
                   return
                 }

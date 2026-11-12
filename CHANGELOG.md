@@ -11,6 +11,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - v1.1.0: full xterm.js terminal, i18n (zh/en), explicit debug switch, virtualized large folders.
 
+## [1.15.0] - 2026-11-12
+
+### Changed
+
+- **Settings apply as they are changed.** The save button is gone: an edit previews immediately (the font reaches
+  the terminals, a threshold re-samples) and is written 400 ms later, carrying only the fields that differ from the
+  document the Host last accepted. A failure rolls the control back and reports it in one status line, and
+  恢复默认 applies at once.
+- **The settings section is drawn with DSH's own values** instead of approximations: its row layout (`16px 0` with a
+  half-pixel l2 divider), the radius tokens, 28 px controls, a 13/600 group heading, 12 px secondary descriptions
+  and one card treatment — no second control language.
+- **The console was toned down**: one background layer, no gradients anywhere, per-host colour blocks and card
+  stripes neutralised, hover shadows dropped, type reduced to 11.5/12.5/13 at weights 400/600, spacing on an
+  8/12/16 grid and radii unified (12 for containers, 8 for rows and buttons). Colour is left to status dots and
+  destructive actions, and latency is quiet secondary text instead of a coloured capsule.
+
+### Notes
+
+- Packaging a selection of more than 200 entries is refused in the browser with a notice instead of a server error.
+
 ## [1.14.0] - 2026-11-12
 
 ### Added
