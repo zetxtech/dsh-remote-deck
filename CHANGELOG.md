@@ -11,6 +11,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - v1.1.0: full xterm.js terminal, i18n (zh/en), explicit debug switch, virtualized large folders.
 
+## [1.18.2] - 2026-11-12
+
+### Changed
+
+- The 远端工作台 settings section now uses DSH's own settings-row metrics instead of approximations, copied from the
+  installed stylesheet: a row is `padding:16px 0` over a half-pixel `border-l2` divider with an 8px gap and a text
+  column that keeps a 48px gutter, the row title is `14px/400/22px`, and a control is 36px tall, radius 12, on
+  `bg-module-platform` with 14px side padding and no border — the group headings are plain rows, so the card
+  outlines are gone.
+
 ## [1.18.1] - 2026-11-12
 
 ### Fixed
