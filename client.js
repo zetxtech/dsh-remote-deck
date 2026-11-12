@@ -2797,6 +2797,15 @@ window.__ModuleLoader__.load({
           style: { display: 'none' },
           onChange: upload.onFiles,
         }),
+        h('input', {
+          ref: upload.dirInputRef,
+          type: 'file',
+          multiple: true,
+          webkitdirectory: '',
+          directory: '',
+          style: { display: 'none' },
+          onChange: upload.onFiles,
+        }),
         upload.prompt === null ? null : transferDialog(upload.prompt, upload.decide),
         archive.prompt === null ? null : transferDialog(archive.prompt, archive.decide),
       )
@@ -4357,7 +4366,62 @@ window.__ModuleLoader__.load({
         if (taskId !== '') sink.bind(taskId, xhr)
         xhr.send(file)
       })
-      const runBatch = async (connectionId, dir, list) => {
+      /** Create one remote directory, treating "already there" as success. */
+      const ensureRemoteDir = async (connectionId, parent, name) => {
+        const info = boot()
+        if (info === null) throw new Error('remote-deck is not active yet; restart DSH')
+        const response = await fetch(apiBase() + '/connections/' + encodeURIComponent(connectionId) + '/mkdir', {
+          method: 'POST',
+          headers: { 'x-dsh-remote-token': info.token, 'content-type': 'application/json' },
+          body: JSON.stringify({ path: parent, name }),
+        })
+        const payload = await response.json().catch(() => null)
+        if (response.ok) return true
+        return payload !== null && payload !== undefined && payload.code === 'EXISTS'
+      }
+      /**
+       * Upload a directory tree: make every folder the browser reported, shallow
+       * first, then send the files. `webkitRelativePath` is the only structure
+       * the picker exposes, so empty directories do not survive.
+       */
+      const runDirectoryBatch = async (connectionId, dir, list) => {
+        setBusy(true)
+        setNote('上传中 0/' + list.length)
+        const folders = new Set()
+        for (const file of list) {
+          const relative = typeof file.webkitRelativePath === 'string' && file.webkitRelativePath.length > 0
+            ? file.webkitRelativePath
+            : String(file.name || '')
+          const parts = relative.split('/').filter(Boolean)
+          if (parts.length > 1) {
+            for (let depth = 1; depth < parts.length; depth += 1) folders.add(parts.slice(0, depth).join('/'))
+          }
+        }
+        try {
+          for (const folder of Array.from(folders).sort((a, b) => a.split('/').length - b.split('/').length)) {
+            const parts = folder.split('/')
+            const name = parts.pop()
+            const parent = parts.length === 0 ? dir : dir.replace(/\/$/, '') + '/' + parts.join('/')
+            await ensureRemoteDir(connectionId, parent, name)
+          }
+        } catch (failure) {
+          setBusy(false)
+          setNote('创建目录失败：' + (failure instanceof Error ? failure.message : String(failure)))
+          return
+        }
+        setBusy(false)
+        const flat = list.map((file) => {
+          const relative = typeof file.webkitRelativePath === 'string' && file.webkitRelativePath.length > 0
+            ? file.webkitRelativePath
+            : String(file.name || '')
+          const parts = relative.split('/').filter(Boolean)
+          const name = parts.pop() || String(file.name || 'upload.bin')
+          const target = parts.length === 0 ? dir : dir.replace(/\/$/, '') + '/' + parts.join('/')
+          return { file, name, dir: target }
+        })
+        await runBatch(connectionId, dir, flat.map((row) => row.file), flat)
+      }
+      const runBatch = async (connectionId, dir, list, targets) => {
         setBusy(true)
         setNote('上传中 0/' + list.length)
         const skipDirs = new Set()
@@ -4367,17 +4431,21 @@ window.__ModuleLoader__.load({
         let stopped = false
         for (let index = 0; index < list.length; index += 1) {
           const file = list[index]
-          const name = file && typeof file.name === 'string' && file.name.trim().length > 0 ? file.name : 'upload.bin'
-          if (skipDirs.has(dir)) {
+          const row = targets === undefined ? null : targets[index]
+          const targetDir = row !== null && row !== undefined ? row.dir : dir
+          const name = row !== null && row !== undefined && typeof row.name === 'string'
+            ? row.name
+            : (file && typeof file.name === 'string' && file.name.trim().length > 0 ? file.name : 'upload.bin')
+          if (skipDirs.has(targetDir)) {
             skipped += 1
             setNote('上传中 ' + (done + failed + skipped) + '/' + list.length)
             continue
           }
-          const taskId = sink.begin('upload', name, dir + '/' + name, file && typeof file.size === 'number' ? file.size : 0)
+          const taskId = sink.begin('upload', name, targetDir + '/' + name, file && typeof file.size === 'number' ? file.size : 0)
           const limit = uploadLimitBytes()
           const result = file && typeof file.size === 'number' && file.size > limit
             ? { ok: false, message: '「' + name + '」超过 ' + uploadLimitLabel(limit) + ' 上限，未上传。' }
-            : await send(connectionId, dir, file, name, taskId)
+            : await send(connectionId, targetDir, file, name, taskId)
           if (result.ok) {
             sink.done(taskId)
             done += 1
@@ -4406,7 +4474,7 @@ window.__ModuleLoader__.load({
             stopped = true
             break
           }
-          if (choice === 'dir') skipDirs.add(dir)
+          if (choice === 'dir') skipDirs.add(targetDir)
         }
         setBusy(false)
         const parts = ['已上传 ' + done]
@@ -4428,13 +4496,26 @@ window.__ModuleLoader__.load({
         if (node) node.value = ''
         if (batchRef.current) return
         batchRef.current = true
+        const isTree = list.some((file) => file !== null && file !== undefined
+          && typeof file.webkitRelativePath === 'string' && file.webkitRelativePath.length > 0)
         try {
-          await runBatch(target.connectionId, target.dir, list)
+          if (isTree) await runDirectoryBatch(target.connectionId, target.dir, list)
+          else await runBatch(target.connectionId, target.dir, list)
         } finally {
           batchRef.current = false
         }
       }
-      return { busy, note, prompt, decide, pick, onFiles, inputRef }
+      const dirInputRef = React.useRef(null)
+      const pickDirectory = (target) => {
+        if (busy) return
+        const connectionId = target && target.connectionId ? String(target.connectionId) : ''
+        const dir = target && typeof target.path === 'string' ? target.path : ''
+        if (connectionId === '' || dir === '') return
+        targetRef.current = { connectionId, dir }
+        const node = dirInputRef.current
+        if (node !== null) node.click()
+      }
+      return { busy, note, prompt, decide, pick, pickDirectory, onFiles, inputRef, dirInputRef }
     }
 
     // --------------------------------------------------- remote files sidebar
@@ -4866,7 +4947,9 @@ window.__ModuleLoader__.load({
     // DSH's own file preview is read-only, so editing lives in our own tab type.
 
     const EDIT_KIND = 'remote-deck-edit'
-    const EDIT_MAX_BYTES = 2 * 1024 * 1024
+    // The read window the editor asks for. A file larger than this is not
+    // opened here, because a truncated buffer would save a truncated file.
+    const EDIT_MAX_BYTES = 8 * 1024 * 1024
     const EDIT_TEXT_EXT = /\.(txt|text|md|markdown|mdx|rst|json|jsonc|ya?ml|toml|ini|cfg|conf|env|log|csv|tsv|js|mjs|cjs|jsx|ts|tsx|vue|svelte|py|rb|go|rs|c|h|cc|cpp|hpp|cs|java|kt|kts|swift|sh|bash|zsh|fish|ps1|sql|html?|css|scss|sass|less|xml|php|lua|pl|r|jl|ex|exs|erl|hs|scala|clj|gradle|properties|lock|gitignore)$/i
 
     /** Text-ish files open in our editor; everything else keeps the DSH preview. */
@@ -5353,7 +5436,7 @@ window.__ModuleLoader__.load({
             h('div', { className: 'rd-rf-statetitle' }, state === 'binary' ? '这个文件是二进制内容' : '文件过大，未完整载入'),
             h('div', { className: 'rd-rf-statehint' }, state === 'binary'
               ? '编辑器只处理文本；可以用 DSH 的预览查看它。'
-              : '超过 ' + formatBytes(EDIT_MAX_BYTES) + ' 的文件不在编辑器里打开。'),
+              : '超过 ' + formatBytes(EDIT_MAX_BYTES) + ' 的文件不在编辑器里打开：只载入一部分会让保存截断原文件。'),
             h('button', { className: 'rd-rf-statebtn', type: 'button', onClick: openInPreview }, h(Icon, { name: 'file', size: 13 }), '用 DSH 预览打开')))
       }
       if (state === 'error') {
@@ -6011,6 +6094,13 @@ window.__ModuleLoader__.load({
             run: () => void archive.run({ connectionId, path: currentDir, name: '' }),
           },
           {
+            key: 'uploaddir',
+            icon: 'upload',
+            label: '上传文件夹',
+            title: '把整个文件夹上传到 ' + currentDir,
+            run: () => upload.pickDirectory({ connectionId, path: currentDir }),
+          },
+          {
             key: 'mkdir',
             icon: 'folder',
             label: '新建文件夹',
@@ -6269,6 +6359,15 @@ window.__ModuleLoader__.load({
           ref: upload.inputRef,
           type: 'file',
           multiple: true,
+          style: { display: 'none' },
+          onChange: upload.onFiles,
+        }),
+        h('input', {
+          ref: upload.dirInputRef,
+          type: 'file',
+          multiple: true,
+          webkitdirectory: '',
+          directory: '',
           style: { display: 'none' },
           onChange: upload.onFiles,
         }),

@@ -11,6 +11,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - v1.1.0: full xterm.js terminal, i18n (zh/en), explicit debug switch, virtualized large folders.
 
+## [1.22.0] - 2026-11-13
+
+### Added
+
+- **Upload a whole folder.** The empty-space menu gained 上传文件夹: the picker reports `webkitRelativePath`, so the
+  plugin creates every directory shallow-first on the host (an existing one answers `409 EXISTS` and is treated as
+  success) and then sends each file into its own folder. Empty directories do not survive, because the browser
+  picker never reports them.
+- **The editor opens files up to 8 MiB** instead of 2 MiB, and the host read window is 32 MiB. Beyond the window the
+  page still refuses rather than showing a truncated buffer, because saving that buffer would truncate the file.
+
 ## [1.21.0] - 2026-11-13
 
 ### Added
