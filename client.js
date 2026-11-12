@@ -621,8 +621,6 @@ window.__ModuleLoader__.load({
       .rd-gcard-keys { flex:none;background:transparent;padding:0;color:var(--dsw-alias-label-tertiary,#8f959e) }
       [data-rd-theme="dark"] .rd-gcard:hover { background:rgba(255,255,255,.06) }
       [data-rd-theme="dark"] .rd-gcard-tag { background:rgba(47,125,221,.24);color:#8cc6ff }
-
-      /* ---- remote files page ---- */
       .rd-rf { display:flex;flex-direction:column;height:100%;min-height:0;font-size:12px;color:var(--dsw-alias-label-primary,#1f2329) }
       .rd-rf-head { flex:none;display:flex;align-items:center;gap:8px;padding:10px 10px 6px;min-width:0 }
       .rd-rf-title { flex:1;min-width:0;display:flex;align-items:center;gap:7px }
@@ -5116,9 +5114,10 @@ window.__ModuleLoader__.load({
         for (const off of offs) off()
       }, 'remote-deck: slots')
 
-      // The tab type is what makes the pane above reachable: DSH lists a guide
-      // card for every registered type. Injected dynamically so a DSH without
-      // the sidebar services still gets every other surface.
+      // The tab type is what makes the pane above reachable from the strip's add
+      // control. It deliberately contributes no `guide` entry: every session's
+      // guide page must keep DSH's own card set. Injected dynamically so a DSH
+      // without the sidebar services still gets every other surface.
       if (typeof ctx.inject === 'function') {
         ctx.inject(['sidebarRightTabs'], (scope) => {
           scope.effect(() => scope.sidebarRightTabs.register({
@@ -5126,12 +5125,6 @@ window.__ModuleLoader__.load({
             kind: REMOTE_FILES_KIND,
             multiple: false,
             title: () => '远端文件',
-            guide: [{
-              id: 'browse',
-              order: 30,
-              title: () => '远端文件',
-              description: () => '浏览、上传、下载与删除远端文件',
-            }],
           }), 'remote-deck: files tab type')
         })
       }

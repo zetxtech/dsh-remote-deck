@@ -11,6 +11,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - v1.1.0: full xterm.js terminal, i18n (zh/en), explicit debug switch, virtualized large folders.
 
+## [1.13.2] - 2026-11-12
+
+### Fixed
+
+- A local workspace showed a 远端文件 card in its guide. Declaring a guide entry on the tab type made the
+  guide render an extra card in *every* Session, which is not the design: this plugin only re-renders the
+  built-in workspace-files card — a Remote Deck workspace opens the remote file page, a local workspace opens
+  DSH's own tab. The guide entry is gone, so the guide lists DSH's own cards in every Session and the remote
+  page is reached from the card (in a remote workspace) or the sidebar's add-tab control.
+
+### Notes
+
+- The card takeover itself is unchanged and keeps its escape hatch: `localStorage['rd-guide-takeover'] = '0'`
+  plus a reload restores DSH's own card and behaviour.
+
 ## [1.13.1] - 2026-11-12
 
 ### Changed
