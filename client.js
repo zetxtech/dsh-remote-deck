@@ -5024,6 +5024,14 @@ window.__ModuleLoader__.load({
             kind: REMOTE_FILES_KIND,
             multiple: false,
             title: () => '远端文件',
+            // Our own type's guide card, alongside DSH's own files card — the
+            // built-in card is neither shadowed nor displaced.
+            guide: [{
+              id: 'browse',
+              order: 30,
+              title: () => '远端文件',
+              description: () => '浏览、上传、下载与删除远端文件',
+            }],
           }), 'remote-deck: files tab type')
         })
       }

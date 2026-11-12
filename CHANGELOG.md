@@ -11,6 +11,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - v1.1.0: full xterm.js terminal, i18n (zh/en), explicit debug switch, virtualized large folders.
 
+## [1.13.4] - 2026-11-12
+
+### Added
+
+- A **远端文件** card in the guide, sitting *beside* DSH's own 工作区文件 card instead of in its place. The
+  card belongs to this plugin's own tab type, which is the documented path: 1.13.2 and 1.13.3 established that
+  shadowing another provider's card suppresses it without rendering a replacement. In a local workspace the
+  card is present and its page explains that it only browses remote files.
+
+### Notes
+
+- Nothing shadows, replaces or re-renders DSH's cards any more: one card each, no shared slot.
+
 ## [1.13.3] - 2026-11-12
 
 ### Fixed
