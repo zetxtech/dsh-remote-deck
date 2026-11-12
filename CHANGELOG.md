@@ -11,6 +11,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - v1.1.0: full xterm.js terminal, i18n (zh/en), explicit debug switch, virtualized large folders.
 
+## [1.14.0] - 2026-11-12
+
+### Added
+
+- **Every entry type has an icon.** `/files` now reports a `kind` per row — dir, link, fifo, socket, char,
+  block, file — and the page maps each to its own glyph, falling back to a generic file icon for anything
+  unknown. A row whose size or time is missing shows `—` instead of `0 B`.
+  The kind is read from the POSIX mode bits first: measured against a real host, ssh2's `isSocket()` and
+  `isBlockDevice()` both report false for a socket (`mode` 140775) and a block device (`060660`), which
+  would have filed them as plain files. A symlink is never followed, so a link to a directory stays a link.
+- **Show/hide hidden files** from the header (eye toggle, remembered per browser, hidden by default).
+- **Multi-select**: Ctrl/Cmd-click toggles, Shift-click selects a range, empty space or Escape clears, and
+  the header shows how many are selected. Downloading a selection packs it into **one** archive
+  (`?path=a&path=b…`, flat members, missing paths skipped rather than failing the download); deleting a
+  selection asks once — 永久删除 N 项, with the first names and paths — then removes them one by one and
+  reports how many succeeded and failed instead of stopping at the first error.
+- **Double-clicking a file opens it in a new tab** through DSH's own navigation (`tab.actions.openResource`
+  with the same address shape the built-in file tree builds), leaving the current page in place.
+
+### Notes
+
+- The archive route accepts repeated `path` parameters (up to 200); a single path behaves exactly as before,
+  byte for byte. Paths are validated, duplicates folded, and a path that no longer exists only produces a
+  debug log line instead of a failed archive.
+- Verified on a real host: a fixture with a socket, a FIFO, a dangling link, a link to a directory and a
+  block device classifies correctly; a multi-path download produced flat members (`a.txt`, `b.txt`,
+  `c.txt`), left the symlink and its target out, and still packed a single directory's subtree.
+
 ## [1.13.4] - 2026-11-12
 
 ### Added

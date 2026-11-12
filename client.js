@@ -335,6 +335,10 @@ window.__ModuleLoader__.load({
       filetext: '<path d="M6 2h7l5 5v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z"/><path d="M13 2v6h6"/><path d="M8.5 13h7M8.5 16.5h4"/>',
       image: '<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.5"/><path d="M4 17.5 9 12l3.5 3.5L15 13l5 5"/>',
       archive: '<path d="M3 7.5A2.5 2.5 0 0 1 5.5 5h13A2.5 2.5 0 0 1 21 7.5V10H3z"/><path d="M4.5 10v8.5a1 1 0 0 0 1 1h13a1 1 0 0 0 1-1V10"/><path d="M10 13.5h4"/>',
+      symlink: '<path d="M9.5 14.5 6 18a3 3 0 0 1-4.2-4.2l3.5-3.5"/><path d="M14.5 9.5 18 6a3 3 0 0 1 4.2 4.2l-3.5 3.5"/><path d="M10 14l4-4"/>',
+      device: '<rect x="8" y="8" width="8" height="8" rx="1.6"/><path d="M10.5 3.5v4.5M13.5 3.5v4.5M10.5 16v4.5M13.5 16v4.5M3.5 10.5H8M3.5 13.5H8M16 10.5h4.5M16 13.5h4.5"/>',
+      eye: '<path d="M2.2 12S5.8 5.6 12 5.6 21.8 12 21.8 12 18.2 18.4 12 18.4 2.2 12 2.2 12z"/><circle cx="12" cy="12" r="2.6"/>',
+      eyeoff: '<path d="M4 4l16 16"/><path d="M9.8 5.8A10.4 10.4 0 0 1 12 5.6c6.2 0 9.8 6.4 9.8 6.4a17.6 17.6 0 0 1-3.2 4.1"/><path d="M6.6 7.7A16.4 16.4 0 0 0 2.2 12s3.6 6.4 9.8 6.4c1.2 0 2.3-.2 3.3-.5"/><path d="M10.1 10.2a2.6 2.6 0 0 0 3.7 3.7"/>',
     }
 
     function Icon({ name, size = 16, style }) {
@@ -618,6 +622,8 @@ window.__ModuleLoader__.load({
       .rd-rf-act { width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;padding:0;border:0;border-radius:8px;background:transparent;color:var(--dsw-alias-label-secondary,#5f6672);cursor:pointer }
       .rd-rf-act:hover:not([disabled]) { background:var(--dsw-alias-interactive-bg-hover,rgba(15,23,42,.06));color:var(--dsw-alias-label-primary,#1f2329) }
       .rd-rf-act[disabled] { opacity:.4;cursor:default }
+      .rd-rf-act.on { background:rgba(47,125,221,.14);color:#1d6fc4 }
+      .rd-rf-selcount { flex:none;padding:2px 8px;border-radius:999px;background:rgba(47,125,221,.12);color:#1d6fc4;font-size:10.5px;white-space:nowrap }
       .rd-rf-crumbs { flex:none;display:flex;align-items:center;flex-wrap:wrap;gap:1px;padding:0 10px 8px;font-size:11.5px;line-height:18px }
       .rd-rf-crumb { max-width:150px;padding:2px 5px;border:0;border-radius:6px;background:transparent;color:var(--dsw-alias-label-secondary,#5f6672);font:inherit;font-size:11.5px;cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap }
       .rd-rf-crumb:hover { background:var(--dsw-alias-interactive-bg-hover,rgba(15,23,42,.06));color:var(--dsw-alias-label-primary,#1f2329) }
@@ -663,6 +669,8 @@ window.__ModuleLoader__.load({
       .rd-tf-path { margin-top:5px;font-family:var(--rd-term-font,ui-monospace,Consolas,monospace);font-size:11px;color:var(--dsw-alias-label-secondary,#8f959e);overflow-wrap:anywhere }
       [data-rd-theme="dark"] .rd-rf-act:hover:not([disabled]), [data-rd-theme="dark"] .rd-rf-crumb:hover, [data-rd-theme="dark"] .rd-rf-row:hover, [data-rd-theme="dark"] .rd-rf-statebtn:hover, [data-rd-theme="dark"] .rd-rf-taskx:hover { background:rgba(255,255,255,.07) }
       [data-rd-theme="dark"] .rd-rf-row.sel { background:rgba(47,125,221,.2) }
+      [data-rd-theme="dark"] .rd-rf-act.on { background:rgba(47,125,221,.24);color:#8cc6ff }
+      [data-rd-theme="dark"] .rd-rf-selcount { background:rgba(47,125,221,.24);color:#8cc6ff }
       [data-rd-theme="dark"] .rd-rf-tasks { border-top-color:#2c3138 }
       [data-rd-theme="dark"] .rd-rf-stateicon { background:rgba(255,255,255,.06) }
       [data-rd-theme="dark"] .rd-rf-statebtn { border-color:#2c3138 }
@@ -3722,12 +3730,18 @@ window.__ModuleLoader__.load({
       return parts.length > 0 ? parts[parts.length - 1] : ''
     }
 
-    /** Directory archive direct link; the host streams a tar.gz. */
+    /**
+     * Archive direct link; the host streams one flat tar.gz. `dir` is a single
+     * directory or a whole selection, which repeats the `path` parameter.
+     */
     function startArchiveDownload(connectionId, dir, name, options) {
       const info = boot()
       if (info === null) return false
-      const file = (typeof name === 'string' && name.length > 0 ? name : baseNameOf(dir) || 'download') + '.tar.gz'
-      const url = apiBase() + '/connections/' + encodeURIComponent(connectionId) + '/archive?path=' + encodeURIComponent(dir) + '&token=' + encodeURIComponent(info.token)
+      const paths = (Array.isArray(dir) ? dir : [dir]).filter((row) => typeof row === 'string' && row.length > 0)
+      if (paths.length === 0) return false
+      const file = (typeof name === 'string' && name.length > 0 ? name : baseNameOf(paths[0]) || 'download') + '.tar.gz'
+      const query = paths.map((row) => 'path=' + encodeURIComponent(row)).join('&')
+      const url = apiBase() + '/connections/' + encodeURIComponent(connectionId) + '/archive?' + query + '&token=' + encodeURIComponent(info.token)
       const tasks = options === undefined || options === null ? undefined : options.tasks
       if (tasks !== undefined && tasks !== null) tasks.download(url, file, dir)
       else startAnchorDownload(url, file)
@@ -3813,10 +3827,21 @@ window.__ModuleLoader__.load({
       }
       const run = async (target) => {
         const connectionId = target && target.connectionId ? String(target.connectionId) : ''
-        const dir = target && typeof target.path === 'string' ? target.path : ''
-        if (connectionId === '' || dir === '' || busy || runRef.current) return
+        const requested = target !== null && target !== undefined && Array.isArray(target.paths)
+          ? target.paths
+          : [target !== null && target !== undefined ? target.path : undefined]
+        const paths = requested.filter((row) => typeof row === 'string' && row.length > 0)
+        if (connectionId === '' || paths.length === 0 || busy || runRef.current) return
         runRef.current = true
         try {
+          // A selection is one archive request; only a single directory keeps
+          // the pre-flight scan and its confirmation.
+          if (paths.length > 1) {
+            setNote('正在打包 ' + paths.length + ' 项…')
+            startArchiveDownload(connectionId, paths, target.name, { tasks })
+            return
+          }
+          const dir = paths[0]
           setBusy(true)
           setNote('正在扫描目录…')
           let scan = null
@@ -4278,10 +4303,52 @@ window.__ModuleLoader__.load({
      * confirmation and the task strip; transfers come from the shared hooks so
      * the console file page and this page cannot drift apart.
      */
+    const SHOW_HIDDEN_KEY = 'rd-show-hidden'
+
+    /** Hidden files stay out of the way until the eye in the head turns on. */
+    function loadShowHidden() {
+      try {
+        return globalThis.localStorage !== undefined && globalThis.localStorage !== null
+          ? globalThis.localStorage.getItem(SHOW_HIDDEN_KEY) === '1'
+          : false
+      } catch {
+        return false
+      }
+    }
+
+    function saveShowHidden(value) {
+      try {
+        if (globalThis.localStorage !== undefined && globalThis.localStorage !== null) {
+          globalThis.localStorage.setItem(SHOW_HIDDEN_KEY, value === true ? '1' : '0')
+        }
+      } catch {
+        /* private mode */
+      }
+    }
+
+    function isRemoteDir(entry) {
+      if (entry === null || entry === undefined) return false
+      return entry.type === 'dir' || entry.kind === 'dir'
+    }
+
+    function remoteEntryName(entry) {
+      return entry === null || entry === undefined || entry.name === undefined || entry.name === null ? '' : String(entry.name)
+    }
+
+    /**
+     * `dsh-resource://file/session/<sessionId>/<path>`, exactly the address DSH's
+     * own file tree builds for a path outside the session root (`fileAddressFor`).
+     */
+    function remoteFileAddress(sessionId, filePath) {
+      const normalized = String(filePath === undefined || filePath === null ? '' : filePath).replace(/\\/g, '/').replace(/^(?:\.\/)+/, '')
+      const encoded = normalized.split('/').map((segment) => encodeURIComponent(segment).replace(/%3A/gi, ':')).join('/')
+      return 'dsh-resource://file/session/' + encodeURIComponent(String(sessionId)) + '/' + encoded
+    }
+
     /** Directories first, then names in natural order. */
     function compareRemoteEntries(left, right) {
-      const leftRank = left !== null && left !== undefined && left.type === 'dir' ? 0 : 1
-      const rightRank = right !== null && right !== undefined && right.type === 'dir' ? 0 : 1
+      const leftRank = isRemoteDir(left) ? 0 : 1
+      const rightRank = isRemoteDir(right) ? 0 : 1
       if (leftRank !== rightRank) return leftRank - rightRank
       const leftName = String(left !== null && left !== undefined && left.name !== undefined ? left.name : '')
       const rightName = String(right !== null && right !== undefined && right.name !== undefined ? right.name : '')
@@ -4296,15 +4363,51 @@ window.__ModuleLoader__.load({
     const REMOTE_ICON_IMAGE = /\.(png|jpe?g|gif|webp|bmp|ico|avif|tiff?|heic|heif|psd|raw)$/i
     const REMOTE_ICON_ARCHIVE = /\.(zip|tar|gz|tgz|bz2|xz|zst|7z|rar|lz4|jar|war|ear|deb|rpm|apk|dmg|iso|whl)$/i
 
-    /** Folder, text, image, archive, or the generic file glyph. */
+    const REMOTE_SPECIAL_ICON = { fifo: 'device', socket: 'device', char: 'device', block: 'device' }
+
+    /**
+     * Directory, symlink, device node, or — for a regular file — text / image /
+     * archive by extension. An unknown or missing kind never renders nothing: it
+     * falls back to the generic file glyph.
+     */
     function remoteIconName(entry) {
       if (entry === null || entry === undefined) return 'file'
-      if (entry.type === 'dir') return 'folder'
-      const name = String(entry.name === undefined || entry.name === null ? '' : entry.name)
+      const kind = typeof entry.kind === 'string' && entry.kind.length > 0 ? entry.kind : ''
+      if (isRemoteDir(entry)) return 'folder'
+      if (kind === 'link') return 'symlink'
+      if (REMOTE_SPECIAL_ICON[kind] !== undefined) return REMOTE_SPECIAL_ICON[kind]
+      // Only a known regular file gets its extension glyph; an unknown or
+      // missing kind reads as the generic file instead of nothing at all.
+      if (kind !== 'file') return 'file'
+      const name = remoteEntryName(entry)
       if (REMOTE_ICON_IMAGE.test(name)) return 'image'
       if (REMOTE_ICON_ARCHIVE.test(name)) return 'archive'
       if (REMOTE_ICON_TEXT.test(name) || /^(makefile|dockerfile|readme|license|changelog)$/i.test(name)) return 'filetext'
       return 'file'
+    }
+
+    /** A size of zero or nothing at all reads as unknown, not as "0 B". */
+    function remoteSizeText(entry) {
+      if (isRemoteDir(entry)) return ''
+      const size = entry === null || entry === undefined ? undefined : entry.size
+      if (typeof size !== 'number' || !Number.isFinite(size) || size <= 0) return '—'
+      return formatBytes(size)
+    }
+
+    /** Likewise for a missing mtime. */
+    function remoteTimeText(entry) {
+      const text = ago(entry === null || entry === undefined ? undefined : entry.mtime)
+      return text.length > 0 ? text : '—'
+    }
+
+    function remoteKindLabel(entry) {
+      const kind = entry === null || entry === undefined || typeof entry.kind !== 'string' ? '' : entry.kind
+      if (kind === 'link') return '软链接'
+      if (kind === 'fifo') return '命名管道'
+      if (kind === 'socket') return '套接字'
+      if (kind === 'char') return '字符设备'
+      if (kind === 'block') return '块设备'
+      return ''
     }
 
     /** The parent of a remote POSIX directory; the root is its own parent. */
@@ -4324,10 +4427,16 @@ window.__ModuleLoader__.load({
       const [entries, setEntries] = React.useState([])
       const [loading, setLoading] = React.useState(false)
       const [error, setError] = React.useState('')
-      const [selected, setSelected] = React.useState('')
+      const [selection, setSelection] = React.useState([])
+      const [anchor, setAnchor] = React.useState('')
+      const [showHidden, setShowHidden] = React.useState(loadShowHidden)
       const [menu, setMenu] = React.useState(null)
       const [confirming, setConfirming] = React.useState(null)
       const menuRef = React.useRef(null)
+      const tabInfo = typeof props.useTabInfo === 'function' ? props.useTabInfo() : null
+      const tabActions = tabInfo !== null && tabInfo !== undefined && tabInfo.tab !== undefined && tabInfo.tab !== null
+        ? tabInfo.tab.actions
+        : null
       const closeMenu = React.useCallback(() => setMenu(null), [])
       const tasks = useTransferTasks()
       const upload = useDirectoryUpload(tasks)
@@ -4342,7 +4451,8 @@ window.__ModuleLoader__.load({
           const data = await call('/connections/' + encodeURIComponent(connectionId) + '/files?path=' + encodeURIComponent(dir))
           setPath(typeof data.path === 'string' ? data.path : dir)
           setEntries(Array.isArray(data.entries) ? data.entries : [])
-          setSelected('')
+          setSelection([])
+          setAnchor('')
         } catch (failure) {
           setError(failure instanceof Error ? failure.message : String(failure))
         } finally {
@@ -4359,9 +4469,14 @@ window.__ModuleLoader__.load({
       }, [connectionId, rootPath])
 
       React.useEffect(() => {
-        if (confirming === null) return undefined
         const onKey = (event) => {
-          if (event.key === 'Escape') setConfirming(null)
+          if (event.key !== 'Escape') return
+          if (confirming !== null) {
+            setConfirming(null)
+            return
+          }
+          setSelection([])
+          setAnchor('')
         }
         document.addEventListener('keydown', onKey)
         return () => document.removeEventListener('keydown', onKey)
@@ -4380,7 +4495,46 @@ window.__ModuleLoader__.load({
       const status = host ? host.status : 'disconnected'
       const segments = currentDir.split('/').filter(Boolean)
       const atRoot = segments.length === 0
-      const visible = entries.slice().sort(compareRemoteEntries)
+      const visible = entries
+        .filter((entry) => showHidden || !remoteEntryName(entry).startsWith('.'))
+        .sort(compareRemoteEntries)
+      const toggleHidden = () => setShowHidden((current) => {
+        const next = !current
+        saveShowHidden(next)
+        return next
+      })
+      const selectedEntries = visible.filter((entry) => selection.includes(entry.path))
+      const onRowClick = (event, entry, index) => {
+        const additive = event !== undefined && event !== null && (event.ctrlKey === true || event.metaKey === true)
+        const range = event !== undefined && event !== null && event.shiftKey === true
+        if (range && anchor.length > 0) {
+          const from = visible.findIndex((row) => row.path === anchor)
+          if (from >= 0) {
+            const start = Math.min(from, index)
+            const end = Math.max(from, index)
+            setSelection(visible.slice(start, end + 1).map((row) => row.path))
+            return
+          }
+        }
+        if (additive) {
+          setAnchor(entry.path)
+          setSelection((current) => (current.includes(entry.path) ? current.filter((path) => path !== entry.path) : [...current, entry.path]))
+          return
+        }
+        setAnchor(entry.path)
+        setSelection([entry.path])
+      }
+      const openFilePreview = (entry) => {
+        if (tabActions === null || tabActions === undefined || typeof tabActions.openResource !== 'function') return false
+        try {
+          // Same address shape DSH's own tree uses; no `replaceTab`, so the
+          // preview lands in a new tab instead of taking this page over.
+          tabActions.openResource(remoteFileAddress(sessionId, entry.path))
+          return true
+        } catch {
+          return false
+        }
+      }
       const crumbNodes = [h('button', {
         key: 'root',
         type: 'button',
@@ -4406,7 +4560,9 @@ window.__ModuleLoader__.load({
       const openEntryMenu = (event, entry) => {
         event.preventDefault()
         event.stopPropagation()
-        setSelected(entry.path)
+        // A right click inside the selection keeps it; anywhere else selects that row.
+        setSelection((current) => (current.includes(entry.path) ? current : [entry.path]))
+        setAnchor(entry.path)
         setMenu({ x: Number(event.clientX) || 0, y: Number(event.clientY) || 0, entry })
       }
       const openBlankMenu = (event) => {
@@ -4414,8 +4570,16 @@ window.__ModuleLoader__.load({
         setMenu({ x: Number(event.clientX) || 0, y: Number(event.clientY) || 0, entry: null })
       }
       const enter = (entry) => {
-        if (entry.type !== 'dir') return
+        if (!isRemoteDir(entry)) return false
         void load(entry.path)
+        return true
+      }
+      const onRowDoubleClick = (entry) => {
+        if (isRemoteDir(entry)) {
+          enter(entry)
+          return
+        }
+        openFilePreview(entry)
       }
       const openWorkspace = async (dir) => {
         try {
@@ -4428,67 +4592,98 @@ window.__ModuleLoader__.load({
         if (entry.type === 'dir') void archive.run({ connectionId, path: entry.path, name: entry.name })
         else startFileDownload(connectionId, entry.path, entry.name, { tasks })
       }
-      const runDelete = async (target) => {
-        const id = tasks.begin('delete', target.name, target.path, 0)
+      const runDelete = async (request) => {
+        const list = request !== null && request !== undefined && Array.isArray(request.targets) ? request.targets : []
+        if (list.length === 0) return
+        const multi = list.length > 1
         const controller = typeof AbortController === 'function' ? new AbortController() : null
+        const id = tasks.begin('delete', multi ? list.length + ' 项' : list[0].name, multi ? '' : list[0].path, list.length)
         if (controller !== null) tasks.bind(id, controller)
-        try {
-          const deleted = await deleteRemoteEntry(connectionId, target.path, controller)
-          if (controller !== null && controller.signal.aborted) {
-            tasks.cancelled(id)
-            return
+        let done = 0
+        let failed = 0
+        let firstError = ''
+        let removed = { files: 0, dirs: 0 }
+        for (const target of list) {
+          if (controller !== null && controller.signal.aborted) break
+          try {
+            const deleted = await deleteRemoteEntry(connectionId, target.path, controller)
+            done += 1
+            removed = { files: removed.files + countOf(deleted.files), dirs: removed.dirs + countOf(deleted.dirs) }
+          } catch (failure) {
+            if (controller !== null && controller.signal.aborted) break
+            failed += 1
+            if (firstError.length === 0) firstError = failure instanceof Error ? failure.message : String(failure)
           }
-          tasks.done(id)
-          pushNotice('已永久删除 ' + target.name, countOf(deleted.files) + ' 个文件、' + countOf(deleted.dirs) + ' 个目录')
-          await load(currentDir)
-        } catch (failure) {
-          if (controller !== null && controller.signal.aborted) {
-            tasks.cancelled(id)
-            return
-          }
-          tasks.fail(id, failure instanceof Error ? failure.message : String(failure))
+          tasks.progress(id, done, list.length)
         }
+        if (controller !== null && controller.signal.aborted) {
+          tasks.cancelled(id)
+          return
+        }
+        if (failed === 0) {
+          tasks.done(id)
+          pushNotice(multi ? '已永久删除 ' + done + ' 项' : '已永久删除 ' + list[0].name,
+            countOf(removed.files) + ' 个文件、' + countOf(removed.dirs) + ' 个目录')
+        } else {
+          tasks.fail(id, '成功 ' + done + ' / 失败 ' + failed + '（' + firstError + '）')
+          pushNotice('删除完成：成功 ' + done + ' / 失败 ' + failed, firstError)
+        }
+        setSelection([])
+        setAnchor('')
+        await load(currentDir)
       }
       const menuItemsFor = () => {
         if (menu === null) return []
         const entry = menu.entry
         if (entry !== null && entry !== undefined) {
-          const isDir = entry.type === 'dir'
-          const taken = isDir && workspaceAt(stateWorkspaces, connectionId, entry.path) !== null
+          const targets = selection.length > 1 && selection.includes(entry.path) ? selectedEntries : [entry]
+          const multi = targets.length > 1
+          const single = multi ? null : targets[0]
+          const isDir = single !== null && isRemoteDir(single)
+          const taken = isDir && workspaceAt(stateWorkspaces, connectionId, single.path) !== null
           const items = [
             {
               key: 'download',
               icon: 'download',
-              label: '下载',
-              title: isDir ? '打包下载此目录（tar.gz）：' + entry.path : '下载此文件：' + entry.path,
-              run: () => startDownload(entry),
+              label: multi ? '下载 ' + targets.length + ' 项（打包）' : '下载',
+              title: multi
+                ? '把选中的 ' + targets.length + ' 项打包成一个 tar.gz'
+                : isDir ? '打包下载此目录（tar.gz）：' + single.path : '下载此文件：' + single.path,
+              run: () => {
+                if (multi) {
+                  const paths = targets.map((target) => target.path)
+                  void archive.run({ connectionId, paths, name: 'selection-' + paths.length + '-items' })
+                  return
+                }
+                if (single !== null) startDownload(single)
+              },
             },
           ]
-          if (isDir) {
+          if (multi || isDir) {
             items.push({
               key: 'upload',
               icon: 'upload',
               label: '上传到此处',
-              title: '上传文件到 ' + entry.path,
-              run: () => upload.pick({ connectionId, path: entry.path }),
+              title: '上传文件到 ' + currentDir,
+              run: () => upload.pick({ connectionId, path: currentDir }),
             })
           }
           items.push({
             key: 'delete',
             icon: 'trash',
-            label: '删除',
+            label: multi ? '删除 ' + targets.length + ' 项' : '删除',
             danger: true,
-            title: '永久删除 ' + entry.path,
-            run: () => setConfirming({ path: entry.path, name: entry.name, type: entry.type }),
+            title: multi ? '永久删除选中的 ' + targets.length + ' 项' : '永久删除 ' + single.path,
+            run: () => setConfirming({ targets }),
           })
           if (isDir) {
             items.push({
               key: 'workspace',
               icon: 'folder',
               label: '打开为工作区',
-              title: taken ? '该目录已经是工作区' : '把 ' + entry.path + ' 添加为 DSH 工作区',
+              title: taken ? '该目录已经是工作区' : '把 ' + single.path + ' 添加为 DSH 工作区',
               disabled: taken,
-              run: () => { void openWorkspace(entry.path) },
+              run: () => { void openWorkspace(single.path) },
             })
           }
           return items
@@ -4518,19 +4713,25 @@ window.__ModuleLoader__.load({
         ]
       }
       const menuItems = menuItemsFor()
-      const deletePrompt = confirming === null ? null : {
-        title: confirming.type === 'dir' ? '永久删除这个目录？' : '永久删除这个文件？',
-        subtitle: confirming.name,
-        body: h('div', null,
-          h('div', null, confirming.type === 'dir'
-            ? '将递归删除其下全部内容，永久删除、不可恢复。'
-            : '永久删除、不可恢复。'),
-          h('div', { className: 'rd-tf-path' }, confirming.path)),
-        actions: [
-          { value: 'delete', label: '永久删除', tone: 'danger' },
-          { value: 'cancel', label: '取消', tone: 'ghost' },
-        ],
-      }
+      const deletePrompt = confirming === null ? null : (() => {
+        const targets = Array.isArray(confirming.targets) ? confirming.targets : []
+        const multi = targets.length > 1
+        const first = targets[0]
+        const names = targets.slice(0, 3).map((target) => target.name).join('、') + (targets.length > 3 ? ' 等' : '')
+        return {
+          title: multi ? '永久删除 ' + targets.length + ' 项？' : (isRemoteDir(first) ? '永久删除这个目录？' : '永久删除这个文件？'),
+          subtitle: multi ? names : first.name,
+          body: h('div', null,
+            h('div', null, multi
+              ? '将永久删除 ' + targets.length + ' 项（含目录递归），不可恢复。'
+              : (isRemoteDir(first) ? '将递归删除其下全部内容，永久删除、不可恢复。' : '永久删除、不可恢复。')),
+            h('div', { className: 'rd-tf-path' }, targets.slice(0, 4).map((target) => target.path).join('\n'))),
+          actions: [
+            { value: 'delete', label: '永久删除', tone: 'danger' },
+            { value: 'cancel', label: '取消', tone: 'ghost' },
+          ],
+        }
+      })()
 
       return h('div', { className: 'rd-rf' },
         h('div', { className: 'rd-rf-head' },
@@ -4538,7 +4739,15 @@ window.__ModuleLoader__.load({
             h(Dot, { state: status }),
             h('span', { className: 'rd-rf-host', title: remote.path }, remote.host + ' · ' + (remote.folder || remote.title)),
           ),
+          selection.length > 1 ? h('span', { className: 'rd-rf-selcount', title: '右键可对整组操作' }, '已选 ' + selection.length + ' 项') : null,
           h('div', { className: 'rd-rf-acts' },
+            h('button', {
+              className: 'rd-rf-act' + (showHidden ? ' on' : ''),
+              type: 'button',
+              'aria-pressed': showHidden,
+              title: showHidden ? '隐藏以 . 开头的文件' : '显示隐藏文件（以 . 开头）',
+              onClick: toggleHidden,
+            }, h(Icon, { name: showHidden ? 'eyeoff' : 'eye', size: 14 })),
             h('button', {
               className: 'rd-rf-act',
               type: 'button',
@@ -4562,7 +4771,14 @@ window.__ModuleLoader__.load({
           ),
         ),
         h('div', { className: 'rd-rf-crumbs' }, crumbNodes),
-        h('div', { className: 'rd-rf-body', onContextMenu: openBlankMenu },
+        h('div', {
+          className: 'rd-rf-body',
+          onContextMenu: openBlankMenu,
+          onClick: () => {
+            setSelection([])
+            setAnchor('')
+          },
+        },
           error.length > 0
             ? h('div', { className: 'rd-rf-state' },
               h('span', { className: 'rd-rf-stateicon' }, h(Icon, { name: 'server', size: 22 })),
@@ -4583,19 +4799,25 @@ window.__ModuleLoader__.load({
                     onClick: () => upload.pick({ connectionId, path: currentDir }),
                   }, h(Icon, { name: 'upload', size: 13 }), '上传到此处'))
                 : h('div', { className: 'rd-rf-list' },
-                  visible.map((entry) => h('div', {
+                  visible.map((entry, index) => h('div', {
                     key: entry.path,
-                    className: 'rd-rf-row' + (entry.type === 'dir' ? ' dir' : '') + (selected === entry.path ? ' sel' : ''),
-                    'data-type': entry.type,
-                    title: entry.path,
-                    onClick: () => setSelected(entry.path),
-                    onDoubleClick: entry.type === 'dir' ? () => enter(entry) : undefined,
+                    className: 'rd-rf-row'
+                      + (isRemoteDir(entry) ? ' dir' : '')
+                      + (selection.includes(entry.path) ? ' sel' : ''),
+                    'data-type': entry.type === undefined || entry.type === null ? '' : entry.type,
+                    'data-kind': entry.kind === undefined || entry.kind === null ? '' : entry.kind,
+                    title: remoteKindLabel(entry).length > 0 ? entry.path + '（' + remoteKindLabel(entry) + '）' : entry.path,
+                    onClick: (event) => {
+                      if (event !== undefined && event !== null && typeof event.stopPropagation === 'function') event.stopPropagation()
+                      onRowClick(event, entry, index)
+                    },
+                    onDoubleClick: () => onRowDoubleClick(entry),
                     onContextMenu: (event) => openEntryMenu(event, entry),
                   },
                     h('span', { className: 'rd-rf-rowicon' }, h(Icon, { name: remoteIconName(entry), size: 14 })),
                     h('span', { className: 'rd-rf-rowname' }, entry.name),
-                    h('span', { className: 'rd-rf-rowsize' }, entry.type === 'dir' ? '' : formatBytes(entry.size)),
-                    h('span', { className: 'rd-rf-rowtime' }, entry.mtime ? ago(entry.mtime) : ''),
+                    h('span', { className: 'rd-rf-rowsize' }, remoteSizeText(entry)),
+                    h('span', { className: 'rd-rf-rowtime' }, remoteTimeText(entry)),
                   ))),
         ),
         tasks.tasks.length > 0 ? h('div', { className: 'rd-rf-tasks' },
