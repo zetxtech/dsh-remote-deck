@@ -636,6 +636,10 @@ window.__ModuleLoader__.load({
       .rd-rf-row.dir { cursor:pointer }
       .rd-rf-row:hover { background:var(--dsw-alias-interactive-bg-hover,rgba(15,23,42,.05)) }
       .rd-rf-row.sel { background:rgba(47,125,221,.12) }
+      .rd-rf-row.cut { opacity:.5 }
+      .rd-rf-row.drop { outline:2px solid var(--dsw-alias-state-business-primary,#1d6fc4);outline-offset:-2px }
+      .rd-rf-body:focus { outline:none }
+      .rd-rf-body:focus-visible { outline:none }
       .rd-rf-rowicon { flex:none;display:inline-flex;align-items:center;justify-content:center;width:16px;color:var(--dsw-alias-label-tertiary,#8f959e) }
       .rd-rf-row.dir .rd-rf-rowicon { color:#e0a92e }
       .rd-rf-rowname { flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12.5px }
@@ -669,6 +673,7 @@ window.__ModuleLoader__.load({
       .rd-tf-path { margin-top:5px;font-family:var(--rd-term-font,ui-monospace,Consolas,monospace);font-size:11px;color:var(--dsw-alias-label-secondary,#8f959e);overflow-wrap:anywhere }
       [data-rd-theme="dark"] .rd-rf-act:hover:not([disabled]), [data-rd-theme="dark"] .rd-rf-crumb:hover, [data-rd-theme="dark"] .rd-rf-row:hover, [data-rd-theme="dark"] .rd-rf-statebtn:hover, [data-rd-theme="dark"] .rd-rf-taskx:hover { background:rgba(255,255,255,.07) }
       [data-rd-theme="dark"] .rd-rf-row.sel { background:rgba(47,125,221,.2) }
+      [data-rd-theme="dark"] .rd-rf-row.drop { outline-color:#4f8fd6 }
       [data-rd-theme="dark"] .rd-rf-act.on { background:rgba(47,125,221,.24);color:#8cc6ff }
       [data-rd-theme="dark"] .rd-rf-selcount { background:rgba(47,125,221,.24);color:#8cc6ff }
       [data-rd-theme="dark"] .rd-rf-tasks { border-top-color:#2c3138 }
@@ -4335,12 +4340,14 @@ window.__ModuleLoader__.load({
     function taskIconName(kind) {
       if (kind === 'upload') return 'upload'
       if (kind === 'delete') return 'trash'
+      if (kind === 'transfer') return 'symlink'
       return 'download'
     }
 
     function taskKindLabel(kind) {
       if (kind === 'upload') return '上传'
       if (kind === 'delete') return '删除'
+      if (kind === 'transfer') return '复制/移动'
       return '下载'
     }
 
@@ -4512,6 +4519,67 @@ window.__ModuleLoader__.load({
      * the console file page and this page cannot drift apart.
      */
     const SHOW_HIDDEN_KEY = 'rd-show-hidden'
+    const FILE_CLIPBOARD_KEY = 'rd-file-clipboard'
+    /** Only our own list accepts this payload type. */
+    const FILE_DRAG_TYPE = 'application/x-remote-deck-paths'
+
+    function loadFileClipboard() {
+      try {
+        const raw = globalThis.localStorage === undefined || globalThis.localStorage === null
+          ? null
+          : globalThis.localStorage.getItem(FILE_CLIPBOARD_KEY)
+        const parsed = raw === null || raw === undefined ? null : JSON.parse(raw)
+        if (parsed === null || typeof parsed !== 'object' || !Array.isArray(parsed.paths)) return { paths: [], mode: 'copy' }
+        return {
+          paths: parsed.paths.filter((row) => typeof row === 'string' && row.length > 0),
+          mode: parsed.mode === 'cut' ? 'cut' : 'copy',
+        }
+      } catch {
+        return { paths: [], mode: 'copy' }
+      }
+    }
+
+    function saveFileClipboard(value) {
+      try {
+        if (globalThis.localStorage !== undefined && globalThis.localStorage !== null) {
+          globalThis.localStorage.setItem(FILE_CLIPBOARD_KEY, JSON.stringify(value))
+        }
+      } catch {
+        /* private mode */
+      }
+    }
+
+    /** The host's copy/move endpoint; one batch, per-item results. */
+    async function transferRemotePaths(connectionId, paths, toDir, move, controller) {
+      const info = boot()
+      if (info === null) throw new Error('remote-deck is not active yet; restart DSH')
+      const response = await fetch(apiBase() + '/connections/' + encodeURIComponent(connectionId) + '/transfer', {
+        method: 'POST',
+        headers: { 'x-dsh-remote-token': info.token, 'content-type': 'application/json' },
+        body: JSON.stringify({ paths, toDir, move: move === true }),
+        ...(controller === null ? {} : { signal: controller.signal }),
+      })
+      const body = await response.json().catch(() => null)
+      if (!response.ok || body === null || body.ok === false) {
+        const reason = body !== null && (body.error || body.message) ? (body.error || body.message) : 'HTTP ' + response.status
+        throw new Error(reason)
+      }
+      return Array.isArray(body.results) ? body.results : []
+    }
+
+    /** "N ok / M failed (first reason)" from the per-item results. */
+    function transferSummary(results, verb) {
+      const ok = results.filter((row) => row !== null && row !== undefined && row.ok === true).length
+      const failed = results.length - ok
+      const first = results.find((row) => row !== null && row !== undefined && row.ok !== true)
+      const reason = first === undefined ? '' : String(first.message || first.code || '失败')
+      return {
+        ok,
+        failed,
+        reason,
+        text: failed === 0 ? '已' + verb + ' ' + ok + ' 项' : '成功 ' + ok + ' / 失败 ' + failed + '（' + reason + '）',
+      }
+    }
 
     /** Hidden files stay out of the way until the eye in the head turns on. */
     function loadShowHidden() {
@@ -4638,6 +4706,8 @@ window.__ModuleLoader__.load({
       const [selection, setSelection] = React.useState([])
       const [anchor, setAnchor] = React.useState('')
       const [showHidden, setShowHidden] = React.useState(loadShowHidden)
+      const [clipboard, setClipboard] = React.useState(loadFileClipboard)
+      const [dropPath, setDropPath] = React.useState('')
       const [menu, setMenu] = React.useState(null)
       const [confirming, setConfirming] = React.useState(null)
       const menuRef = React.useRef(null)
@@ -4800,6 +4870,108 @@ window.__ModuleLoader__.load({
         if (entry.type === 'dir') void archive.run({ connectionId, path: entry.path, name: entry.name })
         else startFileDownload(connectionId, entry.path, entry.name, { tasks })
       }
+      const writeClipboard = (paths, mode) => {
+        const next = { paths, mode }
+        saveFileClipboard(next)
+        setClipboard(next)
+      }
+      /** One aggregate task row for a whole copy / move batch. */
+      const runTransfer = async (paths, toDir, move, verb, clearClipboard) => {
+        if (paths.length === 0) return
+        const controller = typeof AbortController === 'function' ? new AbortController() : null
+        const id = tasks.begin('transfer', paths.length + ' 项', toDir, paths.length)
+        if (controller !== null) tasks.bind(id, controller)
+        try {
+          const results = await transferRemotePaths(connectionId, paths, toDir, move, controller)
+          if (controller !== null && controller.signal.aborted) {
+            tasks.cancelled(id)
+            return
+          }
+          const summary = transferSummary(results, verb)
+          if (summary.failed === 0) tasks.done(id)
+          else tasks.fail(id, summary.text)
+          pushNotice(summary.text, toDir)
+          if (clearClipboard) writeClipboard([], 'copy')
+          await load(currentDir)
+        } catch (failure) {
+          if (controller !== null && controller.signal.aborted) {
+            tasks.cancelled(id)
+            return
+          }
+          const message = failure instanceof Error ? failure.message : String(failure)
+          tasks.fail(id, message)
+          pushNotice('操作失败', message)
+        }
+      }
+      const pasteClipboard = () => {
+        const clip = clipboard
+        if (clip.paths.length === 0) return
+        void runTransfer(clip.paths, currentDir, clip.mode === 'cut', clip.mode === 'cut' ? '移动' : '复制', clip.mode === 'cut')
+      }
+      const dropInto = (entry, paths) => {
+        if (!isRemoteDir(entry)) return
+        // Dropping onto a source directory, onto itself, or into a dragged
+        // directory is a no-op: no request at all.
+        const list = paths.filter((row) => row !== entry.path && !entry.path.startsWith(row + '/') && parentRemoteDir(row) !== entry.path)
+        if (list.length === 0) return
+        void runTransfer(list, entry.path, true, '移动', false)
+      }
+      const saveLocalEntry = async (entry) => {
+        const id = tasks.begin('download', entry.name, entry.path, 0)
+        try {
+          const result = await call('/connections/' + encodeURIComponent(connectionId) + '/save-local', { method: 'POST', body: { path: entry.path } })
+          tasks.done(id)
+          pushNotice('已保存到 ' + result.localPath, '')
+          await call('/connections/' + encodeURIComponent(connectionId) + '/reveal', { method: 'POST', body: { localPath: result.localPath } }).catch(() => {})
+        } catch (failure) {
+          const message = failure instanceof Error ? failure.message : String(failure)
+          tasks.fail(id, message)
+          pushToast(failure)
+        }
+      }
+      const onListKeyDown = (event) => {
+        const target = event === undefined || event === null ? null : event.target
+        if (target !== null && target !== undefined) {
+          const tag = String(target.tagName === undefined ? '' : target.tagName).toLowerCase()
+          if (tag === 'input' || tag === 'textarea' || tag === 'select' || target.isContentEditable === true) return
+        }
+        if (event.ctrlKey !== true && event.metaKey !== true) return
+        const key = String(event.key === undefined ? '' : event.key).toLowerCase()
+        if (key === 'a') {
+          event.preventDefault()
+          setSelection(visible.map((row) => row.path))
+          setAnchor(visible.length > 0 ? visible[0].path : '')
+          return
+        }
+        if (key === 'c' || key === 'x') {
+          if (selection.length === 0) return
+          event.preventDefault()
+          writeClipboard(selection, key === 'c' ? 'copy' : 'cut')
+          return
+        }
+        if (key === 'v') {
+          event.preventDefault()
+          pasteClipboard()
+        }
+      }
+      const readDragPaths = (event) => {
+        try {
+          const raw = event.dataTransfer.getData(FILE_DRAG_TYPE)
+          const parsed = raw === undefined || raw === null || raw.length === 0 ? [] : JSON.parse(raw)
+          return Array.isArray(parsed) ? parsed.filter((row) => typeof row === 'string' && row.length > 0) : []
+        } catch {
+          return []
+        }
+      }
+      const startDrag = (event, entry) => {
+        const paths = selection.length > 1 && selection.includes(entry.path) ? selectedEntries.map((row) => row.path) : [entry.path]
+        if (event.dataTransfer !== undefined && event.dataTransfer !== null) {
+          // Internal identity only: never a real File, so no other drop zone
+          // (the composer, the OS) treats it as an upload.
+          event.dataTransfer.setData(FILE_DRAG_TYPE, JSON.stringify(paths))
+          event.dataTransfer.effectAllowed = 'move'
+        }
+      }
       const runDelete = async (request) => {
         const list = request !== null && request !== undefined && Array.isArray(request.targets) ? request.targets : []
         if (list.length === 0) return
@@ -4878,6 +5050,15 @@ window.__ModuleLoader__.load({
               label: '上传到此处',
               title: '上传文件到 ' + currentDir,
               run: () => upload.pick({ connectionId, path: currentDir }),
+            })
+          }
+          if (!multi && !isDir) {
+            items.push({
+              key: 'savelocal',
+              icon: 'download',
+              label: '下载到本地并显示',
+              title: '保存到本机下载目录并在文件夹中显示：' + single.path,
+              run: () => { void saveLocalEntry(single) },
             })
           }
           items.push({
@@ -4985,6 +5166,8 @@ window.__ModuleLoader__.load({
         h('div', { className: 'rd-rf-crumbs' }, crumbNodes),
         h('div', {
           className: 'rd-rf-body',
+          tabIndex: 0,
+          onKeyDown: onListKeyDown,
           onContextMenu: openBlankMenu,
           onClick: () => {
             setSelection([])
@@ -5013,9 +5196,12 @@ window.__ModuleLoader__.load({
                 : h('div', { className: 'rd-rf-list' },
                   visible.map((entry, index) => h('div', {
                     key: entry.path,
+                    draggable: true,
                     className: 'rd-rf-row'
                       + (isRemoteDir(entry) ? ' dir' : '')
-                      + (selection.includes(entry.path) ? ' sel' : ''),
+                      + (selection.includes(entry.path) ? ' sel' : '')
+                      + (clipboard.mode === 'cut' && clipboard.paths.includes(entry.path) ? ' cut' : '')
+                      + (dropPath === entry.path ? ' drop' : ''),
                     'data-type': entry.type === undefined || entry.type === null ? '' : entry.type,
                     'data-kind': entry.kind === undefined || entry.kind === null ? '' : entry.kind,
                     title: remoteKindLabel(entry).length > 0 ? entry.path + '（' + remoteKindLabel(entry) + '）' : entry.path,
@@ -5025,6 +5211,21 @@ window.__ModuleLoader__.load({
                     },
                     onDoubleClick: () => onRowDoubleClick(entry),
                     onContextMenu: (event) => openEntryMenu(event, entry),
+                    onDragStart: (event) => startDrag(event, entry),
+                    onDragEnd: () => setDropPath(''),
+                    onDragOver: (event) => {
+                      if (!isRemoteDir(entry)) return
+                      event.preventDefault()
+                      if (event.dataTransfer !== undefined && event.dataTransfer !== null) event.dataTransfer.dropEffect = 'move'
+                      if (dropPath !== entry.path) setDropPath(entry.path)
+                    },
+                    onDragLeave: () => setDropPath((current) => (current === entry.path ? '' : current)),
+                    onDrop: (event) => {
+                      event.preventDefault()
+                      setDropPath('')
+                      if (!isRemoteDir(entry)) return
+                      dropInto(entry, readDragPaths(event))
+                    },
                   },
                     h('span', { className: 'rd-rf-rowicon' }, h(Icon, { name: remoteIconName(entry), size: 14 })),
                     h('span', { className: 'rd-rf-rowname' }, entry.name),

@@ -11,6 +11,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - v1.1.0: full xterm.js terminal, i18n (zh/en), explicit debug switch, virtualized large folders.
 
+## [1.16.0] - 2026-11-12
+
+### Added
+
+- **Keyboard in the remote file page**: Ctrl/Cmd+A selects everything visible, Ctrl/Cmd+C and Ctrl/Cmd+X put the
+  selection on the plugin's clipboard (cut rows stay dimmed, the clipboard survives a reload), and Ctrl/Cmd+V
+  pastes into the current directory — a copy or a move, one cancellable task, with conflicts reported as
+  成功 N / 失败 M instead of being overwritten. They only act while the list has focus, so a chat input keeps
+  its own Ctrl+C.
+- **Drag and drop inside the page**: drag a row onto a folder to move it (multi-select drags the whole selection);
+  dropping on itself, on a source directory or on empty space sends nothing.
+- **下载到本地并显示** in an entry's menu: saves the remote file into the local download folder and reveals it in
+  the file manager — the working answer to "drag it onto my desktop", which a browser-context plugin cannot do
+  (that needs Electron's `startDrag`, which plugins are not given).
+- `POST /connections/:id/transfer` backs all of it: copies or moves a batch (≤200) into a directory, recursing into
+  directories, rebuilding a symlink as a link instead of following it, never overwriting an existing destination
+  (`EXISTS`), reporting FIFOs, sockets and devices as `UNSUPPORTED` without failing the batch, refusing a
+  destination inside a source, and stopping on request abort.
+
+### Notes
+
+- Dragging a remote file **into the chat input** is not implemented: the composer accepts real files or DSH's
+  private `application/x-dsh-file` token, and a synthetic drop cannot be shown to be accepted. Its file-reference
+  path is the documented way in for now.
+- Verified on a real host: a directory copy kept nested files, rebuilt the symlink as a link pointing at the
+  original target (which stayed untouched), a second copy reported `EXISTS`, a move removed its source, a
+  destination inside the source was refused, and a FIFO was skipped while the rest of the batch succeeded.
+
 ## [1.15.0] - 2026-11-12
 
 ### Changed
