@@ -11,6 +11,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - v1.1.0: full xterm.js terminal, i18n (zh/en), explicit debug switch, virtualized large folders.
 
+## [1.23.0] - 2026-11-13
+
+### Added
+
+- **Resumable uploads that survive a dropped connection.** Files above 8 MiB are sent in 4 MiB parts to a remote temp
+  file (`GET /upload/status` reports how much arrived, `POST /upload/part` appends at an offset, `/upload/commit`
+  renames it into place, `/upload/abort` removes it), so a connection that drops mid-upload resumes from the byte the
+  host actually has instead of starting over: each failed part retries with exponential backoff (500ms → 15s) and
+  re-reads the offset first, and a burst of eight failures — rather than one — is what fails a file. An
+  `OFFSET_MISMATCH` re-syncs to the host's `received` value.
+- Unfinished uploads are remembered in `localStorage` (`rd-upload-jobs`) and reported when the page opens; picking the
+  same name and size again continues from the recorded byte instead of re-sending what already landed.
+- Files of 8 MiB or less keep the single-request path, so the common case is unchanged.
+
+### Notes
+
+- A large file no longer overwrites a same-named target silently (`409 EXISTS`) the way small files still do; the
+  remote temp file is kept so the choice can be made deliberately.
+- Two tabs uploading the same file share one temp file; the offset check makes the later one re-send, so the result is
+  consistent but unmediated.
+
 ## [1.22.0] - 2026-11-13
 
 ### Added

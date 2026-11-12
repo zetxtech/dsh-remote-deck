@@ -658,6 +658,10 @@ window.__ModuleLoader__.load({
       .rd-rf-statehint { max-width:210px;color:var(--dsw-alias-label-secondary,#8f959e);font-size:11px;line-height:1.6 }
       .rd-rf-statebtn { display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 12px;border:1px solid var(--dsw-alias-border-l1,#e8e8ec);border-radius:8px;background:transparent;color:var(--dsw-alias-label-primary,#1f2329);font:inherit;font-size:11.5px;cursor:pointer }
       .rd-rf-statebtn:hover { background:var(--dsw-alias-interactive-bg-hover,rgba(15,23,42,.05)) }
+      .rd-rf-resume { flex:none;display:flex;flex-direction:column;gap:5px;padding:8px 10px;border-top:1px solid var(--dsw-alias-border-l1,#e8e8ec);background:rgba(210,153,34,.08) }
+      .rd-rf-resumetitle { font-size:10.5px;font-weight:600;color:#7a5b12 }
+      .rd-rf-resumerow { display:flex;align-items:center;gap:6px;min-width:0 }
+      .rd-rf-resumetext { flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;color:var(--dsw-alias-label-secondary,#5f6672) }
       .rd-rf-tasks { flex:none;display:flex;flex-direction:column;gap:7px;max-height:32%;overflow:auto;border-top:1px solid var(--dsw-alias-border-l1,#e8e8ec);padding:7px 10px 8px }
       .rd-rf-task { display:flex;align-items:flex-start;gap:8px }
       .rd-rf-taskicon { flex:none;display:inline-flex;align-items:center;margin-top:2px;color:var(--dsw-alias-label-tertiary,#8f959e) }
@@ -2606,7 +2610,7 @@ window.__ModuleLoader__.load({
       const [ctx, setCtx] = React.useState(null)
       const menuRef = React.useRef(null)
       const closeMenu = React.useCallback(() => setCtx(null), [])
-      const upload = useDirectoryUpload(undefined, () => { void load(currentDir) })
+      const upload = useDirectoryUpload(undefined, () => { void load(currentDir) }, host.id)
       const archive = useArchiveDownload()
 
       const load = React.useCallback(async (next) => {
@@ -2763,6 +2767,7 @@ window.__ModuleLoader__.load({
           hostWorkspaces.map((row) => h('button', { key: row.workspaceId || row.path, className: 'rd-fchip', onClick: () => void load(row.path) }, row.folder || row.title || row.path)),
         ) : null,
         banner.length > 0 ? h('div', { className: 'rd-fnotice' }, banner) : null,
+        uploadResumeNotice(upload),
         error ? h('div', { className: 'rd-err' }, friendlyText(error)) : null,
         loading ? h('div', { className: 'rd-empty', style: { padding: '20px' } }, '正在读取远程目录…') : null,
         !loading && !error && visible.length === 0 ? h('div', { className: 'rd-empty', style: { padding: '20px' } }, '这个目录是空的。') : null,
@@ -4269,18 +4274,211 @@ window.__ModuleLoader__.load({
     }
 
     /**
+     * Chunked ("resumable") upload parameters. At or below
+     * UPLOAD_CHUNK_MIN_BYTES a file still goes in one request: a small file is
+     * fast, and retrying it costs less than the bookkeeping a resume needs.
+     * Above that the file is cut into UPLOAD_CHUNK_BYTES parts, and every
+     * part's offset is the byte count the remote confirmed — that is what lets
+     * an upload continue when the SSH connection drops and the host reconnects
+     * underneath it.
+     */
+    const UPLOAD_CHUNK_BYTES = 4 * 1024 * 1024
+    const UPLOAD_CHUNK_MIN_BYTES = 8 * 1024 * 1024
+    const UPLOAD_JOBS_KEY = 'rd-upload-jobs'
+    const UPLOAD_RETRY_LIMIT = 8
+    const UPLOAD_RETRY_BASE_MS = 500
+    const UPLOAD_RETRY_MAX_MS = 15000
+
+    /** The identity of one unfinished upload: the file's final remote place. */
+    function uploadJobKey(connectionId, dir, name) {
+      return connectionId + '\u0000' + dir + '\u0000' + name
+    }
+
+    /**
+     * Unfinished uploads, read back defensively: this document outlives the
+     * build that wrote it, so a malformed row is dropped instead of trusted.
+     */
+    function readUploadJobs() {
+      try {
+        const raw = globalThis.localStorage ? globalThis.localStorage.getItem(UPLOAD_JOBS_KEY) : null
+        const list = raw ? JSON.parse(raw) : []
+        if (Array.isArray(list) !== true) return []
+        return list
+          .filter((job) => job !== null && typeof job === 'object'
+            && typeof job.connectionId === 'string' && job.connectionId.length > 0
+            && typeof job.dir === 'string' && job.dir.startsWith('/')
+            && typeof job.name === 'string' && job.name.trim().length > 0
+            && typeof job.size === 'number' && Number.isFinite(job.size) && job.size > 0
+            && typeof job.offset === 'number' && Number.isFinite(job.offset) && job.offset >= 0)
+          .map((job) => ({
+            connectionId: job.connectionId,
+            dir: job.dir,
+            name: job.name,
+            size: Math.floor(job.size),
+            offset: Math.max(0, Math.min(Math.floor(job.size), Math.floor(job.offset))),
+            updatedAt: typeof job.updatedAt === 'number' && Number.isFinite(job.updatedAt) ? job.updatedAt : 0,
+          }))
+      } catch {
+        return []
+      }
+    }
+
+    function writeUploadJobs(list) {
+      try {
+        if (!globalThis.localStorage) return
+        // No unfinished job leaves no key at all: "completed" is the absence of
+        // a record, not an empty array that the next page has to interpret.
+        if (list.length === 0) {
+          globalThis.localStorage.removeItem(UPLOAD_JOBS_KEY)
+          return
+        }
+        globalThis.localStorage.setItem(UPLOAD_JOBS_KEY, JSON.stringify(list))
+      } catch {
+        /* storage unavailable: the upload works, it just cannot resume later */
+      }
+    }
+
+    function findUploadJob(connectionId, dir, name) {
+      const key = uploadJobKey(connectionId, dir, name)
+      for (const job of readUploadJobs()) {
+        if (uploadJobKey(job.connectionId, job.dir, job.name) === key) return job
+      }
+      return null
+    }
+
+    function saveUploadJob(job) {
+      const key = uploadJobKey(job.connectionId, job.dir, job.name)
+      const list = readUploadJobs().filter((row) => uploadJobKey(row.connectionId, row.dir, row.name) !== key)
+      list.push({
+        connectionId: job.connectionId,
+        dir: job.dir,
+        name: job.name,
+        size: job.size,
+        offset: job.offset,
+        updatedAt: Date.now(),
+      })
+      writeUploadJobs(list)
+    }
+
+    function dropUploadJob(connectionId, dir, name) {
+      const key = uploadJobKey(connectionId, dir, name)
+      const list = readUploadJobs()
+      const kept = list.filter((row) => uploadJobKey(row.connectionId, row.dir, row.name) !== key)
+      if (kept.length !== list.length) writeUploadJobs(kept)
+    }
+
+    function uploadPartUrl(connectionId, dir, name, offset) {
+      return apiBase() + '/connections/' + encodeURIComponent(connectionId) + '/upload/part'
+        + '?path=' + encodeURIComponent(dir) + '&name=' + encodeURIComponent(name) + '&offset=' + encodeURIComponent(String(offset))
+    }
+
+    function uploadStatusUrl(connectionId, dir, name) {
+      return apiBase() + '/connections/' + encodeURIComponent(connectionId) + '/upload/status'
+        + '?path=' + encodeURIComponent(dir) + '&name=' + encodeURIComponent(name)
+    }
+
+    function uploadJobUrl(connectionId, dir, name, action) {
+      return apiBase() + '/connections/' + encodeURIComponent(connectionId) + '/upload/' + action
+        + '?path=' + encodeURIComponent(dir) + '&name=' + encodeURIComponent(name)
+    }
+
+    /** How many bytes the remote says it has, or null when it cannot be asked. */
+    async function fetchUploadStatus(connectionId, dir, name) {
+      const info = boot()
+      if (info === null) return null
+      try {
+        const response = await fetch(uploadStatusUrl(connectionId, dir, name), {
+          headers: { 'x-dsh-remote-token': info.token },
+        })
+        const payload = await response.json().catch(() => null)
+        if (response.ok !== true || payload === null || payload.ok === false) return null
+        const received = Number(payload.received)
+        return {
+          ok: true,
+          exists: payload.exists === true,
+          received: Number.isFinite(received) && received > 0 ? Math.floor(received) : 0,
+        }
+      } catch {
+        return null
+      }
+    }
+
+    /** 500ms, 1s, 2s, 4s, 8s, then every 15s — the retry budget of one file. */
+    function uploadRetryDelay(failures) {
+      const attempt = failures > 0 ? failures : 1
+      return Math.min(UPLOAD_RETRY_MAX_MS, UPLOAD_RETRY_BASE_MS * Math.pow(2, attempt - 1))
+    }
+
+    /** A wait the retry loop can leave early when the task is cancelled. */
+    function uploadWait(ms, signal) {
+      return new Promise((resolve) => {
+        let timer = null
+        let done = false
+        const finish = () => {
+          if (done) return
+          done = true
+          if (timer !== null) clearTimeout(timer)
+          if (signal !== undefined && signal !== null && typeof signal.removeEventListener === 'function') {
+            signal.removeEventListener('abort', finish)
+          }
+          resolve()
+        }
+        timer = setTimeout(finish, ms)
+        if (signal !== undefined && signal !== null && typeof signal.addEventListener === 'function') {
+          signal.addEventListener('abort', finish, { once: true })
+        }
+      })
+    }
+
+    /**
+     * The banner that offers to continue an upload whose page was reloaded.
+     * The browser cannot re-read the picked file, so the prompt asks for the
+     * same file again; picking it resumes at the remote's byte count.
+     */
+    function uploadResumeNotice(upload) {
+      const list = upload !== null && upload !== undefined && Array.isArray(upload.resumeHint) ? upload.resumeHint : []
+      if (list.length === 0) return null
+      return h('div', { className: 'rd-rf-resume', role: 'status' },
+        h('div', { className: 'rd-rf-resumetitle' }, '有未完成的上传'),
+        list.map((job) => {
+          const percent = job.size > 0 ? Math.max(0, Math.min(100, Math.round((job.offset / job.size) * 100))) : 0
+          return h('div', { key: uploadJobKey(job.connectionId, job.dir, job.name), className: 'rd-rf-resumerow' },
+            h('span', { className: 'rd-rf-resumetext', title: job.dir + '/' + job.name },
+              job.name + '（已传 ' + percent + '%，请重新选择该文件继续）'),
+            h('button', {
+              className: 'rd-rf-statebtn',
+              type: 'button',
+              onClick: () => upload.pick({ connectionId: job.connectionId, path: job.dir }),
+            }, '重新选择'),
+            h('button', {
+              className: 'rd-rf-taskx',
+              type: 'button',
+              title: '忽略并删除远端临时文件',
+              onClick: () => upload.dismissResume(job),
+            }, '忽略'))
+        }))
+    }
+
+    /**
      * Directory upload state machine: pick files, pre-check the size limit,
      * upload one by one, and ask on every failure. `pick({ connectionId, path })`
      * opens the shared file input; `onFiles` is that input's change handler.
+     *
+     * A file larger than 8 MiB goes in 4 MiB parts through
+     * `/upload/part`, and its progress is recorded under `rd-upload-jobs` so a
+     * dropped connection (the host reconnects on its own) or a reloaded page
+     * continues from the first byte the remote does not have.
      */
-    function useDirectoryUpload(tasks, afterUploaded) {
+    function useDirectoryUpload(tasks, afterUploaded, connectionId) {
       const inputRef = React.useRef(null)
       const [busy, setBusy] = React.useState(false)
       const [note, setNote] = React.useState('')
       const [prompt, setPrompt] = React.useState(null)
+      const [resumeHint, setResumeHint] = React.useState([])
       const decisionRef = React.useRef(null)
       const batchRef = React.useRef(false)
       const targetRef = React.useRef(null)
+      const scope = typeof connectionId === 'string' ? connectionId : ''
       // No task strip (the console file page) still uploads; the sink is a no-op there.
       const sink = tasks === undefined || tasks === null ? NO_TASKS : tasks
       React.useEffect(() => {
@@ -4300,6 +4498,66 @@ window.__ModuleLoader__.load({
         document.addEventListener('keydown', onKey)
         return () => document.removeEventListener('keydown', onKey)
       }, [prompt])
+      // A reload cannot re-read the file the user picked, so an unfinished part
+      // upload becomes a prompt: the same file picked again continues from the
+      // byte count this check asks the remote for.
+      React.useEffect(() => {
+        if (scope === '') {
+          setResumeHint([])
+          return undefined
+        }
+        const jobs = readUploadJobs().filter((job) => job.connectionId === scope)
+        if (jobs.length === 0) {
+          setResumeHint([])
+          return undefined
+        }
+        let alive = true
+        void (async () => {
+          const pending = []
+          for (const job of jobs) {
+            const status = await fetchUploadStatus(scope, job.dir, job.name)
+            if (!alive) return
+            const received = status !== null ? status.received : job.offset
+            if (received <= 0) {
+              // Nothing made it to the remote: there is nothing to continue.
+              dropUploadJob(job.connectionId, job.dir, job.name)
+              continue
+            }
+            const offset = Math.min(received, job.size)
+            const next = {
+              connectionId: job.connectionId,
+              dir: job.dir,
+              name: job.name,
+              size: job.size,
+              offset,
+              updatedAt: Date.now(),
+            }
+            saveUploadJob(next)
+            pending.push(next)
+          }
+          if (alive) setResumeHint(pending)
+        })()
+        return () => {
+          alive = false
+        }
+      }, [scope])
+      const clearResumeHint = (targetConnectionId, dir, name) => {
+        const key = uploadJobKey(targetConnectionId, dir, name)
+        setResumeHint((list) => (list.some((row) => uploadJobKey(row.connectionId, row.dir, row.name) === key)
+          ? list.filter((row) => uploadJobKey(row.connectionId, row.dir, row.name) !== key)
+          : list))
+      }
+      /** Drop the hint and ask the host to delete the remote temporary file. */
+      const dismissResume = (job) => {
+        dropUploadJob(job.connectionId, job.dir, job.name)
+        clearResumeHint(job.connectionId, job.dir, job.name)
+        const info = boot()
+        if (info === null) return
+        void fetch(uploadJobUrl(job.connectionId, job.dir, job.name, 'abort'), {
+          method: 'POST',
+          headers: { 'x-dsh-remote-token': info.token },
+        }).catch(() => {})
+      }
       const pick = (target) => {
         if (busy) return
         const connectionId = target && target.connectionId ? String(target.connectionId) : ''
@@ -4366,6 +4624,155 @@ window.__ModuleLoader__.load({
         if (taskId !== '') sink.bind(taskId, xhr)
         xhr.send(file)
       })
+      /**
+       * One large file, one 4 MiB part at a time.
+       *
+       * The offset is always the byte count the remote confirmed, never the
+       * client's own arithmetic: a part whose answer was lost leaves those
+       * bytes on the remote, and after the backoff `GET /upload/status` says how
+       * many they are. `OFFSET_MISMATCH` carries the same count, so a hole can
+       * neither be created nor patched over. Eight consecutive failures (each
+       * preceded by 500ms…15s of backoff, during which the host reconnects the
+       * dropped SSH session) fail this one file; the batch asks what to do next.
+       */
+      const sendChunked = async (connectionId, dir, file, name, taskId, resumeFrom) => {
+        const info = boot()
+        if (info === null) return { ok: false, message: 'remote-deck is not active yet; restart DSH' }
+        const size = typeof file.size === 'number' && Number.isFinite(file.size) && file.size > 0 ? Math.floor(file.size) : 0
+        const controller = typeof AbortController === 'function' ? new AbortController() : null
+        const signal = controller === null ? undefined : controller.signal
+        const cancelled = () => signal !== undefined && signal.aborted === true
+        const cancelledResult = { ok: false, cancelled: true, message: '已取消' }
+        if (taskId !== '' && controller !== null) sink.bind(taskId, controller)
+        let offset = Number.isFinite(resumeFrom) && resumeFrom > 0 ? Math.min(size, Math.floor(resumeFrom)) : 0
+        let failures = 0
+        let resuming = offset > 0
+        const clampReceived = (value) => {
+          const received = Number(value)
+          if (Number.isFinite(received) !== true || received < 0) return null
+          return Math.min(size, Math.floor(received))
+        }
+        const recordJob = () => saveUploadJob({ connectionId, dir, name, size, offset, updatedAt: Date.now() })
+        const showProgress = () => {
+          if (taskId === '') return
+          sink.progress(taskId, offset, size, { resuming })
+        }
+        recordJob()
+        showProgress()
+        while (offset < size) {
+          if (cancelled()) return cancelledResult
+          try {
+            const end = Math.min(size, offset + UPLOAD_CHUNK_BYTES)
+            const chunk = typeof file.slice === 'function' ? file.slice(offset, end) : null
+            if (chunk === null) return { ok: false, message: '浏览器未能切分该文件，无法分片上传。' }
+            const response = await fetch(uploadPartUrl(connectionId, dir, name, offset), {
+              method: 'POST',
+              headers: { 'x-dsh-remote-token': info.token, 'content-type': 'application/octet-stream' },
+              body: chunk,
+              signal,
+            })
+            const payload = await response.json().catch(() => null)
+            if (response.ok === true && payload !== null && payload.ok === true) {
+              const received = clampReceived(payload.received)
+              const next = received === null ? end : received
+              // A part that reports no progress would loop forever on a broken
+              // server; treat it like a failed part and resynchronise.
+              if (next <= offset) throw new Error('远端没有接受这一分片，重试。')
+              offset = next
+              failures = 0
+              resuming = false
+              recordJob()
+              showProgress()
+              continue
+            }
+            const code = payload !== null && typeof payload.code === 'string' ? payload.code : ''
+            const detail = payload !== null && typeof payload.message === 'string' && payload.message.length > 0
+              ? payload.message
+              : 'HTTP ' + response.status
+            if (response.status === 409 && code === 'OFFSET_MISMATCH') {
+              // The remote knows better than the local record: take its count
+              // and continue from there (it may be behind or ahead of us).
+              const received = clampReceived(payload.received)
+              if (received !== null && received !== offset) {
+                offset = received
+                resuming = true
+                recordJob()
+                showProgress()
+                continue
+              }
+            }
+            if (response.status >= 500 || response.status === 408 || response.status === 429) throw new Error(detail)
+            // Any other 4xx is the request itself (name, path, token): retrying
+            // cannot fix it, so fail this file at once.
+            if (offset <= 0) dropUploadJob(connectionId, dir, name)
+            return { ok: false, message: code.length > 0 ? code + '：' + detail : detail }
+          } catch (failure) {
+            if (cancelled()) return cancelledResult
+            failures += 1
+            resuming = true
+            showProgress()
+            const reason = failure instanceof Error ? failure.message : String(failure)
+            if (failures >= UPLOAD_RETRY_LIMIT) {
+              // Nothing reached the remote, so there is nothing worth resuming;
+              // a partial upload keeps its record for the next attempt.
+              if (offset <= 0) dropUploadJob(connectionId, dir, name)
+              return { ok: false, message: name + ' 连续 ' + UPLOAD_RETRY_LIMIT + ' 次上传失败：' + reason }
+            }
+            await uploadWait(uploadRetryDelay(failures), signal)
+            if (cancelled()) return cancelledResult
+            // Waiting out a reconnect: ask the remote what it actually has and
+            // continue from that offset instead of from our own record.
+            const status = await fetchUploadStatus(connectionId, dir, name)
+            if (cancelled()) return cancelledResult
+            if (status !== null) {
+              const received = clampReceived(status.received)
+              if (received !== null) offset = received
+              recordJob()
+              showProgress()
+            }
+          }
+        }
+        if (cancelled()) return cancelledResult
+        // Every byte is on the remote; the rename is the commit. Transient
+        // network errors get the same retry budget as the parts themselves.
+        for (;;) {
+          if (cancelled()) return cancelledResult
+          try {
+            const response = await fetch(uploadJobUrl(connectionId, dir, name, 'commit'), {
+              method: 'POST',
+              headers: { 'x-dsh-remote-token': info.token, 'content-type': 'application/json' },
+              body: '{}',
+              signal,
+            })
+            const payload = await response.json().catch(() => null)
+            const code = payload !== null && typeof payload.code === 'string' ? payload.code : ''
+            const detail = payload !== null && typeof payload.message === 'string' && payload.message.length > 0
+              ? payload.message
+              : 'HTTP ' + response.status
+            if (response.ok === true && payload !== null && payload.ok === true) {
+              dropUploadJob(connectionId, dir, name)
+              clearResumeHint(connectionId, dir, name)
+              return { ok: true, message: '' }
+            }
+            if (response.status === 409 && code === 'EXISTS') {
+              return { ok: false, message: '远端已存在同名文件，未覆盖：' + name }
+            }
+            if (response.status === 404 && code === 'NOT_FOUND') {
+              return { ok: false, message: '远端临时文件已不存在，请重新上传：' + name }
+            }
+            if (response.status < 500) return { ok: false, message: code.length > 0 ? code + '：' + detail : detail }
+            throw new Error(detail)
+          } catch (failure) {
+            if (cancelled()) return cancelledResult
+            failures += 1
+            if (failures >= UPLOAD_RETRY_LIMIT) {
+              const reason = failure instanceof Error ? failure.message : String(failure)
+              return { ok: false, message: name + ' 收尾失败 ' + UPLOAD_RETRY_LIMIT + ' 次：' + reason }
+            }
+            await uploadWait(uploadRetryDelay(failures), signal)
+          }
+        }
+      }
       /** Create one remote directory, treating "already there" as success. */
       const ensureRemoteDir = async (connectionId, parent, name) => {
         const info = boot()
@@ -4441,12 +4848,26 @@ window.__ModuleLoader__.load({
             setNote('上传中 ' + (done + failed + skipped) + '/' + list.length)
             continue
           }
-          const taskId = sink.begin('upload', name, targetDir + '/' + name, file && typeof file.size === 'number' ? file.size : 0)
+          const size = file && typeof file.size === 'number' && Number.isFinite(file.size) ? Math.floor(file.size) : 0
+          const pending = findUploadJob(connectionId, targetDir, name)
+          // A record that already holds every byte needs only the commit, so the
+          // full size is a valid resume point too.
+          const resumeFrom = pending !== null && pending.size === size && pending.offset > 0 ? pending.offset : 0
+          const taskId = sink.begin('upload', name, targetDir + '/' + name, size)
           const limit = uploadLimitBytes()
-          const result = file && typeof file.size === 'number' && file.size > limit
-            ? { ok: false, message: '「' + name + '」超过 ' + uploadLimitLabel(limit) + ' 上限，未上传。' }
-            : await send(connectionId, targetDir, file, name, taskId)
+          let result
+          if (size > limit) {
+            result = { ok: false, message: '「' + name + '」超过 ' + uploadLimitLabel(limit) + ' 上限，未上传。' }
+          } else if (size > UPLOAD_CHUNK_MIN_BYTES) {
+            result = await sendChunked(connectionId, targetDir, file, name, taskId, resumeFrom)
+          } else {
+            result = await send(connectionId, targetDir, file, name, taskId)
+          }
           if (result.ok) {
+            // A small file finished atomically; a chunked one removed its
+            // record at commit. Both cleanups are harmless here.
+            dropUploadJob(connectionId, targetDir, name)
+            clearResumeHint(connectionId, targetDir, name)
             sink.done(taskId)
             done += 1
             setNote('上传中 ' + (done + failed + skipped) + '/' + list.length)
@@ -4515,7 +4936,7 @@ window.__ModuleLoader__.load({
         const node = dirInputRef.current
         if (node !== null) node.click()
       }
-      return { busy, note, prompt, decide, pick, pickDirectory, onFiles, inputRef, dirInputRef }
+      return { busy, note, prompt, decide, pick, pickDirectory, onFiles, inputRef, dirInputRef, resumeHint, dismissResume }
     }
 
     // --------------------------------------------------- remote files sidebar
@@ -4605,6 +5026,9 @@ window.__ModuleLoader__.load({
       if (task.status === 'failed') return '失败'
       if (task.status === 'cancelled') return '已取消'
       if (task.status === 'done') return '已完成'
+      // A resumed upload or one waiting out a reconnect says so instead of
+      // looking like a stuck "进行中".
+      if (task.resuming === true) return '续传中'
       return '进行中'
     }
 
@@ -4684,13 +5108,13 @@ window.__ModuleLoader__.load({
         box.current.seq += 1
         const id = 'rd-task-' + box.current.seq
         setTasks((list) => [...list, {
-          id, kind, name, path, sent: 0, total: countOf(total), status: 'running', error: '',
+          id, kind, name, path, sent: 0, total: countOf(total), status: 'running', error: '', resuming: false,
         }].slice(-TASK_MAX_ROWS))
         return id
       }, [])
-      const progress = React.useCallback((id, sent, total) => {
+      const progress = React.useCallback((id, sent, total, extra) => {
         if (id === '') return
-        patch(id, { sent: countOf(sent), total: countOf(total) })
+        patch(id, { sent: countOf(sent), total: countOf(total), ...(extra === undefined || extra === null ? {} : extra) })
       }, [patch])
       const bind = React.useCallback((id, controller) => {
         if (id === '') return
@@ -5577,7 +6001,7 @@ window.__ModuleLoader__.load({
         : null
       const closeMenu = React.useCallback(() => setMenu(null), [])
       const tasks = useTransferTasks()
-      const upload = useDirectoryUpload(tasks, () => { void load(currentDir) })
+      const upload = useDirectoryUpload(tasks, () => { void load(currentDir) }, connectionId)
       const archive = useArchiveDownload(tasks)
       useContextMenuDismiss(menu !== null, closeMenu, menuRef)
 
@@ -6336,6 +6760,7 @@ window.__ModuleLoader__.load({
                     h('span', { className: 'rd-rf-rowtime' }, remoteTimeText(entry)),
                   ))),
         ),
+        uploadResumeNotice(upload),
         tasks.tasks.length > 0 ? h('div', { className: 'rd-rf-tasks' },
           tasks.tasks.map((task) => h('div', { key: task.id, className: 'rd-rf-task', 'data-state': task.status },
             h('span', { className: 'rd-rf-taskicon' }, h(Icon, { name: taskIconName(task.kind), size: 12 })),
@@ -6351,7 +6776,7 @@ window.__ModuleLoader__.load({
                 className: 'rd-rf-taskbar' + (task.status === 'running' && task.total === 0 ? ' pending' : ''),
               }, h('i', { style: { width: taskPercent(task) + '%' } })),
               task.status === 'running' && task.total > 0
-                ? h('div', { className: 'rd-rf-tasksub' }, formatBytes(task.sent) + ' / ' + formatBytes(task.total))
+                ? h('div', { className: 'rd-rf-tasksub' }, '已传 ' + formatBytes(task.sent) + ' / ' + formatBytes(task.total))
                 : null,
               task.error.length > 0 ? h('div', { className: 'rd-rf-taskerr' }, task.error) : null,
             )))) : null,
