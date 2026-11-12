@@ -600,6 +600,11 @@ window.__ModuleLoader__.load({
       .rd-rf { display:flex;flex-direction:column;height:100%;min-height:0;font-size:12px;color:var(--dsw-alias-label-primary,#1f2329) }
       .rd-rf-head { flex:none;display:flex;align-items:center;flex-wrap:wrap;gap:8px;padding:10px 10px 8px;min-width:0 }
       .rd-rf-title { flex:1;min-width:0;display:flex;align-items:center;gap:8px;flex-wrap:wrap }
+      .rd-rf-hostname { flex:none;display:inline-flex;align-items:center;gap:6px;min-width:0;color:var(--dsw-alias-label-secondary,#5f6672) }
+      .rd-rf-actionbtn { display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;padding:0;border:0;border-radius:var(--dsw-radius-sm,8px);background:transparent;color:var(--dsw-alias-label-secondary,#5f6672);cursor:pointer }
+      .rd-rf-actionbtn:hover { background:var(--dsw-alias-interactive-bg-hover,rgba(15,23,42,.06));color:var(--dsw-alias-label-primary,#1f2329) }
+      [data-rd-theme="dark"] .rd-rf-actionbtn { color:var(--dsw-alias-label-secondary,#a8b0bb) }
+      [data-rd-theme="dark"] .rd-rf-actionbtn:hover { background:rgba(255,255,255,.08);color:var(--dsw-alias-label-primary,#e6e8eb) }
       .rd-rf-host { min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12.5px;font-weight:600 }
       .rd-rf-acts { flex:none;display:flex;align-items:center;gap:2px }
       .rd-rf-act { width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;padding:0;border:0;border-radius:8px;background:transparent;color:var(--dsw-alias-label-secondary,#5f6672);cursor:pointer }
@@ -5325,6 +5330,40 @@ window.__ModuleLoader__.load({
       )
     }
 
+    /** The column service, captured when the client exposes one. */
+    let sidebarRightHandle = null
+    const setSidebarRightService = (value) => { sidebarRightHandle = value }
+    const sidebarRightService = () => sidebarRightHandle
+
+    /**
+     * The built-in 工作区文件 page offers an action slot for its current
+     * directory only: this button hands that directory to our own page, so the
+     * remote listing keeps one implementation instead of two drifting ones.
+     */
+    function OpenRemoteFilesAction(props) {
+      const sessionId = props && typeof props.sessionId === 'string' ? props.sessionId : ''
+      const remote = useRemote(sessionId)
+      const absolutePath = props && typeof props.absolutePath === 'string' ? props.absolutePath : ''
+      if (remote === null) return null
+      const service = sidebarRightService()
+      if (service === null || typeof service.openTab !== 'function') return null
+      const open = () => {
+        const target = absolutePath.length > 0 ? absolutePath : String(remote.path || '')
+        try {
+          service.openTab(REMOTE_FILES_ID, { params: { path: target } })
+        } catch {
+          /* the column may be unavailable on this screen; the button is inert then */
+        }
+      }
+      return h('button', {
+        className: 'rd-rf-actionbtn',
+        type: 'button',
+        title: '在远端文件中打开 ' + (absolutePath.length > 0 ? absolutePath : remote.path),
+        'aria-label': '在远端文件中打开',
+        onClick: open,
+      }, h(Icon, { name: 'folder', size: 14 }))
+    }
+
     function RemoteFilesBody(props) {
       const sessionId = props && typeof props.sessionId === 'string' ? props.sessionId : ''
       const remote = useRemote(sessionId)
@@ -5372,13 +5411,28 @@ window.__ModuleLoader__.load({
         }
       }, [connectionId])
 
+      // The built-in 工作区文件 page opens this one with the directory it is
+      // showing, so both surfaces always land in the same place.
+      const requestedPath = (() => {
+        const tab = tabInfo !== null && tabInfo !== undefined ? tabInfo.tab : null
+        const params = tab !== null && tab !== undefined && tab.navigation !== undefined && tab.navigation !== null
+          ? tab.navigation.params
+          : null
+        return params !== null && params !== undefined && typeof params.path === 'string' ? params.path : ''
+      })()
+
       React.useEffect(() => {
         setPath('')
         setEntries([])
         setError('')
-        if (connectionId === '' || rootPath === '') return
+        if (connectionId === '') return
+        if (requestedPath !== '') {
+          void load(requestedPath)
+          return
+        }
+        if (rootPath === '') return
         void load(rootPath)
-      }, [connectionId, rootPath])
+      }, [connectionId, rootPath, requestedPath])
 
       React.useEffect(() => {
         const onKey = (event) => {
@@ -5812,7 +5866,10 @@ window.__ModuleLoader__.load({
       return h('div', { className: 'rd-rf' },
         h('div', { className: 'rd-rf-head' },
           h('div', { className: 'rd-rf-title' },
-            h('span', { className: 'rd-rf-host', title: remote.path }, remote.host + ' · ' + (remote.folder || remote.title)),
+            h('span', { className: 'rd-rf-hostname', title: remote.path },
+              h(Icon, { name: 'folder', size: 13 }),
+              h('span', { className: 'rd-rf-host' }, remote.host + ' · ' + (remote.folder || remote.title)),
+            ),
             pathDraft === null
               ? h('div', {
                 className: 'rd-rf-crumbs',
@@ -6346,6 +6403,10 @@ window.__ModuleLoader__.load({
       offs.push(ctx.slots.inject('sidebar.right.tab.document.actions', () =>
         ctx.slots.register({ name: 'sidebar.right.tab.document.actions', id: 'remote-deck-download-stream', order: 19 }, PreviewStreamDownloadAction),
       ))
+      // DSH's own 工作区文件 page: carry its current directory into our page.
+      offs.push(ctx.slots.inject('sidebar.right.tab.files.actions', () =>
+        ctx.slots.register({ name: 'sidebar.right.tab.files.actions', id: 'remote-deck-open-files', order: 18 }, OpenRemoteFilesAction),
+      ))
       offs.push(ctx.slots.inject('sidebar.right.pane.tab', () =>
         ctx.slots.register({ name: 'sidebar.right.pane.tab', key: REMOTE_FILES_ID }, RemoteFilesBody),
       ))
@@ -6370,6 +6431,12 @@ window.__ModuleLoader__.load({
       // guide page must keep DSH's own card set. Injected dynamically so a DSH
       // without the sidebar services still gets every other surface.
       if (typeof ctx.inject === 'function') {
+        // The files.actions slot gets no tab actions of its own, so opening our
+        // page from there needs the column service.
+        ctx.inject(['sidebarRight'], (scope) => {
+          setSidebarRightService(scope.sidebarRight || null)
+          scope.effect(() => () => setSidebarRightService(null), 'remote-deck: sidebarRight handle')
+        })
         ctx.inject(['sidebarRightTabs'], (scope) => {
           scope.effect(() => scope.sidebarRightTabs.register({
             id: REMOTE_FILES_ID,

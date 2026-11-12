@@ -11,6 +11,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - v1.1.0: full xterm.js terminal, i18n (zh/en), explicit debug switch, virtualized large folders.
 
+## [1.19.0] - 2026-11-13
+
+### Added
+
+- **The built-in 工作区文件 page now hands its directory to this plugin's page.** DSH's own file tab has an action slot
+  that knows only `absolutePath`, so a folder button there opens 远端文件 at exactly that directory — one listing, one
+  upload path, one editor, instead of two surfaces that drift apart. Local sessions get no button, and a client
+  without the column service simply renders nothing.
+- 远端文件 consumes `navigation.params.path`, so any entry point can deep-link a directory, and the header keeps
+  showing the host it belongs to.
+- The file page header gained the folder icon asked for: `<icon> ws · zzs / home / zzs` on one line.
+
+### Notes
+
+- The editor was already shared: double-clicking a text file in 远端文件 opens the CodeMirror tab, which is the same
+  editor reached from anywhere in the plugin. DSH's own preview stays read-only for images, PDFs and Office files.
+- Not visually verified in the running app: the button's placement inside DSH's file-tab header depends on that
+  header's layout, which the plugin does not control.
+
 ## [1.18.5] - 2026-11-13
 
 ### Fixed
