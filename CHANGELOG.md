@@ -11,6 +11,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - v1.1.0: full xterm.js terminal, i18n (zh/en), explicit debug switch, virtualized large folders.
 
+## [1.13.1] - 2026-11-12
+
+### Changed
+
+- The remote file page was redrawn against DSH's own file tab: one header row (connection dot and host on the left;
+  up, upload and refresh as 28 px icon buttons using the interactive hover token on the right), a compact breadcrumb
+  without the stray leading slash and with the current segment at normal weight, 32 px rows carrying a per-type icon,
+  an ellipsised name and right-aligned size and modified time in tabular digits, whole-row hover plus a selected
+  state, directories first in a numeric-aware name order, an empty state centred inside the list with an 上传到此处
+  button, and a task bar docked under the list behind a divider. Both colour schemes are covered.
+
+### Fixed
+
+- Every breadcrumb segment jumped to the current directory: the buttons shared one closure variable, so the path
+  never walked. Each segment now captures its own value.
+
+### Notes
+
+- **Ctrl+P cannot be redirected to this page.** It runs DSH's own `workspace.files` command, which opens the `files`
+  kind, and a kind resolves to a single in-force registration: `canOpen(address)` receives only `sidebar://files`
+  (no Session) and a refusal *throws* instead of falling back to the built-in type — claiming the kind would break
+  local Sessions outright. The page is reached from the guide card (which takes over the workspace-files card inside
+  a remote workspace) or from the sidebar's add-tab control, while local Sessions keep DSH's own file tab.
+
 ## [1.13.0] - 2026-11-12
 
 ### Added

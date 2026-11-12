@@ -332,6 +332,9 @@ window.__ModuleLoader__.load({
       bolt: '<path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z"/>',
       upload: '<path d="M12 17V5"/><path d="M7 9l5-5 5 5"/><path d="M5 21h14"/>',
       alert: '<path d="M12 4 2.9 19.6h18.2z"/><path d="M12 10v4.4"/><path d="M12 17.1h.01"/>',
+      filetext: '<path d="M6 2h7l5 5v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z"/><path d="M13 2v6h6"/><path d="M8.5 13h7M8.5 16.5h4"/>',
+      image: '<rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="8.5" cy="9.5" r="1.5"/><path d="M4 17.5 9 12l3.5 3.5L15 13l5 5"/>',
+      archive: '<path d="M3 7.5A2.5 2.5 0 0 1 5.5 5h13A2.5 2.5 0 0 1 21 7.5V10H3z"/><path d="M4.5 10v8.5a1 1 0 0 0 1 1h13a1 1 0 0 0 1-1V10"/><path d="M10 13.5h4"/>',
     }
 
     function Icon({ name, size = 16, style }) {
@@ -619,51 +622,69 @@ window.__ModuleLoader__.load({
       [data-rd-theme="dark"] .rd-gcard:hover { background:rgba(255,255,255,.06) }
       [data-rd-theme="dark"] .rd-gcard-tag { background:rgba(47,125,221,.24);color:#8cc6ff }
 
-      .rd-rfiles { display:flex;flex-direction:column;height:100%;min-height:0;font-size:12px;color:var(--dsw-alias-label-primary,#1f2329) }
-      .rd-rfiles-head { flex:none;display:flex;align-items:center;gap:7px;padding:9px 10px 5px;min-width:0 }
-      .rd-rfiles-head .nm { flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11.5px;font-weight:600 }
-      .rd-rfiles-crumbs { flex:none;display:flex;align-items:center;gap:2px;flex-wrap:wrap;padding:0 8px 6px }
-      .rd-rfiles-list { flex:1;min-height:0;overflow:auto;padding:0 6px 8px }
-      .rd-rfiles-row { display:flex;align-items:center;gap:8px;padding:5px 6px;border-radius:7px;color:var(--dsw-alias-label-primary,#1f2329) }
-      .rd-rfiles-row.dir { cursor:pointer }
-      .rd-rfiles-row:hover { background:var(--dsw-alias-bg-layer-2,rgba(15,23,42,.045)) }
-      .rd-rfiles-row.sel { background:rgba(47,125,221,.12) }
-      .rd-rfiles-row .nm { flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px }
-      .rd-rfiles-row .sz { flex:none;color:var(--dsw-alias-label-tertiary,#8f959e);font-size:10.5px;font-variant-numeric:tabular-nums }
-      .rd-rfiles-empty { flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;gap:4px;padding:18px 14px;color:var(--dsw-alias-label-secondary,#8f959e);line-height:1.6 }
-      .rd-rfiles-empty .nm { color:var(--dsw-alias-label-primary,#1f2329);font-size:12.5px;font-weight:600 }
-      .rd-rfiles-empty .sub { font-size:11px }
-
-      .rd-tasks { flex:none;border-top:1px solid var(--dsw-alias-border-l1,#e8e8ec);padding:6px 8px 7px;display:flex;flex-direction:column;gap:6px;max-height:34%;overflow:auto }
-      .rd-task { display:flex;align-items:flex-start;gap:7px }
-      .rd-task > svg { margin-top:2px;color:var(--dsw-alias-label-tertiary,#8f959e);flex:none }
-      .rd-task-main { flex:1;min-width:0;display:flex;flex-direction:column;gap:3px }
-      .rd-task-top { display:flex;align-items:center;gap:6px;min-width:0 }
-      .rd-task-top .nm { flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px }
-      .rd-task-top .st { flex:none;font-size:10px;color:var(--dsw-alias-label-tertiary,#8f959e) }
-      .rd-task[data-state="failed"] .rd-task-top .st { color:#c0392b }
-      .rd-task[data-state="done"] .rd-task-top .st { color:#2ea043 }
-      .rd-task-x { flex:none;border:0;background:transparent;color:var(--dsw-alias-label-secondary,#5f6672);font:inherit;font-size:10.5px;cursor:pointer;padding:0 3px;border-radius:4px;display:inline-flex;align-items:center }
-      .rd-task-x:hover { background:var(--dsw-alias-bg-layer-2,rgba(15,23,42,.06)) }
-      .rd-task-bar { height:3px;border-radius:999px;background:var(--dsw-alias-border-l1,#e8e8ec);overflow:hidden }
-      .rd-task-bar i { display:block;height:100%;border-radius:999px;background:var(--dsw-alias-state-business-primary,#1d6fc4);transition:width .2s ease }
-      .rd-task[data-state="failed"] .rd-task-bar i { background:#e5484d }
-      .rd-task[data-state="done"] .rd-task-bar i { background:#2ea043 }
-      .rd-task-bar.pending i { width:35% !important;animation:rd-task-slide 1.1s ease-in-out infinite }
+      /* ---- remote files page ---- */
+      .rd-rf { display:flex;flex-direction:column;height:100%;min-height:0;font-size:12px;color:var(--dsw-alias-label-primary,#1f2329) }
+      .rd-rf-head { flex:none;display:flex;align-items:center;gap:8px;padding:10px 10px 6px;min-width:0 }
+      .rd-rf-title { flex:1;min-width:0;display:flex;align-items:center;gap:7px }
+      .rd-rf-host { min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12.5px;font-weight:600 }
+      .rd-rf-acts { flex:none;display:flex;align-items:center;gap:2px }
+      .rd-rf-act { width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;padding:0;border:0;border-radius:8px;background:transparent;color:var(--dsw-alias-label-secondary,#5f6672);cursor:pointer }
+      .rd-rf-act:hover:not([disabled]) { background:var(--dsw-alias-interactive-bg-hover,rgba(15,23,42,.06));color:var(--dsw-alias-label-primary,#1f2329) }
+      .rd-rf-act[disabled] { opacity:.4;cursor:default }
+      .rd-rf-crumbs { flex:none;display:flex;align-items:center;flex-wrap:wrap;gap:1px;padding:0 10px 8px;font-size:11.5px;line-height:18px }
+      .rd-rf-crumb { max-width:150px;padding:2px 5px;border:0;border-radius:6px;background:transparent;color:var(--dsw-alias-label-secondary,#5f6672);font:inherit;font-size:11.5px;cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap }
+      .rd-rf-crumb:hover { background:var(--dsw-alias-interactive-bg-hover,rgba(15,23,42,.06));color:var(--dsw-alias-label-primary,#1f2329) }
+      .rd-rf-crumb.on { color:var(--dsw-alias-label-primary,#1f2329);font-weight:400 }
+      .rd-rf-crumb-root { padding:2px 4px;color:var(--dsw-alias-label-tertiary,#8f959e) }
+      .rd-rf-sep { flex:none;padding:0 1px;color:var(--dsw-alias-label-tertiary,#8f959e);user-select:none }
+      .rd-rf-body { flex:1;min-height:0;display:flex;flex-direction:column }
+      .rd-rf-list { flex:1;min-height:0;overflow:auto;padding:0 6px 8px }
+      .rd-rf-row { display:flex;align-items:center;gap:9px;height:32px;box-sizing:border-box;padding:0 8px;border-radius:8px }
+      .rd-rf-row.dir { cursor:pointer }
+      .rd-rf-row:hover { background:var(--dsw-alias-interactive-bg-hover,rgba(15,23,42,.05)) }
+      .rd-rf-row.sel { background:rgba(47,125,221,.12) }
+      .rd-rf-rowicon { flex:none;display:inline-flex;align-items:center;justify-content:center;width:16px;color:var(--dsw-alias-label-tertiary,#8f959e) }
+      .rd-rf-row.dir .rd-rf-rowicon { color:#e0a92e }
+      .rd-rf-rowname { flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12.5px }
+      .rd-rf-rowsize { flex:none;min-width:56px;text-align:right;color:var(--dsw-alias-label-secondary,#8f959e);font-size:11px;font-variant-numeric:tabular-nums }
+      .rd-rf-rowtime { flex:none;min-width:62px;text-align:right;color:var(--dsw-alias-label-tertiary,#8f959e);font-size:11px;font-variant-numeric:tabular-nums }
+      .rd-rf-state { flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:24px 20px;text-align:center }
+      .rd-rf-stateicon { display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:12px;background:var(--dsw-alias-bg-layer-2,rgba(15,23,42,.04));color:var(--dsw-alias-label-tertiary,#8f959e) }
+      .rd-rf-statetitle { font-size:12.5px;font-weight:600 }
+      .rd-rf-statehint { max-width:210px;color:var(--dsw-alias-label-secondary,#8f959e);font-size:11px;line-height:1.6 }
+      .rd-rf-statebtn { display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 12px;border:1px solid var(--dsw-alias-border-l1,#e8e8ec);border-radius:8px;background:transparent;color:var(--dsw-alias-label-primary,#1f2329);font:inherit;font-size:11.5px;cursor:pointer }
+      .rd-rf-statebtn:hover { background:var(--dsw-alias-interactive-bg-hover,rgba(15,23,42,.05)) }
+      .rd-rf-tasks { flex:none;display:flex;flex-direction:column;gap:7px;max-height:32%;overflow:auto;border-top:1px solid var(--dsw-alias-border-l1,#e8e8ec);padding:7px 10px 8px }
+      .rd-rf-task { display:flex;align-items:flex-start;gap:8px }
+      .rd-rf-taskicon { flex:none;display:inline-flex;align-items:center;margin-top:2px;color:var(--dsw-alias-label-tertiary,#8f959e) }
+      .rd-rf-taskmain { flex:1;min-width:0;display:flex;flex-direction:column;gap:3px }
+      .rd-rf-tasktop { display:flex;align-items:center;gap:6px;min-width:0 }
+      .rd-rf-taskname { flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11.5px }
+      .rd-rf-taskst { flex:none;color:var(--dsw-alias-label-tertiary,#8f959e);font-size:10.5px }
+      .rd-rf-task[data-state="failed"] .rd-rf-taskst { color:#c0392b }
+      .rd-rf-task[data-state="done"] .rd-rf-taskst { color:#2ea043 }
+      .rd-rf-taskx { flex:none;display:inline-flex;align-items:center;padding:1px 4px;border:0;border-radius:5px;background:transparent;color:var(--dsw-alias-label-secondary,#5f6672);font:inherit;font-size:10.5px;cursor:pointer }
+      .rd-rf-taskx:hover { background:var(--dsw-alias-interactive-bg-hover,rgba(15,23,42,.06)) }
+      .rd-rf-taskbar { height:3px;border-radius:999px;background:var(--dsw-alias-border-l1,#e8e8ec);overflow:hidden }
+      .rd-rf-taskbar i { display:block;height:100%;border-radius:999px;background:var(--dsw-alias-state-business-primary,#1d6fc4);transition:width .2s ease }
+      .rd-rf-task[data-state="failed"] .rd-rf-taskbar i { background:#e5484d }
+      .rd-rf-task[data-state="done"] .rd-rf-taskbar i { background:#2ea043 }
+      .rd-rf-taskbar.pending i { width:35% !important;animation:rd-task-slide 1.1s ease-in-out infinite }
+      .rd-rf-tasksub { color:var(--dsw-alias-label-tertiary,#8f959e);font-size:10px;font-variant-numeric:tabular-nums }
+      .rd-rf-taskerr { color:#c0392b;font-size:10.5px;line-height:1.45;overflow-wrap:anywhere }
       @keyframes rd-task-slide { 0% { margin-left:0 } 50% { margin-left:65% } 100% { margin-left:0 } }
-      .rd-task-sub { font-size:10px;color:var(--dsw-alias-label-tertiary,#8f959e);font-variant-numeric:tabular-nums }
-      .rd-task-err { font-size:10.5px;line-height:1.45;color:#c0392b;overflow-wrap:anywhere }
       .rd-tf-path { margin-top:5px;font-family:var(--rd-term-font,ui-monospace,Consolas,monospace);font-size:11px;color:var(--dsw-alias-label-secondary,#8f959e);overflow-wrap:anywhere }
-      [data-rd-theme="dark"] .rd-rfiles-row:hover { background:rgba(255,255,255,.06) }
-      [data-rd-theme="dark"] .rd-rfiles-row.sel { background:rgba(47,125,221,.2) }
-      [data-rd-theme="dark"] .rd-tasks { border-top-color:#2c3138 }
-      [data-rd-theme="dark"] .rd-task-bar { background:rgba(255,255,255,.12) }
-      [data-rd-theme="dark"] .rd-task-bar i { background:#4f8fd6 }
-      [data-rd-theme="dark"] .rd-task[data-state="failed"] .rd-task-bar i { background:#ff7b72 }
-      [data-rd-theme="dark"] .rd-task[data-state="done"] .rd-task-bar i { background:#3fb950 }
-      [data-rd-theme="dark"] .rd-task[data-state="failed"] .rd-task-top .st { color:#ff9a9a }
-      [data-rd-theme="dark"] .rd-task-err { color:#ff9a9a }
-      [data-rd-theme="dark"] .rd-task-x:hover { background:rgba(255,255,255,.08) }
+      [data-rd-theme="dark"] .rd-rf-act:hover:not([disabled]), [data-rd-theme="dark"] .rd-rf-crumb:hover, [data-rd-theme="dark"] .rd-rf-row:hover, [data-rd-theme="dark"] .rd-rf-statebtn:hover, [data-rd-theme="dark"] .rd-rf-taskx:hover { background:rgba(255,255,255,.07) }
+      [data-rd-theme="dark"] .rd-rf-row.sel { background:rgba(47,125,221,.2) }
+      [data-rd-theme="dark"] .rd-rf-tasks { border-top-color:#2c3138 }
+      [data-rd-theme="dark"] .rd-rf-stateicon { background:rgba(255,255,255,.06) }
+      [data-rd-theme="dark"] .rd-rf-statebtn { border-color:#2c3138 }
+      [data-rd-theme="dark"] .rd-rf-taskbar { background:rgba(255,255,255,.12) }
+      [data-rd-theme="dark"] .rd-rf-taskbar i { background:#4f8fd6 }
+      [data-rd-theme="dark"] .rd-rf-task[data-state="failed"] .rd-rf-taskbar i { background:#ff7b72 }
+      [data-rd-theme="dark"] .rd-rf-task[data-state="done"] .rd-rf-taskbar i { background:#3fb950 }
+      [data-rd-theme="dark"] .rd-rf-task[data-state="failed"] .rd-rf-taskst { color:#ff9a9a }
+      [data-rd-theme="dark"] .rd-rf-taskerr { color:#ff9a9a }
 
       .rd-pill-restore { border:1px solid rgba(29,111,196,.35);background:rgba(29,111,196,.08);color:#1d6fc4;border-radius:999px;font-size:11px;padding:2px 8px;margin-left:6px;cursor:pointer;line-height:1.5 }
       .rd-pill-restore:hover { background:rgba(29,111,196,.16) }
@@ -4333,6 +4354,42 @@ window.__ModuleLoader__.load({
       )
     }
 
+    /** Directories first, then names in natural order. */
+    function compareRemoteEntries(left, right) {
+      const leftRank = left !== null && left !== undefined && left.type === 'dir' ? 0 : 1
+      const rightRank = right !== null && right !== undefined && right.type === 'dir' ? 0 : 1
+      if (leftRank !== rightRank) return leftRank - rightRank
+      const leftName = String(left !== null && left !== undefined && left.name !== undefined ? left.name : '')
+      const rightName = String(right !== null && right !== undefined && right.name !== undefined ? right.name : '')
+      try {
+        return leftName.localeCompare(rightName, undefined, { numeric: true, sensitivity: 'base' })
+      } catch {
+        return leftName < rightName ? -1 : leftName > rightName ? 1 : 0
+      }
+    }
+
+    const REMOTE_ICON_TEXT = /\.(txt|text|log|md|markdown|mdx|rst|json|jsonc|ya?ml|toml|ini|cfg|conf|env|csv|tsv|js|mjs|cjs|jsx|ts|tsx|vue|svelte|py|rb|go|rs|c|h|cc|cpp|hpp|cs|java|kt|kts|swift|m|mm|sh|bash|zsh|fish|ps1|bat|cmd|sql|html?|css|scss|sass|less|xml|svg|php|lua|pl|r|jl|ex|exs|erl|hs|scala|clj|gradle|properties|lock|gitignore|dockerfile)$/i
+    const REMOTE_ICON_IMAGE = /\.(png|jpe?g|gif|webp|bmp|ico|avif|tiff?|heic|heif|psd|raw)$/i
+    const REMOTE_ICON_ARCHIVE = /\.(zip|tar|gz|tgz|bz2|xz|zst|7z|rar|lz4|jar|war|ear|deb|rpm|apk|dmg|iso|whl)$/i
+
+    /** Folder, text, image, archive, or the generic file glyph. */
+    function remoteIconName(entry) {
+      if (entry === null || entry === undefined) return 'file'
+      if (entry.type === 'dir') return 'folder'
+      const name = String(entry.name === undefined || entry.name === null ? '' : entry.name)
+      if (REMOTE_ICON_IMAGE.test(name)) return 'image'
+      if (REMOTE_ICON_ARCHIVE.test(name)) return 'archive'
+      if (REMOTE_ICON_TEXT.test(name) || /^(makefile|dockerfile|readme|license|changelog)$/i.test(name)) return 'filetext'
+      return 'file'
+    }
+
+    /** The parent of a remote POSIX directory; the root is its own parent. */
+    function parentRemoteDir(dir) {
+      const parts = String(dir === undefined || dir === null ? '' : dir).split('/').filter(Boolean)
+      if (parts.length === 0) return '/'
+      return '/' + parts.slice(0, -1).join('/')
+    }
+
     function RemoteFilesBody(props) {
       const sessionId = props && typeof props.sessionId === 'string' ? props.sessionId : ''
       const remote = useRemote(sessionId)
@@ -4387,22 +4444,40 @@ window.__ModuleLoader__.load({
       }, [confirming !== null])
 
       if (remote === null) {
-        return h('div', { className: 'rd-rfiles' },
-          h('div', { className: 'rd-rfiles-empty' },
-            h('div', { className: 'nm' }, '此会话不在远端工作区'),
-            h('span', { className: 'sub' }, '这个页面只浏览远端文件；在远程工作区的会话里打开它。')))
+        return h('div', { className: 'rd-rf' },
+          h('div', { className: 'rd-rf-state' },
+            h('span', { className: 'rd-rf-stateicon' }, h(Icon, { name: 'server', size: 22 })),
+            h('div', { className: 'rd-rf-statetitle' }, '此会话不在远端工作区'),
+            h('div', { className: 'rd-rf-statehint' }, '这个页面只浏览远端文件；在远程工作区的会话里打开它。')))
       }
 
       const currentDir = path || rootPath
       const host = ((store.state && store.state.connections) || []).find((row) => row.id === connectionId)
       const status = host ? host.status : 'disconnected'
-      const crumbs = [{ label: '/', value: '/' }]
+      const segments = currentDir.split('/').filter(Boolean)
+      const atRoot = segments.length === 0
+      const visible = entries.slice().sort(compareRemoteEntries)
+      const crumbNodes = [h('button', {
+        key: 'root',
+        type: 'button',
+        className: 'rd-rf-crumb rd-rf-crumb-root',
+        title: '/',
+        onClick: () => void load('/'),
+      }, '/')]
       let walked = ''
-      for (const part of currentDir.split('/').filter(Boolean)) {
-        walked += '/' + part
-        crumbs.push({ label: part, value: walked })
-      }
-      const visible = entries
+      segments.forEach((part, index) => {
+        // Per-iteration binding: every crumb loads its own prefix.
+        const value = walked + '/' + part
+        walked = value
+        if (index > 0) crumbNodes.push(h('span', { key: 'sep-' + value, className: 'rd-rf-sep' }, '/'))
+        crumbNodes.push(h('button', {
+          key: value,
+          type: 'button',
+          className: 'rd-rf-crumb' + (index === segments.length - 1 ? ' on' : ''),
+          title: value,
+          onClick: () => void load(value),
+        }, part))
+      })
 
       const openEntryMenu = (event, entry) => {
         event.preventDefault()
@@ -4533,62 +4608,90 @@ window.__ModuleLoader__.load({
         ],
       }
 
-      return h('div', { className: 'rd-rfiles' },
-        h('div', { className: 'rd-rfiles-head' },
-          h(Dot, { state: status }),
-          h('span', { className: 'nm', title: remote.path }, remote.host + ' · ' + (remote.folder || remote.title)),
-          h('button', {
-            className: 'rd-ibtn',
-            type: 'button',
-            title: '刷新远端目录',
-            onClick: () => void load(currentDir),
-          }, h(Icon, { name: 'refresh', size: 13 })),
+      return h('div', { className: 'rd-rf' },
+        h('div', { className: 'rd-rf-head' },
+          h('div', { className: 'rd-rf-title' },
+            h(Dot, { state: status }),
+            h('span', { className: 'rd-rf-host', title: remote.path }, remote.host + ' · ' + (remote.folder || remote.title)),
+          ),
+          h('div', { className: 'rd-rf-acts' },
+            h('button', {
+              className: 'rd-rf-act',
+              type: 'button',
+              title: atRoot ? '已经在根目录' : '上级目录：' + parentRemoteDir(currentDir),
+              disabled: atRoot,
+              onClick: () => void load(parentRemoteDir(currentDir)),
+            }, h(Icon, { name: 'arrowleft', size: 14 })),
+            h('button', {
+              className: 'rd-rf-act',
+              type: 'button',
+              title: '上传到当前目录：' + currentDir,
+              disabled: upload.busy,
+              onClick: () => upload.pick({ connectionId, path: currentDir }),
+            }, h(Icon, { name: 'upload', size: 14 })),
+            h('button', {
+              className: 'rd-rf-act',
+              type: 'button',
+              title: '刷新远端目录',
+              onClick: () => void load(currentDir),
+            }, h(Icon, { name: 'refresh', size: 14 })),
+          ),
         ),
-        h('div', { className: 'rd-rfiles-crumbs' },
-          crumbs.map((crumb, index) => h('button', {
-            key: crumb.value,
-            type: 'button',
-            className: 'rd-crumb' + (index === crumbs.length - 1 ? ' on' : ''),
-            title: crumb.value,
-            onClick: () => void load(crumb.value),
-          }, crumb.label))),
-        error.length > 0 ? h('div', { className: 'rd-err' }, friendlyText(error)) : null,
-        loading && visible.length === 0 ? h('div', { className: 'rd-rfiles-empty' }, '正在读取远端目录…') : null,
-        !loading && error.length === 0 && visible.length === 0 ? h('div', { className: 'rd-rfiles-empty' }, '这个目录是空的。') : null,
-        h('div', {
-          className: 'rd-rfiles-list',
-          onContextMenu: openBlankMenu,
-        },
-          visible.map((entry) => h('div', {
-            key: entry.path,
-            className: 'rd-rfiles-row' + (entry.type === 'dir' ? ' dir' : '') + (selected === entry.path ? ' sel' : ''),
-            'data-type': entry.type,
-            onClick: () => setSelected(entry.path),
-            onDoubleClick: entry.type === 'dir' ? () => enter(entry) : undefined,
-            onContextMenu: (event) => openEntryMenu(event, entry),
-          },
-            h(Icon, { name: entry.type === 'dir' ? 'folder' : 'file', size: 13 }),
-            h('span', { className: 'nm', title: entry.name }, entry.name),
-            h('span', { className: 'sz' }, entry.type === 'dir' ? '' : formatBytes(entry.size)),
-          ))),
-        tasks.tasks.length > 0 ? h('div', { className: 'rd-tasks' },
-          tasks.tasks.map((task) => h('div', { key: task.id, className: 'rd-task', 'data-state': task.status },
-            h(Icon, { name: taskIconName(task.kind), size: 12 }),
-            h('div', { className: 'rd-task-main' },
-              h('div', { className: 'rd-task-top' },
-                h('span', { className: 'nm', title: task.path || task.name }, taskKindLabel(task.kind) + ' · ' + task.name),
-                h('span', { className: 'st' }, taskStatusText(task)),
+        h('div', { className: 'rd-rf-crumbs' }, crumbNodes),
+        h('div', { className: 'rd-rf-body', onContextMenu: openBlankMenu },
+          error.length > 0
+            ? h('div', { className: 'rd-rf-state' },
+              h('span', { className: 'rd-rf-stateicon' }, h(Icon, { name: 'server', size: 22 })),
+              h('div', { className: 'rd-rf-statetitle' }, '读取失败'),
+              h('div', { className: 'rd-rf-statehint' }, friendlyText(error)))
+            : loading && visible.length === 0
+              ? h('div', { className: 'rd-rf-state' },
+                h('span', { className: 'rd-rf-stateicon' }, h(Icon, { name: 'refresh', size: 22 })),
+                h('div', { className: 'rd-rf-statetitle' }, '正在读取远端目录…'))
+              : visible.length === 0
+                ? h('div', { className: 'rd-rf-state' },
+                  h('span', { className: 'rd-rf-stateicon' }, h(Icon, { name: 'folder', size: 22 })),
+                  h('div', { className: 'rd-rf-statetitle' }, '这个目录是空的'),
+                  h('div', { className: 'rd-rf-statehint' }, '上传文件后它们会出现在这里。'),
+                  h('button', {
+                    className: 'rd-rf-statebtn',
+                    type: 'button',
+                    onClick: () => upload.pick({ connectionId, path: currentDir }),
+                  }, h(Icon, { name: 'upload', size: 13 }), '上传到此处'))
+                : h('div', { className: 'rd-rf-list' },
+                  visible.map((entry) => h('div', {
+                    key: entry.path,
+                    className: 'rd-rf-row' + (entry.type === 'dir' ? ' dir' : '') + (selected === entry.path ? ' sel' : ''),
+                    'data-type': entry.type,
+                    title: entry.path,
+                    onClick: () => setSelected(entry.path),
+                    onDoubleClick: entry.type === 'dir' ? () => enter(entry) : undefined,
+                    onContextMenu: (event) => openEntryMenu(event, entry),
+                  },
+                    h('span', { className: 'rd-rf-rowicon' }, h(Icon, { name: remoteIconName(entry), size: 14 })),
+                    h('span', { className: 'rd-rf-rowname' }, entry.name),
+                    h('span', { className: 'rd-rf-rowsize' }, entry.type === 'dir' ? '' : formatBytes(entry.size)),
+                    h('span', { className: 'rd-rf-rowtime' }, entry.mtime ? ago(entry.mtime) : ''),
+                  ))),
+        ),
+        tasks.tasks.length > 0 ? h('div', { className: 'rd-rf-tasks' },
+          tasks.tasks.map((task) => h('div', { key: task.id, className: 'rd-rf-task', 'data-state': task.status },
+            h('span', { className: 'rd-rf-taskicon' }, h(Icon, { name: taskIconName(task.kind), size: 12 })),
+            h('div', { className: 'rd-rf-taskmain' },
+              h('div', { className: 'rd-rf-tasktop' },
+                h('span', { className: 'rd-rf-taskname', title: task.path || task.name }, taskKindLabel(task.kind) + ' · ' + task.name),
+                h('span', { className: 'rd-rf-taskst' }, taskStatusText(task)),
                 task.status === 'running'
-                  ? h('button', { className: 'rd-task-x', type: 'button', title: '取消', onClick: () => tasks.cancel(task.id) }, '取消')
-                  : h('button', { className: 'rd-task-x', type: 'button', title: '移除', onClick: () => tasks.drop(task.id) }, h(Icon, { name: 'x', size: 10 })),
+                  ? h('button', { className: 'rd-rf-taskx', type: 'button', title: '取消', onClick: () => tasks.cancel(task.id) }, '取消')
+                  : h('button', { className: 'rd-rf-taskx', type: 'button', title: '移除', onClick: () => tasks.drop(task.id) }, h(Icon, { name: 'x', size: 11 })),
               ),
               h('div', {
-                className: 'rd-task-bar' + (task.status === 'running' && task.total === 0 ? ' pending' : ''),
+                className: 'rd-rf-taskbar' + (task.status === 'running' && task.total === 0 ? ' pending' : ''),
               }, h('i', { style: { width: taskPercent(task) + '%' } })),
               task.status === 'running' && task.total > 0
-                ? h('div', { className: 'rd-task-sub' }, formatBytes(task.sent) + ' / ' + formatBytes(task.total))
+                ? h('div', { className: 'rd-rf-tasksub' }, formatBytes(task.sent) + ' / ' + formatBytes(task.total))
                 : null,
-              task.error.length > 0 ? h('div', { className: 'rd-task-err' }, task.error) : null,
+              task.error.length > 0 ? h('div', { className: 'rd-rf-taskerr' }, task.error) : null,
             )))) : null,
         h('input', {
           ref: upload.inputRef,
