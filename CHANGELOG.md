@@ -11,6 +11,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - v1.1.0: full xterm.js terminal, i18n (zh/en), explicit debug switch, virtualized large folders.
 
+## [1.18.5] - 2026-11-13
+
+### Fixed
+
+- **A finished upload did not refresh the file list.** `useDirectoryUpload` ended by calling the console store's
+  `refresh()`, which re-reads the session list and never the directory the files landed in, so the new entries only
+  appeared after navigating away or pressing 刷新. Both file surfaces now pass their own reload action, and the
+  directory is re-read the moment the batch settles.
+- The client harnesses behind that report were themselves wrong (a cumulative draft count where a delta was meant,
+  and an assertion that assumed auto save stays paused after a failure instead of resuming on the next edit). They
+  now pass 183 checks, including a new one that fails if an upload stops reloading the listing.
+
 ## [1.18.4] - 2026-11-13
 
 ### Fixed

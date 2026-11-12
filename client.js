@@ -2570,7 +2570,7 @@ window.__ModuleLoader__.load({
       const [ctx, setCtx] = React.useState(null)
       const menuRef = React.useRef(null)
       const closeMenu = React.useCallback(() => setCtx(null), [])
-      const upload = useDirectoryUpload()
+      const upload = useDirectoryUpload(undefined, () => { void load(currentDir) })
       const archive = useArchiveDownload()
 
       const load = React.useCallback(async (next) => {
@@ -4228,7 +4228,7 @@ window.__ModuleLoader__.load({
      * upload one by one, and ask on every failure. `pick({ connectionId, path })`
      * opens the shared file input; `onFiles` is that input's change handler.
      */
-    function useDirectoryUpload(tasks) {
+    function useDirectoryUpload(tasks, afterUploaded) {
       const inputRef = React.useRef(null)
       const [busy, setBusy] = React.useState(false)
       const [note, setNote] = React.useState('')
@@ -4378,7 +4378,10 @@ window.__ModuleLoader__.load({
         if (skipped > 0) parts.push('跳过 ' + skipped)
         setNote(parts.join('，') + (stopped ? '（已停止）' : ''))
         if (done > 0) pushNotice('已上传 ' + done + ' 个文件', dir)
-        void refresh()
+        // The file lists hold their own directory state, so the console store's
+        // refresh() is the wrong thing to call: it never re-reads this listing.
+        if (typeof afterUploaded === 'function') afterUploaded(dir)
+        else void refresh()
       }
       const onFiles = async (event) => {
         const node = event.currentTarget
@@ -5348,7 +5351,7 @@ window.__ModuleLoader__.load({
         : null
       const closeMenu = React.useCallback(() => setMenu(null), [])
       const tasks = useTransferTasks()
-      const upload = useDirectoryUpload(tasks)
+      const upload = useDirectoryUpload(tasks, () => { void load(currentDir) })
       const archive = useArchiveDownload(tasks)
       useContextMenuDismiss(menu !== null, closeMenu, menuRef)
 
