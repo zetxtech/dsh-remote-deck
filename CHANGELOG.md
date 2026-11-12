@@ -11,6 +11,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - v1.1.0: full xterm.js terminal, i18n (zh/en), explicit debug switch, virtualized large folders.
 
+## [1.17.0] - 2026-11-12
+
+### Added
+
+- **The file page header is one line** — host and breadcrumb together, status dot removed — and clicking the
+  empty space after the breadcrumb turns it into a path field: Enter jumps, Escape cancels, `~` (or an empty
+  value) returns to the Session's remote root, and a path that is not absolute or contains `..` is refused
+  inline without changing the directory.
+- **Double-clicking a text file opens it in this plugin's own editor tab.** DSH's document preview is
+  read-only by design ("Preview, not editing"), so the page now carries an editor built on **CodeMirror
+  5.65.16** (MIT, vendored: 20 files, 309 KiB, no bundler needed, served from the plugin's own `/assets`
+  route behind an exact-match allow-list) with syntax modes for the common languages, line numbers, bracket
+  closing, search and active-line. `Ctrl/Cmd+S` saves, a status line reports lines, bytes, modified state and
+  the save time, and a missing asset falls back to a plain textarea rather than blocking the edit.
+- `GET /connections/:id/read` and `POST /connections/:id/write` back it: a 2 MiB read window (8 MiB
+  ceiling) with a truncation flag, binary detection by NUL byte, and a save that writes a temporary file and
+  replaces the target atomically — refusing to overwrite when `expectedMtime` no longer matches (409
+  `STALE`), where the editor offers 重新加载 or 强制覆盖.
+
+### Notes
+
+- A tab cannot intercept its own close: plugins get no close hook, so an unsaved file is marked and the
+  editor offers 放弃修改并关闭 instead of blocking the close.
+- Images, PDFs and Office files still open in DSH's preview; only text-like files take the editor.
+
 ## [1.16.0] - 2026-11-12
 
 ### Added

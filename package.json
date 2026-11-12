@@ -1,6 +1,6 @@
 {
   "name": "dsh-remote-deck",
-  "version": "1.16.0",
+  "version": "1.17.0",
   "private": false,
   "type": "module",
   "description": "Remote Deck: SSH workspaces for DeepSeek Harness. Connect any number of machines, browse remote folders, and run DSH sessions with the remote filesystem, shell, search, terminal and port forwarding.",
@@ -31,6 +31,7 @@
     "cordis.patch.yml",
     "locale/*.json",
     "vendor/xterm/*",
+    "vendor/codemirror/**",
     "vendor/node_modules/**",
     "icon.svg",
     "README.md",

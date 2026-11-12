@@ -15,7 +15,7 @@ import { realpath } from 'node:fs/promises'
 import { homedir } from 'node:os'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { createApi } from './lib/api.js'
+import { CODEMIRROR_ASSET_FILES, createApi } from './lib/api.js'
 import { ConnectionStore, RemoteHost, Secrets, ssh2SelfTest } from './lib/connection.js'
 import { ForwardManager } from './lib/forwards.js'
 import { installWorkspacePromptGuide } from './lib/guide.js'
@@ -30,12 +30,14 @@ import { renderBashResult, renderPromoted, resolveWorkdir } from './lib/bash-res
 
 const PLUGIN_DIR = dirname(fileURLToPath(import.meta.url))
 const ASSET_DIR = join(PLUGIN_DIR, 'vendor', 'xterm')
+/** The editor's CodeMirror build; the served file list lives with the server. */
+const CODEMIRROR_DIR = join(PLUGIN_DIR, 'vendor', 'codemirror')
 const DSH_HOME = process.env.DSH_HOME || join(homedir(), '.dsh')
 const DATA_DIR = join(DSH_HOME, 'remote-deck')
 const LEGACY_DIR = join(DSH_HOME, 'remote-ssh')
 const WORKSPACE_ROOT = join(DATA_DIR, 'workspaces')
 const LEGACY_WORKSPACE_ROOT = join(LEGACY_DIR, 'workspaces')
-const BUILD = '1.16.0'
+const BUILD = '1.17.0'
 const diagnostics = { pid: process.pid, ssh2: 'pending', ssh2Error: '', checkedAt: 0 }
 void ssh2SelfTest().then((result) => {
   diagnostics.ssh2 = result.ok ? 'ok' : 'failed'
@@ -609,6 +611,7 @@ export function apply(ctx) {
     terminals,
     forwards,
     assetDir: ASSET_DIR,
+    assetDirs: [{ dir: CODEMIRROR_DIR, files: CODEMIRROR_ASSET_FILES }],
   })
   server.on('error', (error) => {
     console.error('[remote-deck] api server failed:', errorText(error))

@@ -615,8 +615,8 @@ window.__ModuleLoader__.load({
       .rd-set-actions { display:flex;gap:8px }
       [data-rd-theme="dark"] .rd-set-row input[type="number"], [data-rd-theme="dark"] .rd-set-text, [data-rd-theme="dark"] .rd-set-font select { background:var(--dsw-alias-bg-layer-1,#1b1e23);border-color:#2c3138 }
       .rd-rf { display:flex;flex-direction:column;height:100%;min-height:0;font-size:12px;color:var(--dsw-alias-label-primary,#1f2329) }
-      .rd-rf-head { flex:none;display:flex;align-items:center;gap:8px;padding:10px 10px 6px;min-width:0 }
-      .rd-rf-title { flex:1;min-width:0;display:flex;align-items:center;gap:7px }
+      .rd-rf-head { flex:none;display:flex;align-items:center;flex-wrap:wrap;gap:8px;padding:10px 10px 8px;min-width:0 }
+      .rd-rf-title { flex:1;min-width:0;display:flex;align-items:center;gap:8px;flex-wrap:wrap }
       .rd-rf-host { min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12.5px;font-weight:600 }
       .rd-rf-acts { flex:none;display:flex;align-items:center;gap:2px }
       .rd-rf-act { width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;padding:0;border:0;border-radius:8px;background:transparent;color:var(--dsw-alias-label-secondary,#5f6672);cursor:pointer }
@@ -624,7 +624,13 @@ window.__ModuleLoader__.load({
       .rd-rf-act[disabled] { opacity:.4;cursor:default }
       .rd-rf-act.on { background:rgba(47,125,221,.14);color:#1d6fc4 }
       .rd-rf-selcount { flex:none;padding:2px 8px;border-radius:999px;background:rgba(47,125,221,.12);color:#1d6fc4;font-size:10.5px;white-space:nowrap }
-      .rd-rf-crumbs { flex:none;display:flex;align-items:center;flex-wrap:wrap;gap:1px;padding:0 10px 8px;font-size:11.5px;line-height:18px }
+      .rd-rf-crumbs { flex:1;min-width:60px;display:flex;align-items:center;flex-wrap:wrap;gap:1px;padding:2px 4px;border-radius:var(--dsw-radius-sm,8px);font-size:11.5px;line-height:18px;cursor:text }
+      .rd-rf-crumbs:hover { background:var(--dsw-alias-interactive-bg-hover,rgba(15,23,42,.04)) }
+      .rd-rf-pathtype { flex:1;min-width:120px;display:flex;align-items:center;gap:8px }
+      .rd-rf-pathinput { flex:1;min-width:0;height:26px;box-sizing:border-box;padding:0 8px;border:.5px solid var(--dsw-alias-state-business-primary,#1d6fc4);border-radius:var(--dsw-radius-sm,8px);background:var(--dsw-alias-bg-layer-1,#fff);color:var(--dsw-alias-label-primary,#1f2329);font:inherit;font-size:12px;font-variant-numeric:tabular-nums }
+      .rd-rf-pathinput.bad { border-color:var(--dsw-alias-state-error-primary,#c0392b) }
+      .rd-rf-pathinput:focus { outline:none }
+      .rd-rf-patherr { flex:none;color:var(--dsw-alias-state-error-primary,#c0392b);font-size:11px }
       .rd-rf-crumb { max-width:150px;padding:2px 5px;border:0;border-radius:6px;background:transparent;color:var(--dsw-alias-label-secondary,#5f6672);font:inherit;font-size:11.5px;cursor:pointer;overflow:hidden;text-overflow:ellipsis;white-space:nowrap }
       .rd-rf-crumb:hover { background:var(--dsw-alias-interactive-bg-hover,rgba(15,23,42,.06));color:var(--dsw-alias-label-primary,#1f2329) }
       .rd-rf-crumb.on { color:var(--dsw-alias-label-primary,#1f2329);font-weight:400 }
@@ -674,6 +680,8 @@ window.__ModuleLoader__.load({
       [data-rd-theme="dark"] .rd-rf-act:hover:not([disabled]), [data-rd-theme="dark"] .rd-rf-crumb:hover, [data-rd-theme="dark"] .rd-rf-row:hover, [data-rd-theme="dark"] .rd-rf-statebtn:hover, [data-rd-theme="dark"] .rd-rf-taskx:hover { background:rgba(255,255,255,.07) }
       [data-rd-theme="dark"] .rd-rf-row.sel { background:rgba(47,125,221,.2) }
       [data-rd-theme="dark"] .rd-rf-row.drop { outline-color:#4f8fd6 }
+      [data-rd-theme="dark"] .rd-rf-crumbs:hover { background:rgba(255,255,255,.06) }
+      [data-rd-theme="dark"] .rd-rf-pathinput { background:var(--dsw-alias-bg-layer-1,#1b1e23) }
       [data-rd-theme="dark"] .rd-rf-act.on { background:rgba(47,125,221,.24);color:#8cc6ff }
       [data-rd-theme="dark"] .rd-rf-selcount { background:rgba(47,125,221,.24);color:#8cc6ff }
       [data-rd-theme="dark"] .rd-rf-tasks { border-top-color:#2c3138 }
@@ -933,6 +941,40 @@ window.__ModuleLoader__.load({
       .rd-set-previewrow { padding:16px 0 4px }
       .rd-set-preview { padding:8px 12px;border:.5px solid var(--dsw-alias-border-l2,#e8e8ec);border-radius:var(--dsw-radius-sm,8px);background:var(--dsw-alias-bg-layer-2,rgba(15,23,42,.03));color:var(--dsw-alias-label-primary,#1f2329);overflow:auto;white-space:pre;font-variant-ligatures:none }
       .rd-set-foot { padding:16px 0 0 }
+
+      /* ---- remote editor tab ---- */
+      .rd-edit { display:flex;flex-direction:column;height:100%;min-height:0;font-size:12px;color:var(--dsw-alias-label-primary,#1f2329) }
+      .rd-edit-head { flex:none;display:flex;align-items:center;gap:8px;padding:10px 12px 8px;min-width:0 }
+      .rd-edit-name { flex:none;max-width:40%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;font-weight:600 }
+      .rd-edit-flag { flex:none;padding:1px 6px;border-radius:var(--dsw-radius-sm,8px);background:rgba(210,153,34,.16);color:#8a6100;font-size:10.5px }
+      .rd-edit-acts { margin-left:auto;display:flex;align-items:center;gap:6px }
+      .rd-edit-btn { height:26px;padding:0 10px;border:.5px solid var(--dsw-alias-border-l2,#e8e8ec);border-radius:var(--dsw-radius-sm,8px);background:transparent;color:var(--dsw-alias-label-primary,#1f2329);font:inherit;font-size:11.5px;cursor:pointer }
+      .rd-edit-btn:hover { background:var(--dsw-alias-interactive-bg-hover,rgba(15,23,42,.05)) }
+      .rd-edit-btn.primary { background:var(--dsw-alias-state-business-primary,#1d6fc4);border-color:transparent;color:#fff }
+      .rd-edit-btn[disabled] { opacity:.5;cursor:default }
+      .rd-edit-conflict { flex:none;display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin:0 12px 8px;padding:8px 10px;border:.5px solid #f0cdcd;border-radius:var(--dsw-radius-sm,8px);background:rgba(229,72,77,.07);color:#a1282c;font-size:11.5px }
+      .rd-edit-area { flex:1;min-height:0;margin:0 12px;padding:10px 12px;box-sizing:border-box;border:.5px solid var(--dsw-alias-border-l2,#e8e8ec);border-radius:var(--dsw-radius-sm,8px);background:var(--dsw-alias-bg-layer-1,#fff);color:var(--dsw-alias-label-primary,#1f2329);font-family:var(--rd-term-font,var(--rd-term-font,ui-monospace,Consolas,monospace));font-size:12px;line-height:1.5;resize:none;outline:none;tab-size:2 }
+      .rd-edit-area:focus { border-color:var(--dsw-alias-state-business-primary,#1d6fc4) }
+      .rd-edit-status { flex:none;padding:6px 12px 10px;color:var(--dsw-alias-label-tertiary,#8f959e);font-size:10.5px;font-variant-numeric:tabular-nums }
+      .rd-edit-tabtitle { overflow:hidden;text-overflow:ellipsis;white-space:nowrap }
+      .rd-edit-cm { flex:1;min-height:0;margin:0 12px;border:.5px solid var(--dsw-alias-border-l2,#e8e8ec);border-radius:var(--dsw-radius-sm,8px);overflow:hidden }
+      .rd-edit-pending { display:block;padding:10px 12px;color:var(--dsw-alias-label-tertiary,#8f959e);font-size:11.5px }
+      .rd-edit-cm .CodeMirror { height:100%;background:var(--dsw-alias-bg-layer-1,#fff);color:var(--dsw-alias-label-primary,#1f2329);font-family:var(--rd-term-font,ui-monospace,Consolas,monospace);font-size:12px;line-height:1.5 }
+      .rd-edit-cm .CodeMirror-gutters { background:var(--dsw-alias-bg-layer-2,rgba(15,23,42,.03));border-right:.5px solid var(--dsw-alias-border-l2,#e8e8ec) }
+      .rd-edit-cm .CodeMirror-linenumber { color:var(--dsw-alias-label-tertiary,#8f959e) }
+      .rd-edit-cm .CodeMirror-cursor { border-left:1.5px solid var(--dsw-alias-label-primary,#1f2329) }
+      .rd-edit-cm .CodeMirror-selected { background:rgba(47,125,221,.18) }
+      .rd-edit-cm .CodeMirror-focused .CodeMirror-selected { background:rgba(47,125,221,.26) }
+      .rd-edit-cm .CodeMirror-activeline-background { background:var(--dsw-alias-interactive-bg-hover,rgba(15,23,42,.04)) }
+      [data-rd-theme="dark"] .rd-edit-cm { border-color:#2c3138 }
+      [data-rd-theme="dark"] .rd-edit-cm .CodeMirror { background:var(--dsw-alias-bg-layer-1,#1b1e23);color:var(--dsw-alias-label-primary,#e6e8eb) }
+      [data-rd-theme="dark"] .rd-edit-cm .CodeMirror-gutters { background:rgba(255,255,255,.04);border-right-color:#2c3138 }
+      [data-rd-theme="dark"] .rd-edit-cm .CodeMirror-cursor { border-left-color:#e6e8eb }
+      [data-rd-theme="dark"] .rd-edit-cm .CodeMirror-selected { background:rgba(99,182,255,.24) }
+      [data-rd-theme="dark"] .rd-edit-area { background:var(--dsw-alias-bg-layer-1,#1b1e23);border-color:#2c3138 }
+      [data-rd-theme="dark"] .rd-edit-conflict { border-color:#5c2b2b;background:rgba(229,72,77,.14);color:#ff9a9a }
+      [data-rd-theme="dark"] .rd-edit-flag { background:rgba(210,153,34,.22);color:#e3b341 }
+      [data-rd-theme="dark"] .rd-edit-btn:hover { background:rgba(255,255,255,.07) }
       .rd-set-textbtn { border:0;background:transparent;color:var(--dsw-alias-label-secondary,#8f959e);font:inherit;font-size:12px;line-height:20px;padding:1px 6px;margin-left:-6px;border-radius:var(--dsw-radius-sm,8px);cursor:pointer }
       .rd-set-textbtn:hover { background:var(--dsw-alias-interactive-bg-hover,rgba(15,23,42,.05));color:var(--dsw-alias-label-primary,#1f2329) }
       [data-rd-theme="dark"] .rd-set-row, [data-rd-theme="dark"] .rd-set-preview { border-color:#2c3138 }
@@ -4693,6 +4735,343 @@ window.__ModuleLoader__.load({
       return '/' + parts.slice(0, -1).join('/')
     }
 
+    // ----------------------------------------------------------- remote editor
+    // DSH's own file preview is read-only, so editing lives in our own tab type.
+
+    const EDIT_KIND = 'remote-deck-edit'
+    const EDIT_MAX_BYTES = 2 * 1024 * 1024
+    const EDIT_TEXT_EXT = /\.(txt|text|md|markdown|mdx|rst|json|jsonc|ya?ml|toml|ini|cfg|conf|env|log|csv|tsv|js|mjs|cjs|jsx|ts|tsx|vue|svelte|py|rb|go|rs|c|h|cc|cpp|hpp|cs|java|kt|kts|swift|sh|bash|zsh|fish|ps1|sql|html?|css|scss|sass|less|xml|php|lua|pl|r|jl|ex|exs|erl|hs|scala|clj|gradle|properties|lock|gitignore)$/i
+
+    /** Text-ish files open in our editor; everything else keeps the DSH preview. */
+    function isEditableTextPath(entry) {
+      if (entry === null || entry === undefined) return false
+      if (isRemoteDir(entry)) return false
+      if (entry.kind !== undefined && entry.kind !== null && entry.kind !== 'file' && entry.kind !== '') return false
+      const name = remoteEntryName(entry)
+      if (name.length === 0) return false
+      if (EDIT_TEXT_EXT.test(name)) return true
+      return name.indexOf('.') < 0
+    }
+
+    /** The file this editor tab was opened for. */
+    function editorFilePath(props) {
+      const info = props !== null && props !== undefined && typeof props.useTabInfo === 'function' ? props.useTabInfo() : null
+      const tab = info !== null && info !== undefined && info.tab !== undefined && info.tab !== null ? info.tab : null
+      const navigation = tab !== null && tab.navigation !== undefined ? tab.navigation : null
+      const params = navigation !== null && navigation.params !== undefined && navigation.params !== null
+        ? navigation.params
+        : (props !== null && props !== undefined ? props.params : null)
+      if (params !== null && params !== undefined && typeof params.path === 'string' && params.path.length > 0) return params.path
+      return ''
+    }
+
+    function editorBaseName(filePath) {
+      const parts = String(filePath === undefined || filePath === null ? '' : filePath).split('/').filter(Boolean)
+      return parts.length === 0 ? '未命名' : parts[parts.length - 1]
+    }
+
+    // ------------------------------------------------------------- code mirror
+    // The editor engine is vendored and lazy: nothing is injected until the
+    // first editor tab actually opens, and a missing file falls back to a plain
+    // monospace textarea with the same save flow.
+
+    const CM_MODE_FILES = {
+      javascript: ['mode/javascript/javascript.js'],
+      markdown: ['mode/markdown/markdown.js'],
+      python: ['mode/python/python.js'],
+      shell: ['mode/shell/shell.js'],
+      yaml: ['mode/yaml/yaml.js'],
+      css: ['mode/css/css.js'],
+      xml: ['mode/xml/xml.js'],
+      htmlmixed: ['mode/xml/xml.js', 'mode/htmlmixed/htmlmixed.js'],
+      clike: ['mode/clike/clike.js'],
+      rust: ['mode/rust/rust.js'],
+      go: ['mode/go/go.js'],
+    }
+    const CM_EXT_MODE = [
+      [/\.(js|mjs|cjs|jsx|ts|tsx|json|jsonc)$/i, 'javascript'],
+      [/\.(md|markdown|mdx)$/i, 'markdown'],
+      [/\.py$/i, 'python'],
+      [/\.(sh|bash|zsh|fish)$/i, 'shell'],
+      [/\.(ya?ml)$/i, 'yaml'],
+      [/\.html?$/i, 'htmlmixed'],
+      [/\.css$/i, 'css'],
+      [/\.(xml|svg)$/i, 'xml'],
+      [/\.(c|h|cc|cpp|hpp|cs|java|kt|kts|scala|gradle)$/i, 'clike'],
+      [/\.rs$/i, 'rust'],
+      [/\.go$/i, 'go'],
+    ]
+    const CM_MODE_FALLBACK_TEXT = '未加载到编辑器组件'
+
+    /** CodeMirror mode for a path; null means plain text. */
+    function editorModeFor(filePath) {
+      const name = editorBaseName(filePath)
+      for (const [pattern, mode] of CM_EXT_MODE) {
+        if (pattern.test(name)) return mode
+      }
+      return null
+    }
+
+    let codeMirrorLoader = null
+    const cmModesLoaded = new Set()
+
+    function injectAsset(tag, attrs) {
+      return new Promise((resolve, reject) => {
+        const el = document.createElement(tag)
+        Object.assign(el, attrs)
+        el.onload = () => resolve(true)
+        el.onerror = () => reject(new Error('failed to load ' + (attrs.src || attrs.href)))
+        document.head.appendChild(el)
+      })
+    }
+
+    function ensureCmMode(mode) {
+      const files = CM_MODE_FILES[mode]
+      if (files === undefined || cmModesLoaded.has(mode)) return Promise.resolve(true)
+      cmModesLoaded.add(mode)
+      let chain = Promise.resolve(true)
+      for (const file of files) chain = chain.then(() => injectAsset('script', { src: assetUrl(file) }))
+      return chain.catch(() => true)
+    }
+
+    /** Inject the engine once; every later editor tab reuses it. */
+    function loadCodeMirror(mode) {
+      if (typeof window === 'undefined') return Promise.resolve(false)
+      if (typeof window.CodeMirror === 'function') {
+        return mode === null ? Promise.resolve(true) : ensureCmMode(mode).then(() => true)
+      }
+      if (codeMirrorLoader === null) {
+        codeMirrorLoader = injectAsset('link', { rel: 'stylesheet', href: assetUrl('codemirror.css') })
+          .then(() => injectAsset('script', { src: assetUrl('codemirror.min.js') }))
+          .then(() => typeof window.CodeMirror === 'function')
+          .catch(() => false)
+      }
+      return codeMirrorLoader.then((loaded) => (loaded === true && mode !== null ? ensureCmMode(mode).then(() => true) : loaded))
+    }
+
+    function RemoteEditorTitle(props) {
+      const filePath = editorFilePath(props)
+      return h('span', { className: 'rd-edit-tabtitle', title: filePath }, editorBaseName(filePath))
+    }
+
+    /** The one place a remote file is written back. 409 carries STALE. */
+    async function writeRemoteFile(connectionId, filePath, content, expectedMtime) {
+      const info = boot()
+      if (info === null) throw new Error('remote-deck is not active yet; restart DSH')
+      const body = { path: filePath, content }
+      if (expectedMtime !== undefined && expectedMtime !== null && expectedMtime !== '') body.expectedMtime = expectedMtime
+      const response = await fetch(apiBase() + '/connections/' + encodeURIComponent(connectionId) + '/write', {
+        method: 'POST',
+        headers: { 'x-dsh-remote-token': info.token, 'content-type': 'application/json' },
+        body: JSON.stringify(body),
+      })
+      const payload = await response.json().catch(() => null)
+      return { status: response.status, payload }
+    }
+
+    function RemoteEditorBody(props) {
+      const sessionId = props !== null && props !== undefined && typeof props.sessionId === 'string' ? props.sessionId : ''
+      const remote = useRemote(sessionId)
+      const connectionId = remote === null ? '' : String(remote.connectionId || '')
+      const info = props !== null && props !== undefined && typeof props.useTabInfo === 'function' ? props.useTabInfo() : null
+      const tab = info !== null && info !== undefined && info.tab !== undefined ? info.tab : null
+      const filePath = editorFilePath(props)
+      const [text, setText] = React.useState('')
+      const [savedText, setSavedText] = React.useState('')
+      const [meta, setMeta] = React.useState(null)
+      const [state, setState] = React.useState('loading')
+      const [failure, setFailure] = React.useState('')
+      const [conflict, setConflict] = React.useState(false)
+      const [saving, setSaving] = React.useState(false)
+      const [savedAt, setSavedAt] = React.useState('')
+      const [engine, setEngine] = React.useState('pending')
+      const cmHostRef = React.useRef(null)
+      const cmRef = React.useRef(null)
+
+      // Inject the engine only once a file is actually loaded.
+      React.useEffect(() => {
+        if (state !== 'ready') return undefined
+        let cancelled = false
+        void loadCodeMirror(editorModeFor(filePath)).then((loaded) => {
+          if (!cancelled) setEngine(loaded === true && typeof window.CodeMirror === 'function' ? 'cm' : 'fallback')
+        })
+        return () => { cancelled = true }
+      }, [state, filePath])
+
+      // One CodeMirror instance per tab; the injected tags stay for other tabs.
+      React.useEffect(() => {
+        if (engine !== 'cm' || cmRef.current !== null) return undefined
+        const host = cmHostRef.current
+        if (host === null || typeof window.CodeMirror !== 'function') {
+          setEngine('fallback')
+          return undefined
+        }
+        const instance = window.CodeMirror(host, {
+          value: text,
+          mode: editorModeFor(filePath),
+          lineNumbers: true,
+          lineWrapping: false,
+          indentUnit: 2,
+          tabSize: 2,
+          viewportMargin: Infinity,
+          extraKeys: { 'Ctrl-S': () => { void save(false) }, 'Cmd-S': () => { void save(false) } },
+        })
+        instance.on('change', () => setText(instance.getValue()))
+        cmRef.current = instance
+        return () => {
+          cmRef.current = null
+          try { instance.toTextArea?.() } catch { /* detached already */ }
+        }
+      }, [engine, filePath])
+
+      // A reload replaces the buffer under the instance.
+      React.useEffect(() => {
+        const instance = cmRef.current
+        if (instance === null) return
+        if (instance.getValue() !== text) instance.setValue(text)
+      }, [text])
+
+      const load = React.useCallback(async () => {
+        if (connectionId === '' || filePath === '') return
+        setState('loading')
+        setFailure('')
+        setConflict(false)
+        try {
+          const body = await call('/connections/' + encodeURIComponent(connectionId) + '/read?path=' + encodeURIComponent(filePath) + '&maxBytes=' + String(EDIT_MAX_BYTES))
+          if (body.binary === true) {
+            setState('binary')
+            return
+          }
+          if (body.truncated === true) {
+            setState('truncated')
+            return
+          }
+          const content = typeof body.text === 'string' ? body.text : ''
+          setText(content)
+          setSavedText(content)
+          setMeta({ size: countOf(body.size), mtime: body.mtime })
+          setState('ready')
+        } catch (error) {
+          setState('error')
+          setFailure(error instanceof Error ? error.message : String(error))
+        }
+      }, [connectionId, filePath])
+
+      React.useEffect(() => {
+        void load()
+      }, [load])
+
+      const openInPreview = () => {
+        if (tab === null || tab.actions === undefined || typeof tab.actions.openResource !== 'function') return
+        try {
+          tab.actions.openResource(remoteFileAddress(sessionId, filePath))
+        } catch {
+          /* nothing to do */
+        }
+      }
+      const dirty = state === 'ready' && text !== savedText
+      const save = async (force) => {
+        if (saving || state !== 'ready') return
+        setSaving(true)
+        try {
+          const expected = force === true ? undefined : (meta === null ? undefined : meta.mtime)
+          const result = await writeRemoteFile(connectionId, filePath, text, expected)
+          const payload = result.payload
+          if (result.status === 409 || (payload !== null && payload !== undefined && payload.code === 'STALE')) {
+            setConflict(true)
+            return
+          }
+          if (result.status < 200 || result.status >= 300 || payload === null || payload.ok === false) {
+            pushToast(new Error(payload !== null && payload !== undefined && payload.message ? payload.message : 'HTTP ' + result.status))
+            return
+          }
+          setSavedText(text)
+          setMeta({ size: countOf(payload.size), mtime: payload.mtime })
+          setConflict(false)
+          setSavedAt(new Date().toISOString())
+        } catch (error) {
+          pushToast(error)
+        } finally {
+          setSaving(false)
+        }
+      }
+      const onKeyDown = (event) => {
+        if (event.ctrlKey !== true && event.metaKey !== true) return
+        if (String(event.key === undefined ? '' : event.key).toLowerCase() !== 's') return
+        event.preventDefault()
+        void save(false)
+      }
+      // No close-hook API is available on `tab.actions` (only open/close and
+      // navigation), so an unsaved tab cannot veto its own close: the header
+      // marks it and offers 放弃修改并关闭 instead.
+      const closeTab = () => {
+        if (tab !== null && tab.actions !== undefined && typeof tab.actions.close === 'function') tab.actions.close()
+      }
+      const lines = text.length === 0 ? 0 : text.split('\n').length
+      const bytes = dirty ? text.length : (meta !== null && meta.size > 0 ? meta.size : text.length)
+      const statusText = state === 'loading' ? '读取中…' : dirty ? '已修改' : savedAt.length > 0 ? '已保存' : '未修改'
+      const statusLine = lines + ' 行 · ' + formatBytes(bytes) + ' · ' + statusText
+        + (savedAt.length > 0 ? ' · ' + clockOf(savedAt) : '')
+        + (engine === 'fallback' ? ' · ' + CM_MODE_FALLBACK_TEXT : '')
+
+      if (remote === null || filePath === '') {
+        return h('div', { className: 'rd-edit' },
+          h('div', { className: 'rd-rf-state' },
+            h('span', { className: 'rd-rf-stateicon' }, h(Icon, { name: 'server', size: 22 })),
+            h('div', { className: 'rd-rf-statetitle' }, '没有可编辑的远端文件'),
+            h('div', { className: 'rd-rf-statehint' }, '在远端文件页双击一个文本文件即可在这里打开。')))
+      }
+      if (state === 'binary' || state === 'truncated') {
+        return h('div', { className: 'rd-edit' },
+          h('div', { className: 'rd-rf-state' },
+            h('span', { className: 'rd-rf-stateicon' }, h(Icon, { name: 'file', size: 22 })),
+            h('div', { className: 'rd-rf-statetitle' }, state === 'binary' ? '这个文件是二进制内容' : '文件过大，未完整载入'),
+            h('div', { className: 'rd-rf-statehint' }, state === 'binary'
+              ? '编辑器只处理文本；可以用 DSH 的预览查看它。'
+              : '超过 ' + formatBytes(EDIT_MAX_BYTES) + ' 的文件不在编辑器里打开。'),
+            h('button', { className: 'rd-rf-statebtn', type: 'button', onClick: openInPreview }, h(Icon, { name: 'file', size: 13 }), '用 DSH 预览打开')))
+      }
+      if (state === 'error') {
+        return h('div', { className: 'rd-edit' },
+          h('div', { className: 'rd-rf-state' },
+            h('span', { className: 'rd-rf-stateicon' }, h(Icon, { name: 'server', size: 22 })),
+            h('div', { className: 'rd-rf-statetitle' }, '读取失败'),
+            h('div', { className: 'rd-rf-statehint' }, friendlyText(failure)),
+            h('button', { className: 'rd-rf-statebtn', type: 'button', onClick: () => void load() }, '重试')))
+      }
+      return h('div', { className: 'rd-edit' },
+        h('div', { className: 'rd-edit-head' },
+          h('span', { className: 'rd-edit-name', title: filePath }, editorBaseName(filePath)),
+          dirty ? h('span', { className: 'rd-edit-flag' }, '未保存') : null,
+          h('div', { className: 'rd-edit-acts' },
+            dirty ? h('button', { className: 'rd-edit-btn primary', type: 'button', disabled: saving, onClick: () => void save(false) }, saving ? '保存中…' : '保存') : null,
+            h('button', { className: 'rd-edit-btn', type: 'button', onClick: () => void load() }, '重新读取'),
+            dirty ? h('button', { className: 'rd-edit-btn', type: 'button', onClick: closeTab }, '放弃修改并关闭') : null,
+          ),
+        ),
+        conflict
+          ? h('div', { className: 'rd-edit-conflict' },
+            h('span', null, '文件已被外部修改，保存会覆盖对方的改动。'),
+            h('button', { className: 'rd-edit-btn', type: 'button', onClick: () => void load() }, '重新加载（丢弃我的修改）'),
+            h('button', { className: 'rd-edit-btn primary', type: 'button', onClick: () => void save(true) }, '强制覆盖'))
+          : null,
+        state === 'loading'
+          ? h('div', { className: 'rd-rf-state' }, h('div', { className: 'rd-rf-statetitle' }, '正在读取远端文件…'))
+          : engine === 'cm'
+            ? h('div', { className: 'rd-edit-cm', ref: cmHostRef })
+            : h('textarea', {
+              // Also the pre-upgrade surface: the file is editable at once and
+              // swaps to CodeMirror when the lazy engine reports in.
+              className: 'rd-edit-area',
+              value: text,
+              spellCheck: false,
+              onChange: (event) => setText(event.target.value),
+              onKeyDown,
+            }),
+        h('div', { className: 'rd-edit-status' }, statusLine),
+      )
+    }
+
     function RemoteFilesBody(props) {
       const sessionId = props && typeof props.sessionId === 'string' ? props.sessionId : ''
       const remote = useRemote(sessionId)
@@ -4708,6 +5087,8 @@ window.__ModuleLoader__.load({
       const [showHidden, setShowHidden] = React.useState(loadShowHidden)
       const [clipboard, setClipboard] = React.useState(loadFileClipboard)
       const [dropPath, setDropPath] = React.useState('')
+      const [pathDraft, setPathDraft] = React.useState(null)
+      const [pathError, setPathError] = React.useState('')
       const [menu, setMenu] = React.useState(null)
       const [confirming, setConfirming] = React.useState(null)
       const menuRef = React.useRef(null)
@@ -4803,7 +5184,18 @@ window.__ModuleLoader__.load({
         setSelection([entry.path])
       }
       const openFilePreview = (entry) => {
-        if (tabActions === null || tabActions === undefined || typeof tabActions.openResource !== 'function') return false
+        if (tabActions === null || tabActions === undefined) return false
+        // Text files open in our own editable tab; images / PDFs / office keep
+        // the built-in read-only preview.
+        if (isEditableTextPath(entry) && typeof tabActions.openTab === 'function') {
+          try {
+            tabActions.openTab(EDIT_KIND, { params: { path: entry.path } })
+            return true
+          } catch {
+            return false
+          }
+        }
+        if (typeof tabActions.openResource !== 'function') return false
         try {
           // Same address shape DSH's own tree uses; no `replaceTab`, so the
           // preview lands in a new tab instead of taking this page over.
@@ -4818,7 +5210,10 @@ window.__ModuleLoader__.load({
         type: 'button',
         className: 'rd-rf-crumb rd-rf-crumb-root',
         title: '/',
-        onClick: () => void load('/'),
+        onClick: (event) => {
+          if (event !== undefined && event !== null && typeof event.stopPropagation === 'function') event.stopPropagation()
+          void load('/')
+        },
       }, '/')]
       let walked = ''
       segments.forEach((part, index) => {
@@ -4831,7 +5226,10 @@ window.__ModuleLoader__.load({
           type: 'button',
           className: 'rd-rf-crumb' + (index === segments.length - 1 ? ' on' : ''),
           title: value,
-          onClick: () => void load(value),
+          onClick: (event) => {
+            if (event !== undefined && event !== null && typeof event.stopPropagation === 'function') event.stopPropagation()
+            void load(value)
+          },
         }, part))
       })
 
@@ -4846,6 +5244,38 @@ window.__ModuleLoader__.load({
       const openBlankMenu = (event) => {
         event.preventDefault()
         setMenu({ x: Number(event.clientX) || 0, y: Number(event.clientY) || 0, entry: null })
+      }
+      /** An absolute POSIX path, `~` or empty (the session's remote root). */
+      const parsePathInput = (value) => {
+        const raw = String(value === undefined || value === null ? '' : value).trim()
+        if (raw.length === 0 || raw === '~') return { ok: true, path: rootPath }
+        if (raw.charAt(0) !== '/') return { ok: false, error: '请输入绝对路径（以 / 开头），或用 ~ 回到远端根目录' }
+        const normalized = raw.replace(/\/{2,}/g, '/').replace(/\/+$/, '')
+        const parts = normalized.split('/').filter(Boolean)
+        if (parts.includes('..')) return { ok: false, error: '路径不能包含 ..' }
+        return { ok: true, path: parts.length === 0 ? '/' : '/' + parts.join('/') }
+      }
+      const submitPathInput = () => {
+        const parsed = parsePathInput(pathDraft)
+        if (parsed.ok !== true) {
+          setPathError(parsed.error)
+          return
+        }
+        setPathDraft(null)
+        setPathError('')
+        if (parsed.path !== currentDir) void load(parsed.path)
+      }
+      const onPathKeyDown = (event) => {
+        if (event.key === 'Enter') {
+          event.preventDefault()
+          submitPathInput()
+          return
+        }
+        if (event.key === 'Escape') {
+          event.preventDefault()
+          setPathDraft(null)
+          setPathError('')
+        }
       }
       const enter = (entry) => {
         if (!isRemoteDir(entry)) return false
@@ -5129,8 +5559,37 @@ window.__ModuleLoader__.load({
       return h('div', { className: 'rd-rf' },
         h('div', { className: 'rd-rf-head' },
           h('div', { className: 'rd-rf-title' },
-            h(Dot, { state: status }),
             h('span', { className: 'rd-rf-host', title: remote.path }, remote.host + ' · ' + (remote.folder || remote.title)),
+            pathDraft === null
+              ? h('div', {
+                className: 'rd-rf-crumbs',
+                title: '点击空白处输入路径',
+                onClick: (event) => {
+                  if (event.target !== event.currentTarget) return
+                  setPathDraft(currentDir)
+                  setPathError('')
+                },
+              }, crumbNodes)
+              : h('div', { className: 'rd-rf-pathtype' },
+                h('input', {
+                  className: 'rd-rf-pathinput' + (pathError.length > 0 ? ' bad' : ''),
+                  type: 'text',
+                  value: pathDraft,
+                  spellCheck: false,
+                  autoFocus: true,
+                  onFocus: (event) => event.target.select(),
+                  onChange: (event) => {
+                    setPathDraft(event.target.value)
+                    setPathError('')
+                  },
+                  onKeyDown: onPathKeyDown,
+                  onBlur: () => {
+                    setPathDraft(null)
+                    setPathError('')
+                  },
+                }),
+                pathError.length > 0 ? h('span', { className: 'rd-rf-patherr' }, pathError) : null,
+              ),
           ),
           selection.length > 1 ? h('span', { className: 'rd-rf-selcount', title: '右键可对整组操作' }, '已选 ' + selection.length + ' 项') : null,
           h('div', { className: 'rd-rf-acts' },
@@ -5163,7 +5622,6 @@ window.__ModuleLoader__.load({
             }, h(Icon, { name: 'refresh', size: 14 })),
           ),
         ),
-        h('div', { className: 'rd-rf-crumbs' }, crumbNodes),
         h('div', {
           className: 'rd-rf-body',
           tabIndex: 0,
@@ -5638,6 +6096,12 @@ window.__ModuleLoader__.load({
       offs.push(ctx.slots.inject('sidebar.right.pane.tab', () =>
         ctx.slots.register({ name: 'sidebar.right.pane.tab', key: REMOTE_FILES_ID }, RemoteFilesBody),
       ))
+      offs.push(ctx.slots.inject('sidebar.right.pane.tab', () =>
+        ctx.slots.register({ name: 'sidebar.right.pane.tab', key: EDIT_KIND }, RemoteEditorBody),
+      ))
+      offs.push(ctx.slots.inject('sidebar.right.pane.tab.title', () =>
+        ctx.slots.register({ name: 'sidebar.right.pane.tab.title', key: EDIT_KIND }, RemoteEditorTitle),
+      ))
       offs.push(ctx.slots.inject('settings.section', () =>
         ctx.slots.register({ name: 'settings.section', id: 'remote-deck', order: 30, label: () => '远端工作台' }, RemoteDeckSettings),
       ))
@@ -5668,6 +6132,14 @@ window.__ModuleLoader__.load({
               description: () => '浏览、上传、下载与删除远端文件',
             }],
           }), 'remote-deck: files tab type')
+          // The editor tab type is deliberately guide-less: the guide page keeps
+          // DSH's own cards plus our single 远端文件 card.
+          scope.effect(() => scope.sidebarRightTabs.register({
+            id: EDIT_KIND,
+            kind: EDIT_KIND,
+            multiple: true,
+            title: () => '远端编辑',
+          }), 'remote-deck: edit tab type')
         })
       }
 
