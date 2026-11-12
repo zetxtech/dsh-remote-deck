@@ -11,6 +11,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - v1.1.0: full xterm.js terminal, i18n (zh/en), explicit debug switch, virtualized large folders.
 
+## [1.18.0] - 2026-11-12
+
+### Added
+
+- **The editor auto-saves.** One second after typing stops (configurable 300–10000 ms, or switched off under
+  Settings → 远端工作台 → 编辑器) the buffer is written back; `Ctrl/Cmd+S` saves immediately. A failed save or a
+  409 conflict pauses auto-saving until the next edit or a manual save, and the status line reports
+  已自动保存 / 已保存 / 未保存 instead of leaving you guessing.
+- **Every edit also leaves a draft on the Host** (`POST /draft`, one per file, 8 MiB cap, pruned after 14 days),
+  so a change outlives the tab: on unmount the last buffer is flushed from a module-level registry, and small
+  content is written once more on unload with a keepalive request. Reopening a file whose draft differs from the
+  remote copy offers 恢复 / 丢弃; a draft that matches is dropped silently. A successful save deletes it.
+
+### Notes
+
+- `keepalive` caps a request at ~64 KiB, so a very large file depends on the draft written before unload; at
+  worst the last second of typing is lost when the whole app is killed.
+- Settings gained an `editor` section (`autoSave`, `autoSaveDelayMs`), validated and clamped host-side so the
+  switch actually persists.
+
 ## [1.17.0] - 2026-11-12
 
 ### Added

@@ -66,6 +66,7 @@ test('the settings defaults carry every section', () => {
       disk: { enabled: true, threshold: 90 },
     },
     transfer: { limitBytes: 536870912 },
+    editor: { autoSave: true, autoSaveDelayMs: 1000 },
   })
   assert.deepEqual(config, DEFAULT_SETTINGS)
   // Every call returns fresh objects; the frozen defaults must not be reachable.
@@ -164,10 +165,20 @@ test('every numeric field is clamped, and font sizes snap to half points', () =>
 
 test('unknown fields are dropped, not stored', () => {
   const config = normalizeSettings({ junk: true, terminal: { family: 'x', fontSize: 18 }, monitor: { mystery: 1 } })
-  assert.deepEqual(Object.keys(config).sort(), ['monitor', 'terminal', 'transfer'])
+  assert.deepEqual(Object.keys(config).sort(), ['editor', 'monitor', 'terminal', 'transfer'])
   assert.deepEqual(Object.keys(config.terminal).sort(), ['fontFamily', 'fontSize', 'letterSpacing', 'lineHeight'])
   assert.deepEqual(Object.keys(config.transfer), ['limitBytes'])
   assert.equal(config.terminal.fontSize, 18)
+})
+
+test('the editor section clamps its delay and keeps the switch', () => {
+  const off = normalizeSettings({ editor: { autoSave: false } })
+  assert.equal(off.editor.autoSave, false)
+  assert.equal(off.editor.autoSaveDelayMs, 1000)
+  assert.equal(normalizeSettings({ editor: { autoSaveDelayMs: 10 } }).editor.autoSaveDelayMs, 300)
+  assert.equal(normalizeSettings({ editor: { autoSaveDelayMs: 99999 } }).editor.autoSaveDelayMs, 10000)
+  assert.equal(normalizeSettings({ editor: { autoSave: 'nope' } }).editor.autoSave, true)
+  assert.equal(normalizeSettings({ editor: { autoSaveDelayMs: 2500 } }).editor.autoSaveDelayMs, 2500)
 })
 
 test('migrateSettings carries a legacy monitor.json into settings.monitor', () => {

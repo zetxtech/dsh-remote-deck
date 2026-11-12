@@ -952,6 +952,7 @@ window.__ModuleLoader__.load({
       .rd-edit-btn:hover { background:var(--dsw-alias-interactive-bg-hover,rgba(15,23,42,.05)) }
       .rd-edit-btn.primary { background:var(--dsw-alias-state-business-primary,#1d6fc4);border-color:transparent;color:#fff }
       .rd-edit-btn[disabled] { opacity:.5;cursor:default }
+      .rd-edit-draft { flex:none;display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin:0 12px 8px;padding:8px 10px;border:.5px solid var(--dsw-alias-border-l2,#e8e8ec);border-radius:var(--dsw-radius-sm,8px);background:var(--dsw-alias-bg-layer-2,rgba(15,23,42,.03));font-size:11.5px;color:var(--dsw-alias-label-secondary,#8f959e) }
       .rd-edit-conflict { flex:none;display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin:0 12px 8px;padding:8px 10px;border:.5px solid #f0cdcd;border-radius:var(--dsw-radius-sm,8px);background:rgba(229,72,77,.07);color:#a1282c;font-size:11.5px }
       .rd-edit-area { flex:1;min-height:0;margin:0 12px;padding:10px 12px;box-sizing:border-box;border:.5px solid var(--dsw-alias-border-l2,#e8e8ec);border-radius:var(--dsw-radius-sm,8px);background:var(--dsw-alias-bg-layer-1,#fff);color:var(--dsw-alias-label-primary,#1f2329);font-family:var(--rd-term-font,var(--rd-term-font,ui-monospace,Consolas,monospace));font-size:12px;line-height:1.5;resize:none;outline:none;tab-size:2 }
       .rd-edit-area:focus { border-color:var(--dsw-alias-state-business-primary,#1d6fc4) }
@@ -2941,6 +2942,7 @@ window.__ModuleLoader__.load({
       terminal: { fontFamily: '', fontSize: 12.5, lineHeight: 1.35, letterSpacing: 0 },
       monitor: MONITOR_FALLBACK,
       transfer: { limitBytes: 512 * 1024 * 1024 },
+      editor: { autoSave: true, autoSaveDelayMs: 1000 },
     }
 
     /** `value: null` is the "custom…" row; an empty value means the built-in font. */
@@ -3006,12 +3008,21 @@ window.__ModuleLoader__.load({
       }
     }
 
+    function normalizeEditorSettings(value, base) {
+      const source = value !== null && typeof value === 'object' ? value : {}
+      return {
+        autoSave: source.autoSave === undefined ? base.autoSave : source.autoSave !== false,
+        autoSaveDelayMs: clampInt(source.autoSaveDelayMs, 300, 10000, base.autoSaveDelayMs),
+      }
+    }
+
     function normalizeSettingsDocument(raw) {
       const source = raw !== null && typeof raw === 'object' ? raw : {}
       return {
         terminal: normalizeTerminalSettings(source.terminal, SETTINGS_FALLBACK.terminal),
         monitor: normalizeMonitor(source.monitor),
         transfer: normalizeTransferSettings(source.transfer, SETTINGS_FALLBACK.transfer),
+        editor: normalizeEditorSettings(source.editor, SETTINGS_FALLBACK.editor),
       }
     }
 
@@ -3096,6 +3107,8 @@ window.__ModuleLoader__.load({
         lineHeight: terminal.lineHeight,
         letterSpacing: terminal.letterSpacing,
         monitor: settings.monitor,
+        autoSave: settings.editor.autoSave !== false,
+        autoSaveDelayMs: settings.editor.autoSaveDelayMs,
         limitMiB: Math.round(settings.transfer.limitBytes / (1024 * 1024)),
       }
     }
@@ -3120,6 +3133,10 @@ window.__ModuleLoader__.load({
         },
         transfer: {
           limitBytes: clampInt(draft.limitMiB, TRANSFER_LIMIT_MIN_MIB, TRANSFER_LIMIT_MAX_MIB, DEFAULT_TRANSFER_LIMIT_MIB) * 1024 * 1024,
+        },
+        editor: {
+          autoSave: draft.autoSave !== false,
+          autoSaveDelayMs: clampInt(draft.autoSaveDelayMs, 300, 10000, SETTINGS_FALLBACK.editor.autoSaveDelayMs),
         },
       }
     }
@@ -3202,6 +3219,17 @@ window.__ModuleLoader__.load({
       }
       if (monitorChanged) patch.monitor = monitor
       if (next.transfer.limitBytes !== base.transfer.limitBytes) patch.transfer = { limitBytes: next.transfer.limitBytes }
+      const editor = {}
+      let editorChanged = false
+      if (next.editor.autoSave !== base.editor.autoSave) {
+        editor.autoSave = next.editor.autoSave
+        editorChanged = true
+      }
+      if (next.editor.autoSaveDelayMs !== base.editor.autoSaveDelayMs) {
+        editor.autoSaveDelayMs = next.editor.autoSaveDelayMs
+        editorChanged = true
+      }
+      if (editorChanged) patch.editor = editor
       return patch
     }
 
@@ -3410,6 +3438,16 @@ window.__ModuleLoader__.load({
           settingsRow('单次上限（MiB，1–8192）',
             settingsNumber('transfer.limitMiB', draft.limitMiB, TRANSFER_LIMIT_MIN_MIB, TRANSFER_LIMIT_MAX_MIB, 1, (value) => patch({ limitMiB: value })),
             '上传与目录打包都受此限制',
+          ),
+        ),
+        h('div', { className: 'rd-set-group' },
+          h('div', { className: 'rd-set-title' }, '编辑器'),
+          settingsRow('自动保存',
+            settingsCheckbox('editor.autoSave', draft.autoSave !== false, (checked) => patch({ autoSave: checked })),
+            '停止输入后自动写回远端；关闭后仍可用 Ctrl/Cmd+S 手动保存',
+          ),
+          settingsRow('自动保存延迟（毫秒，300–10000）',
+            settingsNumber('editor.autoSaveDelayMs', draft.autoSaveDelayMs, 300, 10000, 100, (value) => patch({ autoSaveDelayMs: value }), draft.autoSave === false),
           ),
         ),
         h('div', { className: 'rd-set-foot' },
@@ -4854,6 +4892,57 @@ window.__ModuleLoader__.load({
       return h('span', { className: 'rd-edit-tabtitle', title: filePath }, editorBaseName(filePath))
     }
 
+    const EDITOR_DRAFT_DELAY_MS = 500
+    const EDITOR_DRAFT_KEEPALIVE_MAX = 64 * 1024
+    /**
+     * Drafts are flushed from a module-level registry so a tab that unmounts
+     * (or a page that unloads) can still write: React state is already gone by
+     * then. `/write` success clears the draft again.
+     */
+    const editorDraftRegistry = new Map()
+
+    async function postEditorDraft(connectionId, filePath, content, baseMtime, keepalive) {
+      if (connectionId === '' || filePath === '') return false
+      const info = boot()
+      if (info === null) return false
+      try {
+        const response = await fetch(apiBase() + '/connections/' + encodeURIComponent(connectionId) + '/draft', {
+          method: 'POST',
+          headers: { 'x-dsh-remote-token': info.token, 'content-type': 'application/json' },
+          body: JSON.stringify({ path: filePath, content, baseMtime }),
+          ...(keepalive === true ? { keepalive: true } : {}),
+        })
+        return response.ok === true
+      } catch {
+        return false
+      }
+    }
+
+    async function dropEditorDraft(connectionId, filePath) {
+      if (connectionId === '' || filePath === '') return false
+      const info = boot()
+      if (info === null) return false
+      try {
+        await fetch(apiBase() + '/connections/' + encodeURIComponent(connectionId) + '/draft?path=' + encodeURIComponent(filePath), {
+          method: 'DELETE',
+          headers: { 'x-dsh-remote-token': info.token },
+        })
+        return true
+      } catch {
+        return false
+      }
+    }
+
+    async function fetchEditorDraft(connectionId, filePath) {
+      if (connectionId === '' || filePath === '') return null
+      try {
+        const body = await call('/connections/' + encodeURIComponent(connectionId) + '/draft?path=' + encodeURIComponent(filePath), { timeoutMs: 10000 })
+        return body !== null && body !== undefined && body.draft !== undefined && body.draft !== null ? body.draft : null
+      } catch {
+        return null
+      }
+    }
+
     /** The one place a remote file is written back. 409 carries STALE. */
     async function writeRemoteFile(connectionId, filePath, content, expectedMtime) {
       const info = boot()
@@ -4885,6 +4974,16 @@ window.__ModuleLoader__.load({
       const [saving, setSaving] = React.useState(false)
       const [savedAt, setSavedAt] = React.useState('')
       const [engine, setEngine] = React.useState('pending')
+      const [saveKind, setSaveKind] = React.useState('')
+      const [savingNow, setSavingNow] = React.useState(false)
+      const [autoPaused, setAutoPaused] = React.useState(false)
+      const [draftOffer, setDraftOffer] = React.useState(null)
+      const settingsSnapshot = useSettingsSnapshot()
+      const editorSettings = (settingsSnapshot === null ? SETTINGS_FALLBACK : settingsSnapshot).editor
+      const autoSaveTimerRef = React.useRef(null)
+      const draftTimerRef = React.useRef(null)
+      const liveRef = React.useRef({ text: '', savedText: '', meta: null, path: '', connectionId: '' })
+      liveRef.current = { text, savedText, meta, path: filePath, connectionId }
       const cmHostRef = React.useRef(null)
       const cmRef = React.useRef(null)
 
@@ -4916,7 +5015,7 @@ window.__ModuleLoader__.load({
           viewportMargin: Infinity,
           extraKeys: { 'Ctrl-S': () => { void save(false) }, 'Cmd-S': () => { void save(false) } },
         })
-        instance.on('change', () => setText(instance.getValue()))
+        instance.on('change', () => editText(instance.getValue()))
         cmRef.current = instance
         return () => {
           cmRef.current = null
@@ -4931,6 +5030,30 @@ window.__ModuleLoader__.load({
         if (instance.getValue() !== text) instance.setValue(text)
       }, [text])
 
+      const flushDraft = () => {
+        const live = liveRef.current
+        if (live.path.length === 0 || live.connectionId === '') return
+        editorDraftRegistry.set(live.path, { connectionId: live.connectionId, baseMtime: live.meta === null ? undefined : live.meta.mtime })
+        void postEditorDraft(live.connectionId, live.path, live.text, live.meta === null ? undefined : live.meta.mtime)
+      }
+      const editText = (value) => {
+        setText(value)
+        liveRef.current.text = value
+        const live = liveRef.current
+        if (draftTimerRef.current !== null) clearTimeout(draftTimerRef.current)
+        draftTimerRef.current = setTimeout(() => {
+          draftTimerRef.current = null
+          flushDraft()
+        }, EDITOR_DRAFT_DELAY_MS)
+        if (autoSaveTimerRef.current !== null) clearTimeout(autoSaveTimerRef.current)
+        if (editorSettings.autoSave !== false && autoPaused !== true && conflict !== true) {
+          const delay = clampInt(editorSettings.autoSaveDelayMs, 300, 10000, SETTINGS_FALLBACK.editor.autoSaveDelayMs)
+          autoSaveTimerRef.current = setTimeout(() => {
+            autoSaveTimerRef.current = null
+            void save(false, 'auto')
+          }, delay)
+        }
+      }
       const load = React.useCallback(async () => {
         if (connectionId === '' || filePath === '') return
         setState('loading')
@@ -4949,8 +5072,15 @@ window.__ModuleLoader__.load({
           const content = typeof body.text === 'string' ? body.text : ''
           setText(content)
           setSavedText(content)
+          liveRef.current.text = content
+          liveRef.current.savedText = content
           setMeta({ size: countOf(body.size), mtime: body.mtime })
           setState('ready')
+          const draft = await fetchEditorDraft(connectionId, filePath)
+          if (draft !== null && typeof draft.content === 'string') {
+            if (draft.content !== content) setDraftOffer(draft)
+            else void dropEditorDraft(connectionId, filePath)
+          }
         } catch (error) {
           setState('error')
           setFailure(error instanceof Error ? error.message : String(error))
@@ -4961,6 +5091,28 @@ window.__ModuleLoader__.load({
         void load()
       }, [load])
 
+      // Leaving the tab flushes the draft from the registry, not from state.
+      React.useEffect(() => () => {
+        if (draftTimerRef.current !== null) clearTimeout(draftTimerRef.current)
+        if (autoSaveTimerRef.current !== null) clearTimeout(autoSaveTimerRef.current)
+        const live = liveRef.current
+        if (live.path.length === 0 || live.connectionId === '' || live.text === live.savedText) return
+        editorDraftRegistry.set(live.path, { connectionId: live.connectionId, baseMtime: live.meta === null ? undefined : live.meta.mtime })
+        void postEditorDraft(live.connectionId, live.path, live.text, live.meta === null ? undefined : live.meta.mtime)
+      }, [])
+
+      // Only armed while something is unwritten; keepalive caps the body size.
+      React.useEffect(() => {
+        const onUnload = () => {
+          const live = liveRef.current
+          if (live.path.length === 0 || live.connectionId === '' || live.text === live.savedText) return
+          if (live.text.length > EDITOR_DRAFT_KEEPALIVE_MAX) return
+          void postEditorDraft(live.connectionId, live.path, live.text, live.meta === null ? undefined : live.meta.mtime, true)
+        }
+        window.addEventListener('beforeunload', onUnload)
+        return () => window.removeEventListener('beforeunload', onUnload)
+      }, [])
+
       const openInPreview = () => {
         if (tab === null || tab.actions === undefined || typeof tab.actions.openResource !== 'function') return
         try {
@@ -4970,36 +5122,55 @@ window.__ModuleLoader__.load({
         }
       }
       const dirty = state === 'ready' && text !== savedText
-      const save = async (force) => {
+      const save = async (force, kind) => {
         if (saving || state !== 'ready') return
+        if (autoSaveTimerRef.current !== null) {
+          clearTimeout(autoSaveTimerRef.current)
+          autoSaveTimerRef.current = null
+        }
+        // The timer closes over the render that armed it, so the live buffer
+        // (not the captured `text`) is what gets written.
+        const live = liveRef.current
+        const content = live.text
         setSaving(true)
+        setSavingNow(true)
         try {
-          const expected = force === true ? undefined : (meta === null ? undefined : meta.mtime)
-          const result = await writeRemoteFile(connectionId, filePath, text, expected)
+          const expected = force === true ? undefined : (live.meta === null || live.meta === undefined ? undefined : live.meta.mtime)
+          const result = await writeRemoteFile(connectionId, filePath, content, expected)
           const payload = result.payload
           if (result.status === 409 || (payload !== null && payload !== undefined && payload.code === 'STALE')) {
+            // Stop writing until the user picks reload or force.
             setConflict(true)
+            setAutoPaused(true)
             return
           }
           if (result.status < 200 || result.status >= 300 || payload === null || payload.ok === false) {
+            // Auto save backs off until the next edit or a manual save.
+            setAutoPaused(true)
             pushToast(new Error(payload !== null && payload !== undefined && payload.message ? payload.message : 'HTTP ' + result.status))
             return
           }
-          setSavedText(text)
+          setSavedText(content)
+          liveRef.current.savedText = content
           setMeta({ size: countOf(payload.size), mtime: payload.mtime })
           setConflict(false)
+          setAutoPaused(false)
+          setSaveKind(kind === 'auto' ? 'auto' : 'manual')
           setSavedAt(new Date().toISOString())
+          void dropEditorDraft(connectionId, filePath)
         } catch (error) {
+          setAutoPaused(true)
           pushToast(error)
         } finally {
           setSaving(false)
+          setSavingNow(false)
         }
       }
       const onKeyDown = (event) => {
         if (event.ctrlKey !== true && event.metaKey !== true) return
         if (String(event.key === undefined ? '' : event.key).toLowerCase() !== 's') return
         event.preventDefault()
-        void save(false)
+        void save(false, 'manual')
       }
       // No close-hook API is available on `tab.actions` (only open/close and
       // navigation), so an unsaved tab cannot veto its own close: the header
@@ -5009,9 +5180,15 @@ window.__ModuleLoader__.load({
       }
       const lines = text.length === 0 ? 0 : text.split('\n').length
       const bytes = dirty ? text.length : (meta !== null && meta.size > 0 ? meta.size : text.length)
-      const statusText = state === 'loading' ? '读取中…' : dirty ? '已修改' : savedAt.length > 0 ? '已保存' : '未修改'
+      const statusText = state === 'loading'
+        ? '读取中…'
+        : savingNow
+          ? '正在保存…'
+          : dirty
+            ? '未保存'
+            : savedAt.length > 0 ? (saveKind === 'auto' ? '已自动保存' : '已保存') : '未修改'
       const statusLine = lines + ' 行 · ' + formatBytes(bytes) + ' · ' + statusText
-        + (savedAt.length > 0 ? ' · ' + clockOf(savedAt) : '')
+        + (savedAt.length > 0 ? ' ' + clockOf(savedAt) : '')
         + (engine === 'fallback' ? ' · ' + CM_MODE_FALLBACK_TEXT : '')
 
       if (remote === null || filePath === '') {
@@ -5044,16 +5221,39 @@ window.__ModuleLoader__.load({
           h('span', { className: 'rd-edit-name', title: filePath }, editorBaseName(filePath)),
           dirty ? h('span', { className: 'rd-edit-flag' }, '未保存') : null,
           h('div', { className: 'rd-edit-acts' },
-            dirty ? h('button', { className: 'rd-edit-btn primary', type: 'button', disabled: saving, onClick: () => void save(false) }, saving ? '保存中…' : '保存') : null,
+            dirty ? h('button', { className: 'rd-edit-btn primary', type: 'button', disabled: saving, onClick: () => void save(false, 'manual') }, saving ? '保存中…' : '保存') : null,
             h('button', { className: 'rd-edit-btn', type: 'button', onClick: () => void load() }, '重新读取'),
             dirty ? h('button', { className: 'rd-edit-btn', type: 'button', onClick: closeTab }, '放弃修改并关闭') : null,
           ),
         ),
+        draftOffer === null
+          ? null
+          : h('div', { className: 'rd-edit-draft' },
+            h('span', null, '检测到未保存的草稿（' + clockOf(draftOffer.savedAt) + '）'),
+            h('button', {
+              className: 'rd-edit-btn',
+              type: 'button',
+              onClick: () => {
+                const restored = typeof draftOffer.content === 'string' ? draftOffer.content : ''
+                setText(restored)
+                liveRef.current.text = restored
+                setDraftOffer(null)
+                setAutoPaused(false)
+              },
+            }, '恢复'),
+            h('button', {
+              className: 'rd-edit-btn',
+              type: 'button',
+              onClick: () => {
+                void dropEditorDraft(connectionId, filePath)
+                setDraftOffer(null)
+              },
+            }, '丢弃')),
         conflict
           ? h('div', { className: 'rd-edit-conflict' },
             h('span', null, '文件已被外部修改，保存会覆盖对方的改动。'),
             h('button', { className: 'rd-edit-btn', type: 'button', onClick: () => void load() }, '重新加载（丢弃我的修改）'),
-            h('button', { className: 'rd-edit-btn primary', type: 'button', onClick: () => void save(true) }, '强制覆盖'))
+            h('button', { className: 'rd-edit-btn primary', type: 'button', onClick: () => { setAutoPaused(false); void save(true, 'manual') } }, '强制覆盖'))
           : null,
         state === 'loading'
           ? h('div', { className: 'rd-rf-state' }, h('div', { className: 'rd-rf-statetitle' }, '正在读取远端文件…'))
@@ -5065,7 +5265,7 @@ window.__ModuleLoader__.load({
               className: 'rd-edit-area',
               value: text,
               spellCheck: false,
-              onChange: (event) => setText(event.target.value),
+              onChange: (event) => editText(event.target.value),
               onKeyDown,
             }),
         h('div', { className: 'rd-edit-status' }, statusLine),

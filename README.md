@@ -36,7 +36,7 @@ addresses and paths are demo data (`dev-box`, `203.0.113.10`, `/srv/demo-app`).
 | Area | What you get |
 | --- | --- |
 | Connections | Multiple hosts, key or password auth, `~/.ssh/config` import, connection test with OS/latency, per-host auto-connect (off by default; toggle in the dialog, quick panel or console), keepalive and backoff reconnect |
-| Editor | Double-click a text file to edit it in a vendored CodeMirror 5 tab with `Ctrl/Cmd+S`, atomic saves and a stale-file conflict dialog |
+| Editor | Double-click a text file to edit it in a CodeMirror tab with **auto-save** (configurable) and disk drafts that survive closing the tab or the app in a vendored CodeMirror 5 tab with `Ctrl/Cmd+S`, atomic saves and a stale-file conflict dialog |
 | Remote files | Header is one line with a click-to-type path field; keyboard (Ctrl+A / C / X / V with a plugin clipboard), drag onto a folder to move, and 下载到本地并显示 for the local copy — plus its own guide card, plus a sidebar tab: remote paths, per-type icons (links, devices and unknown types included), a hidden-file toggle, Ctrl/Shift multi-select, packaged multi-download, permanent delete with one confirmation, a cancellable task bar and double-click preview in a new tab |
 | Workspace files | The workspace-files card opens a remote file page in a Remote Deck workspace: remote path, right-click upload / download / delete (permanent-deletion confirmation) and a cancellable task bar |
 | Settings | Settings → 远端工作台 applies as you change it (no save button) and follows DSH's own settings styling: terminal font and size, monitor thresholds, transfer cap |
