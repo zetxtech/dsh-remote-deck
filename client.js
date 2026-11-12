@@ -597,23 +597,6 @@ window.__ModuleLoader__.load({
       .rd-ctx-i.danger:hover { background:rgba(229,72,77,.1) }
       [data-rd-theme="dark"] .rd-ctx-i.danger { color:#ff8b8b }
       [data-rd-theme="dark"] .rd-ctx-i.danger:hover { background:rgba(229,72,77,.18) }
-      .rd-set { display:flex;flex-direction:column;gap:16px;font-size:12px;color:var(--dsw-alias-label-primary,#1f2329);max-width:560px }
-      .rd-set-group { display:flex;flex-direction:column;gap:7px }
-      .rd-set-title { font-size:11px;font-weight:600;color:var(--dsw-alias-label-secondary,#5f6672);letter-spacing:.2px }
-      .rd-set-fields { display:flex;flex-direction:column;gap:7px }
-      .rd-set-row { display:flex;align-items:center;gap:9px;min-height:26px }
-      .rd-set-row .lb { flex:1;min-width:0;font-size:11.5px;color:var(--dsw-alias-label-secondary,#5f6672) }
-      .rd-set-row .hint { flex:none;font-size:10px;color:var(--dsw-alias-label-tertiary,#8f959e) }
-      .rd-set-row input[type="number"], .rd-set-text, .rd-set-font select { height:26px;box-sizing:border-box;padding:0 7px;border:1px solid var(--dsw-alias-border-l1,#e8e8ec);border-radius:6px;background:var(--dsw-alias-bg-layer-1,#fff);color:var(--dsw-alias-label-primary,#1f2329);font:inherit;font-size:11.5px;font-variant-numeric:tabular-nums }
-      .rd-set-row input[type="number"] { width:78px }
-      .rd-set-row input[type="number"][disabled] { opacity:.5 }
-      .rd-set-row input[type="checkbox"] { width:14px;height:14px;flex:none;margin:0;accent-color:#2f7ddd }
-      .rd-set-font { display:flex;align-items:center;gap:6px;flex:none;max-width:340px }
-      .rd-set-font select { flex:none;min-width:150px }
-      .rd-set-text { flex:1;min-width:0 }
-      .rd-set-preview { padding:9px 12px;border-radius:8px;border:1px solid #1c232c;background:#0f1216;color:#c9d1d9;overflow:auto;white-space:pre;font-variant-ligatures:none }
-      .rd-set-actions { display:flex;gap:8px }
-      [data-rd-theme="dark"] .rd-set-row input[type="number"], [data-rd-theme="dark"] .rd-set-text, [data-rd-theme="dark"] .rd-set-font select { background:var(--dsw-alias-bg-layer-1,#1b1e23);border-color:#2c3138 }
       .rd-rf { display:flex;flex-direction:column;height:100%;min-height:0;font-size:12px;color:var(--dsw-alias-label-primary,#1f2329) }
       .rd-rf-head { flex:none;display:flex;align-items:center;flex-wrap:wrap;gap:8px;padding:10px 10px 8px;min-width:0 }
       .rd-rf-title { flex:1;min-width:0;display:flex;align-items:center;gap:8px;flex-wrap:wrap }
@@ -914,33 +897,6 @@ window.__ModuleLoader__.load({
       [data-rd-theme="dark"] .rd-wsrow2.sel { background:rgba(47,125,221,.16) }
 
       /* ---- settings: DSH-native rhythm (values copied from the native settings CSS) ---- */
-      .rd-set { display:flex;flex-direction:column;gap:0;font-size:13px;color:var(--dsw-alias-label-primary,#1f2329);max-width:640px }
-      .rd-set-head { display:flex;align-items:flex-start;gap:12px;padding:0 0 4px }
-      .rd-set-headtext { flex:1;min-width:0;display:flex;flex-direction:column;gap:4px }
-      .rd-set-headtitle { font-size:13px;font-weight:600;line-height:20px }
-      .rd-set-desc { font-size:12px;font-weight:400;line-height:18px;color:var(--dsw-alias-label-secondary,#8f959e) }
-      .rd-set-status { flex:none;font-size:12px;line-height:20px;color:var(--dsw-alias-label-tertiary,#8f959e) }
-      .rd-set-status[data-state="failed"] { color:var(--dsw-alias-state-error-primary,#c0392b) }
-      .rd-set-group { display:flex;flex-direction:column }
-      .rd-set-title { padding:16px 0 6px;font-size:13px;font-weight:600;line-height:20px }
-      .rd-set-fields { display:flex;flex-direction:column }
-      .rd-set-row { display:flex;align-items:center;gap:8px;padding:16px 0;border-bottom:.5px solid var(--dsw-alias-border-l2,#e8e8ec) }
-      .rd-set-textcol { flex:1;min-width:0;display:flex;flex-direction:column;gap:4px }
-      .rd-set-label { font-size:13px;font-weight:500;line-height:20px }
-      .rd-set-control { flex:none;display:flex;align-items:center;gap:8px }
-      .rd-set-pair { display:flex;align-items:center;gap:8px }
-      .rd-set-row input[type="number"], .rd-set-text, .rd-set-font select { height:28px;box-sizing:border-box;padding:0 8px;border:.5px solid var(--dsw-alias-border-l2,#e8e8ec);border-radius:var(--dsw-radius-sm,8px);background:var(--dsw-alias-bg-layer-1,#fff);color:var(--dsw-alias-label-primary,#1f2329);font:inherit;font-size:13px;font-variant-numeric:tabular-nums }
-      .rd-set-row input[type="number"] { width:76px }
-      .rd-set-row input[type="number"]:hover, .rd-set-text:hover, .rd-set-font select:hover { border-color:var(--dsw-alias-border-l1,#d8d8de) }
-      .rd-set-row input[type="number"]:focus, .rd-set-text:focus, .rd-set-font select:focus { outline:none;border-color:var(--dsw-alias-state-business-primary,#1d6fc4) }
-      .rd-set-row input[type="number"][disabled] { opacity:.5 }
-      .rd-set-check { width:16px;height:16px;flex:none;margin:0;accent-color:var(--dsw-alias-state-business-primary,#1d6fc4) }
-      .rd-set-font { display:flex;align-items:center;gap:8px;max-width:360px }
-      .rd-set-font select { min-width:170px }
-      .rd-set-text { flex:1;min-width:0 }
-      .rd-set-previewrow { padding:16px 0 4px }
-      .rd-set-preview { padding:8px 12px;border:.5px solid var(--dsw-alias-border-l2,#e8e8ec);border-radius:var(--dsw-radius-sm,8px);background:var(--dsw-alias-bg-layer-2,rgba(15,23,42,.03));color:var(--dsw-alias-label-primary,#1f2329);overflow:auto;white-space:pre;font-variant-ligatures:none }
-      .rd-set-foot { padding:16px 0 0 }
 
       /* ---- remote editor tab ---- */
       .rd-edit { display:flex;flex-direction:column;height:100%;min-height:0;font-size:12px;color:var(--dsw-alias-label-primary,#1f2329) }
@@ -976,11 +932,6 @@ window.__ModuleLoader__.load({
       [data-rd-theme="dark"] .rd-edit-conflict { border-color:#5c2b2b;background:rgba(229,72,77,.14);color:#ff9a9a }
       [data-rd-theme="dark"] .rd-edit-flag { background:rgba(210,153,34,.22);color:#e3b341 }
       [data-rd-theme="dark"] .rd-edit-btn:hover { background:rgba(255,255,255,.07) }
-      .rd-set-textbtn { border:0;background:transparent;color:var(--dsw-alias-label-secondary,#8f959e);font:inherit;font-size:12px;line-height:20px;padding:1px 6px;margin-left:-6px;border-radius:var(--dsw-radius-sm,8px);cursor:pointer }
-      .rd-set-textbtn:hover { background:var(--dsw-alias-interactive-bg-hover,rgba(15,23,42,.05));color:var(--dsw-alias-label-primary,#1f2329) }
-      [data-rd-theme="dark"] .rd-set-row, [data-rd-theme="dark"] .rd-set-preview { border-color:#2c3138 }
-      [data-rd-theme="dark"] .rd-set-row input[type="number"], [data-rd-theme="dark"] .rd-set-text, [data-rd-theme="dark"] .rd-set-font select { background:var(--dsw-alias-bg-layer-1,#1b1e23);border-color:#2c3138 }
-      [data-rd-theme="dark"] .rd-set-textbtn:hover { background:rgba(255,255,255,.07) }
 
       /* ---- console: one surface, native tool-panel rhythm ---- */
       .rd-console { background:var(--dsw-alias-bg-layer-1,#fff) }
@@ -1029,24 +980,61 @@ window.__ModuleLoader__.load({
          title:    font-size:14px; font-weight:400; line-height:22px
          control:  height:36px; border-radius:var(--dsw-radius-md); background:var(--dsw-alias-bg-module-platform);
                    padding:0 14px; font-size:14px; line-height:22px; no border */
-      .rd-set { font-size:14px;line-height:22px }
-      .rd-set-headtitle { font-size:15px;font-weight:600;line-height:24px }
+
+      /* ---- settings rows: native layout (values from DSH's settings CSS) ------
+         title 14/400/22 label-primary, description 12/400/18 secondary,
+         36px controls with radius-md, right-aligned control column.
+         The divider is a hairline mixed from the label colour: the l2 token
+         renders too dark inside the plugin surface. No card borders. */
+      /* native switch: 36x20 track, 16px thumb, pill radius, real checkbox underneath */
+      /* Track sizes are NOT taken from the native switch (no CSS module was
+         available); the on-state track is the light one from the user's
+         screenshot, with the brand colour moved to the thumb. */
+
+      /* ---- settings rows: values from the native settings/primitive CSS ------
+         row        padding:16px 0; gap:8px; border-bottom:.5px solid var(--dsw-alias-border-l2)
+         text col   flex:1; column; gap:4px; padding-right:48px
+         title      14px/22px, weight 400, label-primary;  desc 12px/18px, label-secondary
+         controls   36px high, radius-md, bg-module-platform, padding 0 14px
+         switch     36x20 track, padding 2, radius 999px, corner-shape:round
+                    off track var(--dsw-alias-border-l3) / on track var(--dsw-alias-brand-primary)
+                    thumb 16px: off var(--dsw-alias-switch-thumb) / on var(--dsw-alias-label-primary-foreground)
+                    focus var(--dsw-focus-ring-width) var(--dsw-focus-ring-color)
+         No [data-rd-theme=dark] row/switch overrides: the tokens carry both themes. */
+      .rd-set { display:flex;flex-direction:column;gap:0;font-size:14px;line-height:22px;color:var(--dsw-alias-label-primary,#1f2329);max-width:100% }
+      .rd-set-head { display:flex;align-items:center;gap:8px;padding:0 0 8px }
       .rd-set-title { padding:20px 0 4px;font-size:15px;font-weight:600;line-height:24px }
-      .rd-set-row { padding:16px 0;border-bottom:.5px solid var(--dsw-alias-border-l2,#e8e8ec) }
+      .rd-set-group:first-child .rd-set-title { padding-top:0 }
+      .rd-set-row { display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px;padding:16px 0;border-bottom:.5px solid var(--dsw-alias-border-l2,#e8e8ec) }
       .rd-set-group:last-child .rd-set-row:last-child { border-bottom:0 }
-      .rd-set-textcol { flex:1;min-width:0;display:flex;flex-direction:column;gap:4px;padding-right:48px }
-      .rd-set-label { font-size:14px;font-weight:400;line-height:22px;color:var(--dsw-alias-label-primary,#1f2329) }
+      .rd-set-textcol { min-width:0;display:flex;flex-direction:column;gap:4px;padding-right:48px }
+      .rd-set-label { font-size:14px;font-weight:400;line-height:22px;color:var(--dsw-alias-label-primary,#1f2329);cursor:pointer }
       .rd-set-desc { font-size:12px;font-weight:400;line-height:18px;color:var(--dsw-alias-label-secondary,#8f959e) }
-      .rd-set-control { flex:none;display:flex;align-items:center;gap:12px }
+      .rd-set-control { justify-self:end;display:flex;align-items:center;gap:12px;min-width:0 }
       .rd-set-pair { display:flex;align-items:center;gap:12px }
-      .rd-set-status { flex:none;font-size:12px;line-height:22px;color:var(--dsw-alias-label-tertiary,#8f959e) }
-      .rd-set-row input[type="number"], .rd-set-text, .rd-set-font select { height:36px;box-sizing:border-box;padding:0 14px;border:0;border-radius:var(--dsw-radius-md,12px);background:var(--dsw-alias-bg-module-platform,var(--dsw-alias-bg-layer-2,rgba(15,23,42,.04)));font:inherit;font-size:14px;line-height:22px }
-      .rd-set-row input[type="number"] { width:92px }
+      .rd-set-status { flex:none;font-size:12px;line-height:18px;color:var(--dsw-alias-label-tertiary,#8f959e) }
+      .rd-set-status[data-state="failed"] { color:var(--dsw-alias-state-error-primary,#c0392b) }
+      .rd-set-row input[type="number"], .rd-set-text, .rd-set-font select { height:36px;box-sizing:border-box;padding:0 14px;border:0;border-radius:var(--dsw-radius-md,12px);background:var(--dsw-alias-bg-module-platform,var(--dsw-alias-bg-layer-2,rgba(15,23,42,.04)));color:var(--dsw-alias-label-primary,#1f2329);font:inherit;font-size:14px;line-height:22px;font-variant-numeric:tabular-nums }
+      .rd-set-row input[type="number"] { width:96px }
       .rd-set-row input[type="number"]:hover, .rd-set-text:hover, .rd-set-font select:hover { background:var(--dsw-alias-interactive-bg-hover,rgba(15,23,42,.07)) }
-      .rd-set-row input[type="number"]:focus, .rd-set-text:focus, .rd-set-font select:focus { outline:2px solid var(--dsw-alias-state-business-primary,#1d6fc4);outline-offset:-2px }
-      .rd-set-check { width:18px;height:18px;flex:none;margin:0;accent-color:var(--dsw-alias-state-business-primary,#1d6fc4) }
-      .rd-set-textbtn { height:36px;padding:0 14px;font-size:14px;line-height:22px;border-radius:var(--dsw-radius-md,12px) }
-      [data-rd-theme="dark"] .rd-set-row input[type="number"], [data-rd-theme="dark"] .rd-set-text, [data-rd-theme="dark"] .rd-set-font select { background:var(--dsw-alias-bg-module-platform,rgba(255,255,255,.06)) }
+      .rd-set-row input[type="number"]:focus-visible, .rd-set-text:focus-visible, .rd-set-font select:focus-visible { outline:var(--dsw-focus-ring-width,2px) solid var(--dsw-focus-ring-color,var(--dsw-alias-state-business-primary,#1d6fc4));outline-offset:2px }
+      .rd-set-row input[type="number"][disabled] { opacity:.5 }
+      .rd-set-font { display:flex;align-items:center;gap:12px;max-width:380px }
+      .rd-set-font select { min-width:180px }
+      .rd-set-text { flex:1;min-width:0 }
+      .rd-set-previewrow { padding:16px 0 4px }
+      .rd-set-preview { padding:12px 14px;border:0;border-radius:var(--dsw-radius-md,12px);background:var(--dsw-alias-bg-module-platform,var(--dsw-alias-bg-layer-2,rgba(15,23,42,.04)));color:var(--dsw-alias-label-primary,#1f2329);overflow:auto;white-space:pre;font-variant-ligatures:none }
+      .rd-set-foot { padding:16px 0 0 }
+      .rd-set-textbtn { height:36px;padding:0 14px;border:0;border-radius:var(--dsw-radius-md,12px);background:transparent;color:var(--dsw-alias-label-secondary,#8f959e);font:inherit;font-size:14px;line-height:22px;cursor:pointer }
+      .rd-set-textbtn:hover { background:var(--dsw-alias-interactive-bg-hover,rgba(15,23,42,.05));color:var(--dsw-alias-label-primary,#1f2329) }
+      .rd-set-switch { position:relative;display:inline-flex;align-items:center;flex:none;min-width:36px;min-height:24px;cursor:pointer }
+      .rd-set-switch.off { opacity:.5;cursor:default }
+      .rd-set-switch-input { position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer }
+      .rd-set-switch-track { position:relative;display:block;box-sizing:border-box;width:36px;height:20px;padding:2px;border-radius:999px;corner-shape:round;background:var(--dsw-alias-border-l3,rgba(15,23,42,.18));transition:background .15s ease }
+      .rd-set-switch-thumb { display:block;width:16px;height:16px;border-radius:999px;corner-shape:round;background:var(--dsw-alias-switch-thumb,#fff);box-shadow:0 1px 2px rgba(16,24,40,.24);transition:transform .15s ease }
+      .rd-set-switch.on .rd-set-switch-track { background:var(--dsw-alias-brand-primary,#1d6fc4) }
+      .rd-set-switch.on .rd-set-switch-thumb { transform:translateX(16px);background:var(--dsw-alias-label-primary-foreground,#fff) }
+      .rd-set-switch-input:focus-visible + .rd-set-switch-track { outline:var(--dsw-focus-ring-width,2px) solid var(--dsw-focus-ring-color,var(--dsw-alias-state-business-primary,#1d6fc4));outline-offset:2px }
     `
 
     let styleInjected = false
@@ -3167,11 +3155,24 @@ window.__ModuleLoader__.load({
     }
 
     /** One labelled row of the settings form. */
+    /** `rd-set-field-<field>`: links a row title to the control it labels. */
+    function settingsFieldId(field) {
+      return 'rd-set-field-' + String(field === undefined || field === null ? '' : field).replace(/[^A-Za-z0-9]+/g, '-')
+    }
+
     /** Native settings row: label + optional description on the left, control right. */
     function settingsRow(label, control, hint) {
+      const props = control !== null && control !== undefined ? control.props : undefined
+      // A switch is wrapped in a span, so the field travels on the wrapper too.
+      const field = props === undefined ? undefined : (props['data-field'] !== undefined ? props['data-field'] : props['data-control-field'])
+      const labelNode = field === undefined
+        ? h('span', { className: 'rd-set-label' }, label)
+        // A real <label for>: clicking the title focuses or toggles the control
+        // and assistive technology reads the row title as its name.
+        : h('label', { className: 'rd-set-label', htmlFor: settingsFieldId(field) }, label)
       return h('div', { className: 'rd-set-row' },
         h('div', { className: 'rd-set-textcol' },
-          h('span', { className: 'rd-set-label' }, label),
+          labelNode,
           hint ? h('span', { className: 'rd-set-desc' }, hint) : null,
         ),
         h('div', { className: 'rd-set-control' }, control),
@@ -3181,6 +3182,7 @@ window.__ModuleLoader__.load({
     function settingsNumber(field, value, min, max, step, onChange, disabled) {
       return h('input', {
         type: 'number',
+        id: settingsFieldId(field),
         min,
         max,
         step,
@@ -3191,15 +3193,29 @@ window.__ModuleLoader__.load({
       })
     }
 
-    function settingsCheckbox(field, checked, onChange, disabled) {
-      return h('input', {
-        type: 'checkbox',
-        className: 'rd-set-check',
-        'data-field': field,
-        checked: checked === true,
-        disabled: disabled === true,
-        onChange: (event) => onChange(event.target.checked),
-      })
+    function settingsCheckbox(field, checked, onChange, disabled, label) {
+      // A switch built on a real checkbox: it keeps the space-key behaviour, the
+      // form contract (`data-field` + onChange) and is named by the row title
+      // through `settingsFieldId`. `role=switch` + `aria-checked` is what
+      // assistive technology announces, per DSH's own control guidance.
+      return h('span', {
+        className: 'rd-set-switch' + (checked === true ? ' on' : '') + (disabled === true ? ' off' : ''),
+        'data-control-field': field,
+      },
+        h('input', {
+          type: 'checkbox',
+          id: settingsFieldId(field),
+          className: 'rd-set-switch-input',
+          role: 'switch',
+          'aria-checked': checked === true,
+          'aria-label': typeof label === 'string' && label.length > 0 ? label : field,
+          'data-field': field,
+          checked: checked === true,
+          disabled: disabled === true,
+          onChange: (event) => onChange(event.target.checked),
+        }),
+        h('span', { className: 'rd-set-switch-track', 'aria-hidden': 'true' }, h('i', { className: 'rd-set-switch-thumb' })),
+      )
     }
 
     const SETTINGS_APPLY_DELAY_MS = 400
@@ -3270,7 +3286,7 @@ window.__ModuleLoader__.load({
       const off = setting.enabled === false
       return h('div', { className: 'rd-set-fields' },
         settingsRow('启用服务器状态监控',
-          settingsCheckbox('monitor.enabled', setting.enabled !== false, (checked) => patch({ enabled: checked })),
+          settingsCheckbox('monitor.enabled', setting.enabled !== false, (checked) => patch({ enabled: checked }), false, '启用服务器状态监控'),
           '关闭后头部胶囊只保留最后一次采样，不再轮询',
         ),
         settingsRow('刷新间隔（秒，10–300）',
@@ -3281,7 +3297,7 @@ window.__ModuleLoader__.load({
         MONITOR_SECTIONS.map((section) => settingsRow(section.label + ' 告警阈值（1–100）',
           h('div', { className: 'rd-set-pair' },
             settingsCheckbox('monitor.' + section.key + '.enabled', setting[section.key].enabled !== false,
-              (checked) => patchSection(section.key, { enabled: checked }), off),
+              (checked) => patchSection(section.key, { enabled: checked }), off, section.label + ' 告警阈值'),
             settingsNumber('monitor.' + section.key + '.threshold', setting[section.key].threshold, 1, 100, 1, (value) => {
               patchSection(section.key, { threshold: clampInt(value, 1, 100, MONITOR_FALLBACK[section.key].threshold) })
             }, off || setting[section.key].enabled === false),
@@ -3418,6 +3434,7 @@ window.__ModuleLoader__.load({
           settingsRow('字体族',
             h('div', { className: 'rd-set-font' },
               h('select', {
+                id: settingsFieldId('terminal.fontId'),
                 'data-field': 'terminal.fontId',
                 value: draft.fontId,
                 onChange: (event) => pickFont(event.target.value),
@@ -3425,6 +3442,7 @@ window.__ModuleLoader__.load({
               draft.fontId === CUSTOM_FONT_ID
                 ? h('input', {
                   type: 'text',
+                  id: settingsFieldId('terminal.fontFamily'),
                   className: 'rd-set-text',
                   'data-field': 'terminal.fontFamily',
                   placeholder: 'JetBrains Mono, Consolas, monospace',
@@ -3468,7 +3486,7 @@ window.__ModuleLoader__.load({
         h('div', { className: 'rd-set-group' },
           h('div', { className: 'rd-set-title' }, '编辑器'),
           settingsRow('自动保存',
-            settingsCheckbox('editor.autoSave', draft.autoSave !== false, (checked) => patch({ autoSave: checked })),
+            settingsCheckbox('editor.autoSave', draft.autoSave !== false, (checked) => patch({ autoSave: checked }), false, '自动保存'),
             '停止输入后自动写回远端；关闭后仍可用 Ctrl/Cmd+S 手动保存',
           ),
           settingsRow('自动保存延迟（毫秒，300–10000）',

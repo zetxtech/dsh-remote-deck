@@ -11,6 +11,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - v1.1.0: full xterm.js terminal, i18n (zh/en), explicit debug switch, virtualized large folders.
 
+## [1.18.3] - 2026-11-13
+
+### Fixed
+
+- Remove conflicting settings styles, restore native divider tokens, and align switches with DSH theme tokens and accessible labels.
+
 ## [1.18.2] - 2026-11-12
 
 ### Changed
