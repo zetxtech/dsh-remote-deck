@@ -11,6 +11,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - v1.1.0: full xterm.js terminal, i18n (zh/en), explicit debug switch, virtualized large folders.
 
+## [1.29.0] - 2026-11-13
+
+### Changed
+
+- **远程开发 → 文件 is the same page as the sidebar's 远端文件 now.** The console had a second, older implementation — no rename,
+  no new folder, no multi-select, no drag, no context menu, plus a 快速跳转 row — so the two surfaces had already drifted apart.
+  The console renders the shared body instead (`RemoteFilesBody`, which now takes an explicit remote row and can hide the
+  host label it would otherwise repeat), and the old implementation, its styles and the 快速跳转 copy are gone: 177 lines
+  removed. Everything the sidebar page can do — filter, 家目录, rename, new folder/file, hidden files, upload, download,
+  drag, clipboard, task strip, symlink handling — is there in the console too.
+
+### Fixed
+
+- **A tab opened from the console edits the connection you picked.** The editor resolved its connection from whichever
+  session the right column was showing, and the same POSIX path exists on every host, so a console tab could have read
+  or written another machine's file. The console now passes `connectionId` in the tab params, the editor prefers it over
+  the session, and a tab with a connection but no session no longer shows the empty state.
+
 ## [1.28.2] - 2026-11-13
 
 ### Changed

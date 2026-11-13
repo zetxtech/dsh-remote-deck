@@ -232,7 +232,6 @@ window.__ModuleLoader__.load({
       "往返延迟": "Round-trip latency",
       "快捷操作": "Quick actions",
       "快捷面板最多固定 3 台，请先取消一台": "The quick panel holds at most 3 hosts; unpin one first",
-      "快速跳转：": "Quick jump:",
       "忽略": "Ignore",
       "忽略并删除远端临时文件": "Ignore and delete the remote temp file",
       "恢复": "Restore",
@@ -1171,7 +1170,6 @@ window.__ModuleLoader__.load({
       .rd-crumb.on { color:var(--dsw-alias-label-primary,#1f2329);font-weight:600 }
       .rd-crumb + .rd-crumb::before { content:'/';color:var(--dsw-alias-label-secondary,#8f959e);margin-right:2px }
       .rd-fright { display:flex;align-items:center;gap:8px;margin-left:auto }
-      .rd-fsearch { width:150px;height:28px;border:1px solid var(--dsw-alias-border-l1,rgba(15,23,42,.14));border-radius:7px;padding:0 8px;font-size:12px;background:var(--dsw-alias-bg-l1,#fff);color:inherit;outline:none }
       .rd-fjump { display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:10px;font-size:11px;color:var(--dsw-alias-label-secondary,#8f959e) }
       .rd-fchip { border:1px solid var(--dsw-alias-border-l1,rgba(15,23,42,.14));background:none;border-radius:999px;padding:2px 9px;font-size:11px;color:inherit;cursor:pointer }
       .rd-fchip:hover { background:rgba(15,23,42,.05) }
@@ -1187,7 +1185,6 @@ window.__ModuleLoader__.load({
       .rd-frow:hover .rd-factions { opacity:1 }
       [data-rd-theme="dark"] .rd-crumb:hover, [data-rd-theme="dark"] .rd-frow:hover { background:rgba(255,255,255,.06) }
       [data-rd-theme="dark"] .rd-fnotice { background:rgba(99,182,255,.14);color:#8ecbff }
-      [data-rd-theme="dark"] .rd-fsearch { background:#12161b;border-color:rgba(255,255,255,.14) }
       .rd-ctx { position:fixed;z-index:1300;width:196px;box-sizing:border-box;padding:4px;background:var(--dsw-alias-bg-layer-1,#fff);color:var(--dsw-alias-label-primary,#1f2329);border:1px solid var(--dsw-alias-border-l1,#e8e8ec);border-radius:10px;box-shadow:0 18px 44px rgba(16,24,40,.2),0 2px 6px rgba(16,24,40,.06);font-size:11.5px }
       .rd-ctx-i { display:flex;align-items:center;gap:7px;width:100%;height:28px;box-sizing:border-box;padding:0 8px;border:0;border-radius:7px;background:transparent;color:inherit;font:inherit;font-size:11.5px;text-align:left;cursor:pointer }
       .rd-ctx-i:hover { background:var(--dsw-alias-bg-layer-2,rgba(15,23,42,.04)) }
@@ -1602,7 +1599,7 @@ window.__ModuleLoader__.load({
       .rd-ctitle { font-size:13px;font-weight:600 }
       .rd-ws .fi, .rd-host .box { background:var(--dsw-alias-bg-layer-2,rgba(15,23,42,.05)) !important;color:var(--dsw-alias-label-secondary,#5f6672) !important }
       .rd-btn { border-radius:var(--dsw-radius-sm,8px) }
-      .rd-input, .rd-wtable, .rd-fsearch { border-radius:var(--dsw-radius-sm,8px) }
+      .rd-input, .rd-wtable { border-radius:var(--dsw-radius-sm,8px) }
       .rd-panel, .rd-hmenu, .rd-ctx { border-radius:var(--dsw-radius-md,12px) }
       [data-rd-theme="dark"] .rd-console { background:var(--dsw-alias-bg-layer-1,#1b1e23) }
       [data-rd-theme="dark"] .rd-ctop, [data-rd-theme="dark"] .rd-rail2, [data-rd-theme="dark"] .rd-tabs { border-color:#2c3138 }
@@ -3210,231 +3207,27 @@ window.__ModuleLoader__.load({
     }
 
 
+    /** The console tab renders the same page as the right sidebar: one listing. */
     function FilePanel({ host }) {
       try {
-        return FilePanelInner({ host })
+        const rows = (store.state && store.state.workspaces) || []
+        const connectionId = host === null || host === undefined ? '' : String(host.id || '')
+        const row = rows.find((item) => item !== null && item !== undefined && String(item.connectionId || '') === connectionId)
+        if (connectionId === '' || row === undefined) {
+          return h('div', { className: 'rd-rf' },
+            h('div', { className: 'rd-rf-state' },
+              h('span', { className: 'rd-rf-stateicon' }, h(Icon, { name: 'server', size: 22 })),
+              h('div', { className: 'rd-rf-statetitle' }, t('此会话不在远端工作区')),
+              h('div', { className: 'rd-rf-statehint' }, t('在右侧栏的「远端文件」里可以浏览任何已连接的远端主机。'))))
+        }
+        return h(RemoteFilesBody, {
+          remote: row,
+          hideHost: true,
+          sessionId: typeof row.sessionId === 'string' ? row.sessionId : '',
+        })
       } catch (error) {
         return h('div', { className: 'rd-err', style: { margin: '12px 0' } }, t("文件面板出错：{message}", { message: (friendlyText(error && error.message ? error.message : error)) }))
       }
-    }
-
-    function FilePanelInner({ host }) {
-      const [path, setPath] = React.useState('')
-      const [entries, setEntries] = React.useState([])
-      const [loading, setLoading] = React.useState(false)
-      const [error, setError] = React.useState('')
-      const [filter, setFilter] = React.useState('')
-      const [notice, setNotice] = React.useState('')
-      const stateWorkspaces = (store.state && store.state.workspaces) || []
-      const workspace = stateWorkspaces.find((row) => row.connectionId === host.id)
-      const root = workspace ? workspace.path : '/'
-      const [ctx, setCtx] = React.useState(null)
-      const menuRef = React.useRef(null)
-      const closeMenu = React.useCallback(() => setCtx(null), [])
-      const upload = useDirectoryUpload(undefined, () => { void load(currentDir) }, host.id)
-      const archive = useArchiveDownload()
-
-      const load = React.useCallback(async (next) => {
-        setLoading(true)
-        setError('')
-        setNotice('')
-        try {
-          const target = typeof next === 'string' && next.length > 0 ? next : root
-          const data = await call('/connections/' + host.id + '/files?path=' + encodeURIComponent(target))
-          setPath(data.path)
-          setEntries(data.entries || [])
-        } catch (failure) {
-          setError(failure instanceof Error ? failure.message : String(failure))
-        } finally {
-          setLoading(false)
-        }
-      }, [host.id, root])
-
-      React.useEffect(() => {
-        setPath('')
-        setEntries([])
-        setFilter('')
-        void load(root)
-      }, [host.id])
-
-      function download(entry) {
-        if (!startFileDownload(host.id, entry.path, entry.name)) return
-        setNotice(t("已开始下载 {name}", { name: (entry.name) }))
-      }
-
-      async function saveLocal(entry) {
-        try {
-          const result = await call('/connections/' + host.id + '/save-local', { method: 'POST', body: { path: entry.path } })
-          setNotice(t("已保存到 {path}", { path: (result.localPath) }))
-          await call('/connections/' + host.id + '/reveal', { method: 'POST', body: { localPath: result.localPath } }).catch(() => {})
-        } catch (failure) {
-          setError(failure instanceof Error ? failure.message : String(failure))
-        }
-      }
-
-      function crumbsFor(value) {
-        const all = [{ label: '/', value: '/' }]
-        let acc = ''
-        for (const part of value.split('/').filter(Boolean)) {
-          acc += '/' + part
-          all.push({ label: part, value: acc })
-        }
-        return all
-      }
-
-      const currentDir = path || root
-      const banner = archive.note.length > 0 ? archive.note : upload.note.length > 0 ? upload.note : notice
-      const openBlankMenu = (event) => {
-        event.preventDefault()
-        setCtx({ x: Number(event.clientX) || 0, y: Number(event.clientY) || 0, entry: null })
-      }
-      const openEntryMenu = (event, entry) => {
-        event.preventDefault()
-        event.stopPropagation()
-        setCtx({ x: Number(event.clientX) || 0, y: Number(event.clientY) || 0, entry })
-      }
-      useContextMenuDismiss(ctx !== null, closeMenu, menuRef)
-      const openWorkspace = async (dir) => {
-        try {
-          await addRemoteWorkspace(host.id, dir, { notice: true })
-        } catch (failure) {
-          pushToast(failure)
-        }
-      }
-      const packDirectory = (dir, name) => {
-        void archive.run({ connectionId: host.id, path: dir, name })
-      }
-      const menuItemsFor = () => {
-        if (ctx === null) return []
-        const entry = ctx.entry
-        if (entry !== null && entry !== undefined) {
-          const isDir = entry.type === 'dir'
-          const taken = isDir && workspaceAt(stateWorkspaces, host.id, entry.path) !== null
-          return [
-            {
-              key: 'download',
-              icon: 'download',
-              label: t('下载'),
-              title: isDir ? t("打包下载此目录（tar.gz）：{path}", { path: (entry.path) }) : t("下载此文件：{path}", { path: (entry.path) }),
-              run: () => {
-                if (isDir) packDirectory(entry.path, entry.name)
-                else if (startFileDownload(host.id, entry.path, entry.name)) setNotice(t("已开始下载 {name}", { name: (entry.name) }))
-              },
-            },
-            {
-              key: 'workspace',
-              icon: 'folder',
-              label: t('打开为工作区'),
-              title: !isDir ? t('只有目录可以添加为工作区') : taken ? t('该目录已经是工作区') : t("把 {path} 添加为 DSH 工作区", { path: (entry.path) }),
-              disabled: !isDir || taken,
-              run: () => { void openWorkspace(entry.path) },
-            },
-          ]
-        }
-        const taken = workspaceAt(stateWorkspaces, host.id, currentDir) !== null
-        return [
-          {
-            key: 'upload',
-            icon: 'upload',
-            label: t('上传到此处'),
-            title: t("上传文件到 {dirname}", { dirname: (currentDir) }),
-            run: () => upload.pick({ connectionId: host.id, path: currentDir }),
-          },
-          {
-            key: 'download',
-            icon: 'download',
-            label: t('下载此目录'),
-            title: t("打包下载 {dirname}（tar.gz）", { dirname: (currentDir) }),
-            run: () => packDirectory(currentDir, ''),
-          },
-          {
-            key: 'workspace',
-            icon: 'folder',
-            label: t('打开为工作区'),
-            title: taken ? t('该目录已经是工作区') : t("把 {path} 添加为 DSH 工作区", { path: (currentDir) }),
-            disabled: taken,
-            run: () => { void openWorkspace(currentDir) },
-          },
-        ]
-      }
-      const crumbs = crumbsFor(path || root)
-      const hostWorkspaces = stateWorkspaces.filter((row) => row.connectionId === host.id)
-      const visible = entries.filter((entry) => entry.name.toLowerCase().includes(filter.toLowerCase()))
-
-      const menuItems = menuItemsFor()
-      const menu = contextMenuElement(ctx, menuRef, menuItems, closeMenu)
-      return h('div', { className: 'rd-files', onContextMenu: openBlankMenu },
-        h('div', { className: 'rd-fbar' },
-          h('div', { className: 'rd-crumbs' },
-            crumbs.map((crumb, index) => h('button', {
-              key: crumb.value,
-              className: 'rd-crumb' + (index === crumbs.length - 1 ? ' on' : ''),
-              onClick: () => void load(crumb.value),
-            }, crumb.label)),
-          ),
-          h('div', { className: 'rd-fright' },
-            h('input', { className: 'rd-fsearch', value: filter, placeholder: t('筛选文件…'), onChange: (event) => setFilter(event.target.value) }),
-            h('button', {
-              className: 'rd-btn sm',
-              disabled: upload.busy,
-              title: t('上传到当前目录'),
-              onClick: () => upload.pick({ connectionId: host.id, path: currentDir }),
-            }, h(Icon, { name: 'upload', size: 12 }), upload.busy ? t('上传中…') : t('上传到目录')),
-            h('button', { className: 'rd-btn sm', onClick: () => void load(path) }, h(Icon, { name: 'refresh', size: 12 }), t('刷新')),
-          ),
-        ),
-        hostWorkspaces.length > 0 ? h('div', { className: 'rd-fjump' },
-          h('span', null, t('快速跳转：')),
-          hostWorkspaces.map((row) => h('button', { key: row.workspaceId || row.path, className: 'rd-fchip', onClick: () => void load(row.path) }, row.folder || row.title || row.path)),
-        ) : null,
-        banner.length > 0 ? h('div', { className: 'rd-fnotice' }, banner) : null,
-        uploadResumeNotice(upload),
-        error ? h('div', { className: 'rd-err' }, friendlyText(error)) : null,
-        loading ? h('div', { className: 'rd-empty', style: { padding: '20px' } }, t('正在读取远程目录…')) : null,
-        !loading && !error && visible.length === 0 ? h('div', { className: 'rd-empty', style: { padding: '20px' } }, t('这个目录是空的。')) : null,
-        !loading && visible.length > 0 ? h('div', { className: 'rd-flist' },
-          visible.map((entry) => h('div', {
-            key: entry.path,
-            className: 'rd-frow' + (entry.type === 'dir' ? ' dir' : ''),
-            onClick: entry.type === 'dir' ? () => void load(entry.path) : undefined,
-            onContextMenu: (event) => openEntryMenu(event, entry),
-          },
-            h(Icon, { name: entry.type === 'dir' ? 'folder' : 'file', size: 14 }),
-            h('span', { className: 'rd-fname', title: entry.name }, entry.name),
-            h('span', { className: 'rd-fsize' }, entry.type === 'dir' ? t('文件夹') : formatBytes(entry.size)),
-            h('span', { className: 'rd-fmod' }, entry.mtime ? ago(entry.mtime) : ''),
-            h('span', { className: 'rd-factions' },
-              entry.type === 'dir' ? null : h('button', {
-                className: 'rd-btn sm',
-                onClick: (event) => { event.stopPropagation(); download(entry) },
-              }, t('下载')),
-              entry.type === 'dir' ? null : h('button', {
-                className: 'rd-btn sm',
-                onClick: (event) => { event.stopPropagation(); void saveLocal(entry) },
-              }, t('本地显示')),
-            ),
-          )),
-        ) : null,
-        menu,
-        h('input', {
-          ref: upload.inputRef,
-          type: 'file',
-          multiple: true,
-          style: { display: 'none' },
-          onChange: upload.onFiles,
-        }),
-        h('input', {
-          ref: upload.dirInputRef,
-          type: 'file',
-          multiple: true,
-          webkitdirectory: '',
-          directory: '',
-          style: { display: 'none' },
-          onChange: upload.onFiles,
-        }),
-        upload.prompt === null ? null : transferDialog(upload.prompt, upload.decide),
-        archive.prompt === null ? null : transferDialog(archive.prompt, archive.decide),
-      )
     }
 
     function formatBytes(value) {
@@ -6267,15 +6060,34 @@ window.__ModuleLoader__.load({
     }
 
     /** The file this editor tab was opened for. */
-    function editorFilePath(props) {
+    /** The navigation params this editor tab was opened with, if any. */
+    function editorTabParams(props) {
       const info = props !== null && props !== undefined && typeof props.useTabInfo === 'function' ? props.useTabInfo() : null
       const tab = info !== null && info !== undefined && info.tab !== undefined && info.tab !== null ? info.tab : null
       const navigation = tab !== null && tab.navigation !== undefined ? tab.navigation : null
-      const params = navigation !== null && navigation.params !== undefined && navigation.params !== null
-        ? navigation.params
-        : (props !== null && props !== undefined ? props.params : null)
+      if (navigation !== null && navigation.params !== undefined && navigation.params !== null) return navigation.params
+      return props !== null && props !== undefined && props.params !== undefined ? props.params : null
+    }
+
+    function editorFilePath(props) {
+      const params = editorTabParams(props)
       if (params !== null && params !== undefined && typeof params.path === 'string' && params.path.length > 0) return params.path
       return ''
+    }
+
+    /**
+     * The connection this tab edits.
+     *
+     * A tab opened from the console names it, and that name must win: the
+     * console picks a host, while the right column belongs to whichever session
+     * is on screen, and the same POSIX path exists on every host. Resolving the
+     * connection from the session here would edit the wrong machine's file.
+     */
+    function editorConnectionId(props, fromSession) {
+      const params = editorTabParams(props)
+      const named = params !== null && params !== undefined && typeof params.connectionId === 'string' ? params.connectionId : ''
+      if (named.length > 0) return named
+      return fromSession === null || fromSession === undefined ? '' : String(fromSession.connectionId || '')
     }
 
     function editorBaseName(filePath) {
@@ -6444,7 +6256,7 @@ window.__ModuleLoader__.load({
     function RemoteEditorBody(props) {
       const sessionId = props !== null && props !== undefined && typeof props.sessionId === 'string' ? props.sessionId : ''
       const remote = useRemote(sessionId)
-      const connectionId = remote === null ? '' : String(remote.connectionId || '')
+      const connectionId = editorConnectionId(props, remote)
       const info = props !== null && props !== undefined && typeof props.useTabInfo === 'function' ? props.useTabInfo() : null
       const tab = info !== null && info !== undefined && info.tab !== undefined ? info.tab : null
       const filePath = editorFilePath(props)
@@ -6781,7 +6593,9 @@ window.__ModuleLoader__.load({
         + (readonly ? t(' · 只读（编码无法无损写回）') : '')
         + (engine === 'fallback' ? ' · ' + t(CM_MODE_FALLBACK_TEXT) : '')
 
-      if (remote === null || filePath === '') {
+      // A console-opened tab has a connection but no session; only a missing
+      // file path is fatal there.
+      if (connectionId === '' || filePath === '') {
         return h('div', { className: 'rd-edit' },
           h('div', { className: 'rd-rf-state' },
             h('span', { className: 'rd-rf-stateicon' }, h(Icon, { name: 'server', size: 22 })),
@@ -6918,7 +6732,13 @@ window.__ModuleLoader__.load({
 
     function RemoteFilesBody(props) {
       const sessionId = props && typeof props.sessionId === 'string' ? props.sessionId : ''
-      const remote = useRemote(sessionId)
+      const hideHost = props !== null && props !== undefined && props.hideHost === true
+      // The hook runs unconditionally; an explicit `remote` row (the console
+      // panel already knows its connection) simply takes precedence.
+      const fromSession = useRemote(sessionId)
+      const remote = props !== null && props !== undefined && props.remote !== undefined && props.remote !== null
+        ? props.remote
+        : fromSession
       const connectionId = remote === null ? '' : String(remote.connectionId || '')
       const rootPath = remote === null ? '' : String(remote.path || '')
       const stateWorkspaces = (store.state && store.state.workspaces) || []
@@ -7049,7 +6869,31 @@ window.__ModuleLoader__.load({
         setSelection([entry.path])
       }
       const openFilePreview = (entry) => {
-        if (tabActions === null || tabActions === undefined) return false
+        if (tabActions === null || tabActions === undefined) {
+          // Console tab: no tab actions here, so drive the right column instead.
+          const service = sidebarRightService()
+          if (service === null || service === undefined) return false
+          if (isEditableTextPath(entry) && typeof service.openTab === 'function') {
+            try {
+              service.openTab(EDIT_KIND, { params: { path: entry.path, connectionId } })
+              return true
+            } catch {
+              return false
+            }
+          }
+          if (sessionId.length === 0) {
+            // The DSH preview needs a session-scoped address.
+            pushNotice(t('无法在这里预览'), t('这个文件已列在右侧栏的「远端文件」里，可从那里打开。'))
+            return false
+          }
+          if (typeof service.openResource !== 'function') return false
+          try {
+            service.openResource(remoteFileAddress(sessionId, entry.path))
+            return true
+          } catch {
+            return false
+          }
+        }
         // Text files open in our own editable tab; images / PDFs / office keep
         // the built-in read-only preview.
         if (isEditableTextPath(entry) && typeof tabActions.openTab === 'function') {
@@ -7520,7 +7364,7 @@ window.__ModuleLoader__.load({
       return h('div', { className: 'rd-rf' },
         h('div', { className: 'rd-rf-head' },
           h('div', { className: 'rd-rf-title' },
-            h('span', { className: 'rd-rf-hostname', title: remote.path },
+            hideHost ? null : h('span', { className: 'rd-rf-hostname', title: remote.path },
               h('span', { className: 'rd-rf-hostmark' }, h(Icon, { name: 'folder', size: 14 })),
               h('span', { className: 'rd-rf-host' }, remote.host + ' · ' + (remote.folder || remote.title)),
             ),
