@@ -310,6 +310,9 @@ window.__ModuleLoader__.load({
       "正在加载完整终端…": "Loading full terminal…",
       "正在连接 {host}…": "Connecting to {host}…",
       "终端字体与字号": "Terminal font and size",
+      "连接后即可使用终端、文件与端口转发": "Connect to use the terminal, files and port forwarding",
+      "未连接到 {host}": "Not connected to {host}",
+      "更多操作": "More actions",
       "行高（1.0–2.0，本插件额外项）": "Line height (1.0-2.0, plugin extra)",
       "字距（−0.5–2，本插件额外项）": "Letter spacing (-0.5-2, plugin extra)",
       "建立 SSH 通道": "Opening the SSH channel",
@@ -934,6 +937,8 @@ window.__ModuleLoader__.load({
       link: '<path d="M10 14a4 4 0 0 0 6 0l2-2a4 4 0 0 0-6-6l-1 1"/><path d="M14 10a4 4 0 0 0-6 0l-2 2a4 4 0 0 0 6 6l1-1"/>',
       dots: '<circle cx="5" cy="12" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="19" cy="12" r="1.4"/>',
       bolt: '<path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z"/>',
+      plug: '<path d="M9 3v6M15 3v6M6 9h12v3a6 6 0 0 1-12 0z"/><path d="M12 18v3"/>',
+      more: '<circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/>',
       upload: '<path d="M12 17V5"/><path d="M7 9l5-5 5 5"/><path d="M5 21h14"/>',
       alert: '<path d="M12 4 2.9 19.6h18.2z"/><path d="M12 10v4.4"/><path d="M12 17.1h.01"/>',
       filetext: '<path d="M6 2h7l5 5v13a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z"/><path d="M13 2v6h6"/><path d="M8.5 13h7M8.5 16.5h4"/>',
@@ -1107,9 +1112,26 @@ window.__ModuleLoader__.load({
       .rd-ctop { height:52px;flex:none;display:flex;align-items:center;gap:10px;padding:0 18px;border-bottom:1px solid var(--dsw-alias-border-l1, rgba(15,23,42,.08)) }
       .rd-ctop .t { font-size:14px;font-weight:650 }
       .rd-ctop .s { font-size:12px;color:var(--dsw-alias-label-secondary,#8f959e) }
-      .rd-ctop .r { margin-left:auto;display:flex;gap:8px;align-items:center }
-      .rd-csearch { display:flex;align-items:center;gap:6px;height:30px;width:200px;border:1px solid var(--dsw-alias-border-l1, rgba(15,23,42,.12));border-radius:8px;padding:0 9px;color:var(--dsw-alias-label-secondary,#8f959e);background:var(--dsw-alias-bg-layer-1,#fff) }
-      .rd-csearch input { border:0;outline:none;background:transparent;flex:1;font-size:11.5px;color:var(--dsw-alias-label-primary,#1f2329);min-width:0 }
+      .rd-ctop .r { margin-left:auto;display:flex;gap:8px;align-items:center;flex:none }
+      /* On a narrow panel the title gives way, never the status chip. */
+      .rd-ctop .t, .rd-ctop .s { min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap }
+      .rd-chip { display:inline-flex;align-items:center;gap:7px;height:28px;padding:0 11px;border:1px solid var(--dsw-alias-border-l2,#e8e8ec);border-radius:var(--dsw-radius-sm,8px);background:var(--dsw-alias-bg-layer-1,#fff);color:var(--dsw-alias-label-primary,#1f2329);font-size:12px;white-space:nowrap }
+      .rd-chip.idle { color:var(--dsw-alias-label-secondary,#8f959e) }
+      .rd-chip.bad { border-color:rgba(180,35,24,.35);color:#b42318 }
+      .rd-overlay { display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;min-height:320px;padding:32px 16px;text-align:center }
+      .rd-overlayicon { display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border-radius:var(--dsw-radius-md,12px);background:var(--dsw-alias-bg-layer-2,rgba(15,23,42,.04));color:var(--dsw-alias-label-secondary,#5f6672) }
+      .rd-overlaytitle { font-size:14px;font-weight:600 }
+      .rd-overlayhint { max-width:420px;color:var(--dsw-alias-label-secondary,#8f959e);font-size:12px;line-height:18px }
+      .rd-overlaywait { display:inline-flex;align-items:center;gap:8px;color:var(--dsw-alias-label-secondary,#8f959e);font-size:12px }
+      .rd-more { position:relative;display:inline-flex }
+      .rd-moremenu { position:absolute;top:calc(100% + 6px);right:0;left:auto;width:190px;padding:4px }
+      .rd-hmenu-row { display:flex;align-items:center;gap:8px;width:100%;padding:7px 8px;border:0;border-radius:var(--dsw-radius-sm,8px);background:transparent;color:inherit;font:inherit;font-size:11.5px;text-align:left;cursor:pointer }
+      .rd-hmenu-row:hover:not([disabled]) { background:var(--dsw-alias-interactive-bg-hover,rgba(15,23,42,.05)) }
+      .rd-hmenu-row[disabled] { opacity:.5;cursor:default }
+      [data-rd-theme="dark"] .rd-chip { background:var(--dsw-alias-bg-layer-1,#1b1e23);border-color:#2c3138 }
+      [data-rd-theme="dark"] .rd-chip.bad { border-color:#5c2b2b;color:#ff9a9a }
+      [data-rd-theme="dark"] .rd-overlayicon { background:rgba(255,255,255,.06) }
+      [data-rd-theme="dark"] .rd-hmenu-row:hover:not([disabled]) { background:rgba(255,255,255,.07) }
       .rd-cbody { flex:1;min-height:0;display:flex }
       .rd-rail2 { width:236px;flex:none;border-right:1px solid var(--dsw-alias-border-l1, rgba(15,23,42,.08));background:var(--dsw-alias-bg-layer-2, rgba(15,23,42,.015));padding:14px 10px;display:flex;flex-direction:column;gap:3px;overflow:auto }
       .rd-rail2 .rh2 { display:flex;align-items:center;padding:6px 8px;font-size:10.5px;font-weight:600;letter-spacing:.04em;color:var(--dsw-alias-label-secondary,#8f959e) }
@@ -1458,8 +1480,8 @@ window.__ModuleLoader__.load({
       /* ---- wide screens: DSH pages cap their content column too ---- */
       .rd-cwrap { width:100%;max-width:1120px }
       .rd-cwrap.wide { max-width:1400px }
-      .rd-cpane > .rd-overview { width:100%;max-width:1120px }
-      .rd-cpane.term > .rd-overview, .rd-cpane.term > .rd-cwrap { max-width:none;width:100% }
+      .rd-cwrap.full { max-width:none }
+      .rd-cpane.term > .rd-cwrap { max-width:none;width:100% }
       .rd-wtable { max-width:100% }
       .rd-porttable { max-width:100% }
       /* Container queries, not media queries: the panel narrows when DSH's own
@@ -4146,15 +4168,18 @@ window.__ModuleLoader__.load({
       const selectedId = useStore((s) => s.consoleHost)
       const busy = useStore((s) => s.busy)
       const tab = useStore((s) => s.consoleTab || 'overview')
-      const [query, setQuery] = React.useState('')
+
       const quickPins = useStore((s) => s.quickPins || [])
       const [pinHint, setPinHint] = React.useState('')
+      const [moreOpen, setMoreOpen] = React.useState(false)
+      const moreRef = React.useRef(null)
 
       const connections = (state && state.connections) || []
       const workspaces = (state && state.workspaces) || []
       const connected = connections.filter((row) => row.status === 'connected')
       const host = connections.find((row) => row.id === selectedId) || connected[0] || connections[0]
-      const filter = query.trim().toLowerCase()
+
+      useContextMenuDismiss(moreOpen, () => setMoreOpen(false), moreRef)
 
       if (!ready) {
         return h('div', { className: 'rd-console' },
@@ -4176,8 +4201,8 @@ window.__ModuleLoader__.load({
         )
       }
 
-      const hostWorkspaces = workspaces.filter((row) => row.connectionId === host.id && (!filter || (row.folder + ' ' + row.path).toLowerCase().includes(filter)))
-      const hostSessions = sessionsForHost(host.id).filter((row) => !filter || (row.summary.displayTitle || '').toLowerCase().includes(filter))
+      const hostWorkspaces = workspaces.filter((row) => row.connectionId === host.id)
+      const hostSessions = sessionsForHost(host.id)
       const color = colorOf(host.color)
       const hostIssue = host.error ? friendlyError(host.error) : null
 
@@ -4251,11 +4276,18 @@ window.__ModuleLoader__.load({
       return h('div', { className: 'rd-console' },
         h('div', { className: 'rd-ctop' },
           h('span', { className: 't' }, t('远程开发')),
-          h('span', { className: 's' }, t("{connected} 台在线 · {workspaces} 个工作区", { connected: (connected.length), workspaces: (workspaces.length) })),
+          host === null || host === undefined
+            ? h('span', { className: 's' }, t("{connected} 台在线 · {workspaces} 个工作区", { connected: (connected.length), workspaces: (workspaces.length) }))
+            : null,
           h('div', { className: 'r' },
-            h('label', { className: 'rd-csearch' },
-              h(Icon, { name: 'search', size: 13 }),
-              h('input', { value: query, placeholder: t('搜索机器、工作区…'), onChange: (event) => setQuery(event.target.value) }),
+            h('span', {
+              className: 'rd-chip' + (hostIssue ? ' bad' : host.status === 'connected' ? '' : ' idle'),
+              title: hostIssue ? hostIssue.title + ' — ' + hostIssue.hint : host.name + ' · ' + host.status,
+            },
+              h(Dot, { state: hostIssue ? 'error' : host.status }),
+              h('span', { className: 't' }, hostIssue
+                ? hostIssue.title
+                : host.status === 'connected' ? t('已连接') : host.status === 'connecting' ? t('连接中') : host.status === 'error' ? t('连接失败') : t('未连接')),
             ),
             h('button', { className: 'rd-btn primary', onClick: () => openHostDialog() },
               h(Icon, { name: 'plus', size: 13 }), t('添加机器')),
@@ -4264,9 +4296,9 @@ window.__ModuleLoader__.load({
         h('div', { className: 'rd-cbody' },
           h('aside', { className: 'rd-rail2' },
             pinHint ? h('div', { className: 'rd-pinhint' }, pinHint) : null,
-            rail(connected.filter((row) => !filter || (row.name + ' ' + row.host + ' ' + row.username).toLowerCase().includes(filter)), t('已连接')),
+            rail(connected, t('已连接')),
             connected.length > 0 ? h('div', { className: 'sep2' }) : null,
-            rail(connections.filter((row) => row.status !== 'connected').filter((row) => !filter || (row.name + ' ' + row.host + ' ' + row.username).toLowerCase().includes(filter)), t('未连接')),
+            rail(connections.filter((row) => row.status !== 'connected'), t('未连接')),
             h('div', { className: 'railfoot2' },
               h('div', null, 'Data: <DSH_HOME>/remote-deck'),
               h('div', null, 'Host ' + (state ? state.build : '')),
@@ -4280,27 +4312,43 @@ window.__ModuleLoader__.load({
                 onClick: () => { store.consoleTab = id; emit() },
               }, label)),
             ),
-            h('div', { className: 'rd-status' + (hostIssue ? ' bad' : '') },
-              h(Dot, { state: hostIssue ? 'error' : host.status }),
-              h('span', { className: 't', title: hostIssue ? (hostIssue.title + ' — ' + hostIssue.hint) : '' },
-                hostIssue ? hostIssue.title : (host.status === 'connected' ? t('连接正常') : t('未连接'))),
-            ),
-            tab === 'terminal'
-              ? h(TerminalPanel, { host })
-              : tab === 'files'
-                ? h('div', { className: 'rd-cwrap wide' }, h(FilePanel, { host }))
-                : tab === 'ports'
-                  ? h('div', { className: 'rd-cwrap' }, h(PortsPanel, { host }))
-                  : null,
-            h('div', { className: 'rd-overview', style: { display: tab === 'overview' ? 'contents' : 'none' } },
+            tab === 'overview'
+              ? null
+              : host.status !== 'connected'
+                ? h('div', { className: 'rd-cwrap' + (tab === 'terminal' ? ' full' : ''), style: tab === 'terminal' ? { maxWidth: 'none' } : null },
+                  h('div', { className: 'rd-overlay' },
+                    h('span', { className: 'rd-overlayicon' }, h(Icon, { name: 'server', size: 26 })),
+                    h('div', { className: 'rd-overlaytitle' }, host.status === 'connecting'
+                      ? t('正在连接 {host}…', { host: host.name })
+                      : host.status === 'error'
+                        ? t('连接失败')
+                        : t('未连接到 {host}', { host: host.name })),
+                    h('div', { className: 'rd-overlayhint' }, host.status === 'error' && hostIssue ? hostIssue.hint : t('连接后即可使用终端、文件与端口转发')),
+                    host.status === 'connecting'
+                      ? h('span', { className: 'rd-overlaywait' }, h('span', { className: 'rd-term-spinner', 'aria-hidden': 'true' }), t('连接中'))
+                      : h('button', {
+                        className: 'rd-btn primary',
+                        type: 'button',
+                        disabled: busy !== '',
+                        onClick: () => act('connect'),
+                      }, h(Icon, { name: 'bolt', size: 13 }), host.status === 'error' ? t('重连') : t('连接')),
+                  ))
+                : tab === 'terminal'
+                  ? h(TerminalPanel, { host })
+                  : tab === 'files'
+                    ? h('div', { className: 'rd-cwrap wide' }, h(FilePanel, { host }))
+                    : h('div', { className: 'rd-cwrap' }, h(PortsPanel, { host })),
+            h('div', { className: 'rd-cwrap', style: { display: tab === 'overview' ? 'block' : 'none' } },
             h('div', { className: 'rd-chead' },
               h('span', { className: 'rd-cavatar', style: { background: color } }, h(Icon, { name: 'server', size: 24 })),
               h('div', null,
                 h('div', { className: 'rd-ctitle' }, host.name,
-                  h('span', { className: 'rd-pill', style: { cursor: 'default', height: 22, fontSize: 10.5 } },
-                    h(Dot, { state: host.status }),
-                    host.status === 'connected' ? t('已连接') : host.status === 'connecting' ? t('连接中') : host.status === 'error' ? t('连接失败') : t('未连接'),
-                  ),
+                  host.status === 'connected' || hostIssue
+                    ? null
+                    : h('span', { className: 'rd-pill', style: { cursor: 'default', height: 22, fontSize: 10.5 } },
+                      h(Dot, { state: host.status }),
+                      host.status === 'connecting' ? t('连接中') : host.status === 'error' ? t('连接失败') : t('未连接'),
+                    ),
                 ),
                 h('div', { className: 'rd-cmeta' },
                   h('span', { className: 'mono' }, host.username + '@' + host.host + ':' + host.port),
@@ -4313,20 +4361,43 @@ window.__ModuleLoader__.load({
               h('div', { className: 'acts' },
                 h('button', { className: 'rd-btn', onClick: () => { store.consoleTab = 'terminal'; emit() } }, h(Icon, { name: 'term', size: 13 }), t('终端')),
                 h('button', { className: 'rd-btn', onClick: () => { store.consoleTab = 'ports'; emit() } }, h(Icon, { name: 'link', size: 13 }), t('端口')),
-                h('button', {
-                  className: 'rd-btn',
-                  title: host.autoConnect ? t('启动 DSH 时自动连接：已开启') : t('启动 DSH 时自动连接：已关闭'),
-                  onClick: () => void setAutoConnect(host.id, !host.autoConnect),
-                }, h(Icon, { name: 'bolt', size: 13 }), t("自动连接：{state}", { state: ((host.autoConnect ? t('开') : t('关'))) })),
-                host.status === 'connected'
-                  ? h('button', { className: 'rd-btn', disabled: busy !== '', onClick: () => act('reconnect') }, h(Icon, { name: 'refresh', size: 13 }), t('重连'))
-                  : null,
-                h('button', {
-                  className: 'rd-btn',
-                  disabled: busy !== '',
-                  onClick: () => act(host.status === 'connected' ? 'disconnect' : 'connect'),
-                }, host.status === 'connected' ? t('断开') : t('连接')),
-                h('button', { className: 'rd-btn', onClick: editHost }, h(Icon, { name: 'edit', size: 13 }), t('编辑')),
+                h('div', { className: 'rd-more', ref: moreRef },
+                  h('button', {
+                    className: 'rd-btn',
+                    type: 'button',
+                    title: t('更多操作'),
+                    'aria-label': t('更多操作'),
+                    onClick: () => setMoreOpen(!moreOpen),
+                  }, h(Icon, { name: 'more', size: 14 })),
+                  moreOpen
+                    ? h('div', { className: 'rd-hmenu rd-moremenu' },
+                      h('button', {
+                        className: 'rd-hmenu-row',
+                        type: 'button',
+                        onClick: () => { setMoreOpen(false); void setAutoConnect(host.id, !host.autoConnect) },
+                      }, h(Icon, { name: 'bolt', size: 12 }), t("自动连接：{state}", { state: ((host.autoConnect ? t('开') : t('关'))) })),
+                      host.status === 'connected'
+                        ? h('button', {
+                          className: 'rd-hmenu-row',
+                          type: 'button',
+                          disabled: busy !== '',
+                          onClick: () => { setMoreOpen(false); act('reconnect') },
+                        }, h(Icon, { name: 'refresh', size: 12 }), t('重连'))
+                        : null,
+                      h('button', {
+                        className: 'rd-hmenu-row',
+                        type: 'button',
+                        disabled: busy !== '',
+                        onClick: () => { setMoreOpen(false); act(host.status === 'connected' ? 'disconnect' : 'connect') },
+                      }, h(Icon, { name: 'plug', size: 12 }), host.status === 'connected' ? t('断开') : t('连接')),
+                      h('button', {
+                        className: 'rd-hmenu-row',
+                        type: 'button',
+                        onClick: () => { setMoreOpen(false); editHost() },
+                      }, h(Icon, { name: 'edit', size: 12 }), t('编辑')),
+                    )
+                    : null,
+                ),
               ),
             ),
 

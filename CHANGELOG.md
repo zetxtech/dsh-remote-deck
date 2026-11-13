@@ -11,6 +11,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - v1.1.0: full xterm.js terminal, i18n (zh/en), explicit debug switch, virtualized large folders.
 
+## [1.31.0] - 2026-11-14
+
+### Fixed
+
+- **The console's content column never actually applied to 概览.** That element was rendered with `display: contents`, which
+  generates no box, so a `max-width` on it did nothing and the host card's actions were still pushed to the window edge —
+  the previous release only asserted that the CSS text existed. The overview now renders as a real `rd-cwrap` box
+  (`display: block`), and the tests assert the rendered style instead of the stylesheet text.
+
+### Changed
+
+- **Connection state moved to the top-right, where it belongs.** The full-width 连接正常 banner is gone (it repeated the
+  card's own pill), and so is the host search box that occupied that corner: the corner now holds a status chip —
+  dot plus 已连接 / 连接中 / 未连接 / 连接失败, with the failure reason on hover. The card's 已连接 pill now appears only
+  when the state is *not* the happy one, so the same fact is not stated twice.
+- **终端 / 文件 / 端口转发 show a state overlay instead of a dead panel** while the host is not connected: icon, what is
+  wrong (`未连接到 <host>`, `正在连接 <host>…`, `连接失败` with the reason), one line about what connecting enables, and a
+  single 连接 / 重连 button; the connecting state spins (respecting `prefers-reduced-motion`). The terminal's overlay keeps
+  the full-width treatment.
+- The host card keeps 终端 and 端口 as buttons and folds 自动连接 / 重连 / 断开 / 编辑 into a ⋯ menu — nothing was removed,
+  the row just stopped being six buttons wide. On a narrow panel the title truncates rather than squeezing the status chip.
+
 ## [1.30.1] - 2026-11-13
 
 ### Fixed

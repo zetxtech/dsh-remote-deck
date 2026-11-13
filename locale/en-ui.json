@@ -454,5 +454,8 @@
   "（{n} 个由 Agent 创建）": "({n} created by Agent)",
   "（已停止）": "(stopped)",
   "（已删除 {files} 个文件、{dirs} 个目录）": "({files} files and {dirs} folders deleted)",
-  "（空目录）": "(empty folder)"
+  "（空目录）": "(empty folder)",
+  "连接后即可使用终端、文件与端口转发": "Connect to use the terminal, files and port forwarding",
+  "未连接到 {host}": "Not connected to {host}",
+  "更多操作": "More actions"
 }
