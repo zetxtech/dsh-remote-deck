@@ -11,6 +11,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - v1.1.0: full xterm.js terminal, i18n (zh/en), explicit debug switch, virtualized large folders.
 
+## [1.28.1] - 2026-11-13
+
+### Changed
+
+- The 终端字体与字号 row no longer explains how the setting works. It now reports the value in effect (`Maple Mono · 18 px`,
+  or `内置字体 · 13 px`), and the sentence about which terminals share it is gone from the interface and the catalogue.
+
 ## [1.28.0] - 2026-11-13
 
 ### Changed

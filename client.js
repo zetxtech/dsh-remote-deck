@@ -311,7 +311,6 @@ window.__ModuleLoader__.load({
       "正在加载完整终端…": "Loading full terminal…",
       "正在连接 {host}…": "Connecting to {host}…",
       "终端字体与字号": "Terminal font and size",
-      "跟随 DSH 设置：设置 → 通用 → 终端字体 / 终端字号；控制台终端与侧栏终端共用同一份值": "Follows the DSH settings (Settings → General → terminal font / terminal size); the console terminal and the sidebar terminal share one value",
       "行高（1.0–2.0，本插件额外项）": "Line height (1.0-2.0, plugin extra)",
       "字距（−0.5–2，本插件额外项）": "Letter spacing (-0.5-2, plugin extra)",
       "建立 SSH 通道": "Opening the SSH channel",
@@ -389,6 +388,8 @@ window.__ModuleLoader__.load({
       "系统默认（内置字体）": "System default (built-in font)",
       "终端": "Terminal",
       "终端外观": "Terminal appearance",
+      "跟随 DSH 设置": "Follows DSH settings",
+      "内置字体": "Built-in font",
       "终端外观、服务器状态监控与传输上限；改动即时生效。": "Terminal appearance, server status monitoring and transfer limits; changes apply immediately.",
       "终端字体预览": "Terminal font preview",
       "继续": "Continue",
@@ -1649,6 +1650,7 @@ window.__ModuleLoader__.load({
       .rd-set-control { justify-self:end;display:flex;align-items:center;gap:12px;min-width:0 }
       .rd-set-pair { display:flex;align-items:center;gap:12px }
       .rd-set-status { flex:none;font-size:12px;line-height:18px;color:var(--dsw-alias-label-tertiary,#8f959e) }
+      .rd-set-value { font-size:12px;line-height:22px;color:var(--dsw-alias-label-secondary,#5f6672);font-variant-numeric:tabular-nums;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap }
       .rd-set-status[data-state="failed"] { color:var(--dsw-alias-state-error-primary,#c0392b) }
       .rd-set-row input[type="number"], .rd-set-text, .rd-set-font select { height:36px;box-sizing:border-box;padding:0 14px;border:0;border-radius:var(--dsw-radius-md,12px);background:var(--dsw-alias-bg-module-platform,var(--dsw-alias-bg-layer-2,rgba(15,23,42,.04)));color:var(--dsw-alias-label-primary,#1f2329);font:inherit;font-size:14px;line-height:22px;font-variant-numeric:tabular-nums }
       .rd-set-row input[type="number"] { width:96px }
@@ -3810,6 +3812,21 @@ window.__ModuleLoader__.load({
       return () => { dshAppearanceSubs.delete(fn) }
     }
 
+    /**
+     * What the terminal is actually using right now, in one short line — the
+     * row reports the effective value instead of explaining where it comes from.
+     */
+    function terminalAppearanceLabel(dsh, terminal) {
+      const dshFamily = dsh !== null && dsh !== undefined && typeof dsh.fontFamily === 'string' ? dsh.fontFamily : ''
+      const ourFamily = terminal !== null && terminal !== undefined && typeof terminal.fontFamily === 'string' ? terminal.fontFamily : ''
+      const family = dshFamily.length > 0 ? dshFamily : ourFamily
+      const dshSize = dsh !== null && dsh !== undefined && dsh.available === true && Number.isFinite(dsh.fontSize) ? dsh.fontSize : null
+      const ourSize = terminal !== null && terminal !== undefined && Number.isFinite(terminal.fontSize) ? terminal.fontSize : null
+      const size = dshSize !== null ? dshSize : ourSize
+      const name = family.length > 0 ? family : t('内置字体')
+      return size === null ? name : name + ' · ' + String(size) + ' px'
+    }
+
     function useDshAppearance() {
       return React.useSyncExternalStore(subscribeDshAppearance, readDshTerminalAppearance)
     }
@@ -4116,6 +4133,7 @@ window.__ModuleLoader__.load({
      * control rolled back if the host refuses it.
      */
     function RemoteDeckSettings() {
+      const dshAppearance = useDshAppearance()
       const snapshot = useSettingsSnapshot()
       const settings = snapshot === null ? SETTINGS_FALLBACK : snapshot
       const [draft, setDraft] = React.useState(() => settingsDraft(settings))
@@ -4247,7 +4265,10 @@ window.__ModuleLoader__.load({
           h('div', { className: 'rd-set-row' },
             h('div', { className: 'rd-set-textcol' },
               h('span', { className: 'rd-set-label' }, t('终端字体与字号')),
-              h('span', { className: 'rd-set-desc' }, t('跟随 DSH 设置：设置 → 通用 → 终端字体 / 终端字号；控制台终端与侧栏终端共用同一份值')),
+              h('span', { className: 'rd-set-desc' }, t('跟随 DSH 设置')),
+            ),
+            h('div', { className: 'rd-set-control' },
+              h('span', { className: 'rd-set-value' }, terminalAppearanceLabel(dshAppearance, draft)),
             ),
           ),
           // DSH has no line-height / letter-spacing setting: these two stay as
