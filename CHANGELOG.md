@@ -11,6 +11,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - v1.1.0: full xterm.js terminal, i18n (zh/en), explicit debug switch, virtualized large folders.
 
+## [1.28.2] - 2026-11-13
+
+### Changed
+
+- **远程开发 → 终端 fills the pane again.** The fake window title bar is gone — the three dots, the `host — bash` tab
+  label, the session id and the header status row — along with the border, rounded corners and padding that framed the
+  emulator as a window. The terminal now runs edge to edge under the tab strip. Status and 重开 appear only when the
+  terminal is not healthily open, as one slim row under the emulator; a working terminal shows nothing but the shell.
+
 ## [1.28.1] - 2026-11-13
 
 ### Changed

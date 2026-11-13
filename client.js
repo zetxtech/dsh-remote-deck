@@ -1460,23 +1460,23 @@ window.__ModuleLoader__.load({
       .rd-tab { border:0;background:transparent;padding:7px 11px;font-size:12px;color:var(--dsw-alias-label-secondary,#8f959e);border-bottom:2px solid transparent;margin-bottom:-1px;cursor:pointer }
       .rd-tab.on { color:var(--dsw-alias-label-primary,#1f2329);font-weight:600;border-bottom-color:var(--dsw-alias-label-primary,#1f2329) }
       .rd-terminal { display:flex;flex-direction:column;gap:0;flex:1;min-height:0 }
-      .rd-cpane.term { display:flex;flex-direction:column;overflow:hidden }
+      .rd-cpane.term { display:flex;flex-direction:column;overflow:hidden;padding:0 }
+      /* The tab strip keeps its own inset; the terminal below it runs edge to edge. */
+      .rd-cpane.term > .rd-tabs { flex:none;padding:0 14px;margin:0 }
       .rd-cpane.term > .rd-tabs, .rd-cpane.term > .rd-status { flex:none }
       .rd-cpane.term > .rd-terminal { flex:1;min-height:0 }
-      .rd-termhead { display:flex;align-items:center;gap:8px;background:#0f1216;border:1px solid #1c232c;border-bottom:0;border-radius:11px 11px 0 0;padding:9px 12px;color:#8b949e;font-size:10.5px }
-      .rd-termhead .dotrow { display:flex;gap:4px }
-      .rd-termhead .dotrow i { width:8px;height:8px;border-radius:50%;background:#2a313a;display:block }
-      .rd-termtab { color:#d7dee6;background:#1a212a;border-radius:5px;padding:2px 8px;font-family:var(--rd-term-font,ui-monospace,Consolas,monospace);font-size:10px }
-      .rd-termstatus { margin-left:auto;display:flex;align-items:center;gap:5px }
+      .rd-termstate { flex:none;display:flex;align-items:center;gap:8px;padding:6px 12px;background:#0f1216;border-top:1px solid #1c232c;color:#8b949e;font-size:11px }
+      .rd-termstate .rd-termerrtext { min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#ff9a9a }
+      .rd-termstate .rd-termbtn { margin-left:auto }
       .rd-termsid { color:#5b6674;font-family:var(--rd-term-font,ui-monospace,Consolas,monospace);font-size:10px;margin-left:2px }
       .rd-termbtn { border:0;background:transparent;color:#8b949e;cursor:pointer;display:grid;place-items:center;width:22px;height:22px;border-radius:5px }
       .rd-termbtn:hover { background:#1a212a;color:#d7dee6 }
-      .rd-termout { background:#0f1216;border:1px solid #1c232c;border-top:0;border-radius:0 0 11px 11px;padding:12px 14px;flex:1;min-height:0;overflow:auto;color:#c9d1d9;font-family:var(--rd-term-font,ui-monospace,Consolas,monospace);font-size:11.5px;line-height:1.7;white-space:pre-wrap;word-break:break-all;outline:none;cursor:text }
+      .rd-termout { background:#0f1216;padding:12px 14px;flex:1;min-height:0;overflow:auto;color:#c9d1d9;font-family:var(--rd-term-font,ui-monospace,Consolas,monospace);font-size:11.5px;line-height:1.7;white-space:pre-wrap;word-break:break-all;outline:none;cursor:text }
       .rd-termout:focus { box-shadow:inset 0 0 0 1px rgba(99,182,255,.35) }
-      .rd-xterm { flex:1;min-height:0;background:#0f1216;border:1px solid #1c232c;border-top:0;border-radius:0 0 11px 11px;padding:8px 10px;overflow:hidden }
+      .rd-xterm { flex:1;min-height:0;background:#0f1216;overflow:hidden }
       .rd-xterm .xterm { height:100% }
-      .rd-xterm-placeholder { flex:1;min-height:0;display:grid;place-items:center;color:#8b95a3;background:#0f1216;border:1px solid #1c232c;border-top:0;border-radius:0 0 11px 11px;font-size:12px }
-      .rd-term-boot { display:flex;align-items:center;gap:10px;padding:12px 16px;border:1px solid #1c232c;border-radius:10px;background:#131820 }
+      .rd-xterm-placeholder { flex:1;min-height:0;display:grid;place-items:center;color:#8b95a3;background:#0f1216;font-size:12px }
+      .rd-term-boot { display:flex;align-items:center;gap:10px }
       .rd-term-spinner { flex:none;width:16px;height:16px;border-radius:999px;border:2px solid rgba(139,149,163,.28);border-top-color:#6ea8fe;animation:rd-term-spin .8s linear infinite }
       @keyframes rd-term-spin { to { transform:rotate(360deg) } }
       .rd-term-boottext { min-width:0;display:flex;flex-direction:column;gap:2px }
@@ -1484,7 +1484,7 @@ window.__ModuleLoader__.load({
       .rd-term-boothint { color:#7d8797;font-size:11.5px;line-height:16px }
       @media (prefers-reduced-motion: reduce) { .rd-term-spinner { animation:none } }
       .rd-termplaceholder { color:#5b6674 }
-      .rd-termerror { color:#f85149;background:#161b22;border:1px solid #3a1d1d;border-top:0;padding:8px 12px;font-size:11px }
+      .rd-termerror { color:#f85149;background:#161b22;padding:8px 12px;font-size:11px }
       .rd-ports { display:flex;flex-direction:column }
       .rd-porthead { display:flex;align-items:center;gap:8px }
       .rd-portrow { display:flex;align-items:center;gap:9px;padding:10px 12px;border:1px solid var(--dsw-alias-border-l1, rgba(15,23,42,.1));border-radius:10px;margin-bottom:8px;font-size:11.5px }
@@ -2874,19 +2874,19 @@ window.__ModuleLoader__.load({
         return cleanup
       }, [host.id])
 
+      // No window chrome: the emulator fills the pane. Status and the reopen
+      // action only appear when the terminal is not healthily open.
+      const settled = status === 'open'
       return h('div', { className: 'rd-terminal' },
-        h('div', { className: 'rd-termhead' },
-          h('span', { className: 'dotrow' }, h('i'), h('i'), h('i')),
-          h('span', { className: 'rd-termtab' }, host.name + ' — bash'),
-          sessionId ? h('span', { className: 'rd-termsid' }, 'session ' + sessionId.slice(0, 8)) : null,
-          h('span', { className: 'rd-termstatus' },
-            h(Dot, { state: status === 'open' ? 'connected' : status === 'error' ? 'error' : status === 'closed' ? 'disconnected' : 'connecting' }),
-            status === 'open' ? t('已连接') : status === 'closed' ? t('已退出') : status === 'error' ? t('失败') : t('连接中'),
-          ),
-          h('button', { className: 'rd-termbtn', onClick: () => void open(), title: t('重开终端') }, h(Icon, { name: 'refresh', size: 13 })),
-        ),
         h('div', { className: 'rd-xterm', ref: boxRef }),
-        error ? h('div', { className: 'rd-termerror' }, friendlyText(error)) : null,
+        error !== '' || !settled
+          ? h('div', { className: 'rd-termstate' },
+            h(Dot, { state: status === 'error' ? 'error' : status === 'closed' ? 'disconnected' : 'connecting' }),
+            h('span', null, status === 'closed' ? t('已退出') : status === 'error' ? t('失败') : t('连接中')),
+            error ? h('span', { className: 'rd-termerrtext' }, friendlyText(error)) : null,
+            h('button', { className: 'rd-termbtn', onClick: () => void open(), title: t('重开终端') }, h(Icon, { name: 'refresh', size: 13 }), t('重开')),
+          )
+          : null,
       )
     }
 
@@ -2906,11 +2906,6 @@ window.__ModuleLoader__.load({
       }, [host.id])
       if (engine === 'loading') {
         return h('div', { className: 'rd-terminal' },
-          h('div', { className: 'rd-termhead' },
-            h('span', { className: 'dotrow' }, h('i'), h('i'), h('i')),
-            h('span', { className: 'rd-termtab' }, host.name + ' — bash'),
-            h('span', { className: 'rd-termstatus' }, h(Dot, { state: 'connecting' }), t('加载终端…')),
-          ),
           h('div', { className: 'rd-xterm-placeholder' },
             h('div', { className: 'rd-term-boot' },
               h('span', { className: 'rd-term-spinner', 'aria-hidden': 'true' }),
@@ -3068,16 +3063,6 @@ window.__ModuleLoader__.load({
       }
 
       return h('div', { className: 'rd-terminal' },
-        h('div', { className: 'rd-termhead' },
-          h('span', { className: 'dotrow' }, h('i'), h('i'), h('i')),
-          h('span', { className: 'rd-termtab' }, host.name + ' — bash'),
-          sessionId ? h('span', { className: 'rd-termsid' }, 'session ' + sessionId.slice(0, 8)) : null,
-          h('span', { className: 'rd-termstatus' },
-            h(Dot, { state: status === 'open' ? 'connected' : status === 'error' ? 'error' : status === 'closed' ? 'disconnected' : 'connecting' }),
-            status === 'open' ? t('已连接') : status === 'closed' ? t('已退出') : status === 'error' ? t('失败') : t('连接中'),
-          ),
-          h('button', { className: 'rd-termbtn', onClick: () => void open(), title: t('重开终端') }, h(Icon, { name: 'refresh', size: 13 })),
-        ),
         h('div', {
           className: 'rd-termout',
           ref: viewRef,
@@ -3092,7 +3077,14 @@ window.__ModuleLoader__.load({
           },
           onMouseDown: () => viewRef.current?.focus(),
         }, text.length === 0 ? h('span', { className: 'rd-termplaceholder' }, t('正在打开远端 shell…')) : text),
-        error ? h('div', { className: 'rd-termerror' }, friendlyText(error)) : null,
+        error !== '' || status !== 'open'
+          ? h('div', { className: 'rd-termstate' },
+            h(Dot, { state: status === 'error' ? 'error' : status === 'closed' ? 'disconnected' : 'connecting' }),
+            h('span', null, status === 'closed' ? t('已退出') : status === 'error' ? t('失败') : t('连接中')),
+            error ? h('span', { className: 'rd-termerrtext' }, friendlyText(error)) : null,
+            h('button', { className: 'rd-termbtn', onClick: () => void open(), title: t('重开终端') }, h(Icon, { name: 'refresh', size: 13 }), t('重开')),
+          )
+          : null,
       )
     }
 
