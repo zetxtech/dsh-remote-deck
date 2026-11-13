@@ -1125,7 +1125,7 @@ window.__ModuleLoader__.load({
       .rd-host2 .lat2 { font-size:10px;font-family:var(--rd-term-font,ui-monospace,Consolas,monospace);color:#4c8f5c }
       .rd-rail2 .sep2 { height:1px;background:var(--dsw-alias-border-l1, rgba(15,23,42,.07));margin:8px }
       .rd-rail2 .railfoot2 { margin-top:auto;padding:10px 8px 2px;font-size:10px;color:var(--dsw-alias-label-secondary,#8f959e);line-height:1.7;border-top:1px solid var(--dsw-alias-border-l1, rgba(15,23,42,.07)) }
-      .rd-cpane { flex:1;min-width:0;overflow:auto;padding:22px 26px 30px }
+      .rd-cpane { flex:1;min-width:0;overflow:auto;padding:22px 26px 30px;container-type:inline-size;container-name:rdpane }
       .rd-chead { display:flex;align-items:flex-start;gap:14px }
       .rd-cavatar { width:46px;height:46px;border-radius:12px;color:#fff;display:grid;place-items:center;flex:none }
       .rd-ctitle { font-size:19px;font-weight:700;letter-spacing:-.3px;display:flex;align-items:center;gap:8px }
@@ -1133,16 +1133,16 @@ window.__ModuleLoader__.load({
       .rd-cmeta .mono { font-family:var(--rd-term-font,ui-monospace,Consolas,monospace);font-size:11px;color:var(--dsw-alias-label-secondary,#5f6672) }
       .rd-chead .acts { margin-left:auto;display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end }
       .rd-stats { display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:20px }
-      .rd-stat { border:1px solid var(--dsw-alias-border-l1, rgba(15,23,42,.1));border-radius:10px;padding:11px 13px }
+      .rd-stat { border:1px solid var(--dsw-alias-border-l1, rgba(15,23,42,.1));border-radius:var(--dsw-radius-md,12px);padding:12px 14px }
       .rd-stat .k { font-size:10.5px;color:var(--dsw-alias-label-secondary,#8f959e) }
       .rd-stat .v { font-size:19px;font-weight:700;margin-top:3px;letter-spacing:-.4px }
       .rd-stat .v small { font-size:11px;font-weight:500;color:var(--dsw-alias-label-secondary,#8f959e);margin-left:3px }
-      .rd-csect { display:flex;align-items:center;margin:26px 0 10px }
+      .rd-csect { display:flex;align-items:center;margin:24px 0 10px }
       .rd-csect .st2 { font-size:13px;font-weight:600 }
       .rd-csect .ct2 { margin-left:8px;font-size:11px;color:var(--dsw-alias-label-secondary,#8f959e) }
       .rd-csect .rt2 { margin-left:auto;display:flex;gap:7px }
       .rd-cards { display:grid;grid-template-columns:1fr 1fr;gap:10px }
-      .rd-card { border:1px solid var(--dsw-alias-border-l1, rgba(15,23,42,.1));border-radius:11px;padding:12px 13px;background:var(--dsw-alias-bg-layer-1,#fff);position:relative;cursor:pointer }
+      .rd-card { border:1px solid var(--dsw-alias-border-l1, rgba(15,23,42,.1));border-radius:var(--dsw-radius-md,12px);padding:12px 14px;background:var(--dsw-alias-bg-layer-1,#fff);position:relative;cursor:pointer }
       .rd-card:hover { border-color:rgba(15,23,42,.22);box-shadow:0 2px 8px rgba(16,24,40,.05) }
       .rd-card .stripe2 { position:absolute;left:0;top:10px;bottom:10px;width:3px;border-radius:0 3px 3px 0 }
       .rd-card .top2 { display:flex;align-items:center;gap:7px }
@@ -1174,7 +1174,7 @@ window.__ModuleLoader__.load({
       .rd-fchip { border:1px solid var(--dsw-alias-border-l1,rgba(15,23,42,.14));background:none;border-radius:999px;padding:2px 9px;font-size:11px;color:inherit;cursor:pointer }
       .rd-fchip:hover { background:rgba(15,23,42,.05) }
       .rd-fnotice { margin-bottom:10px;padding:7px 10px;border-radius:8px;background:rgba(29,111,196,.08);color:#1d6fc4;font-size:11.5px;word-break:break-all }
-      .rd-flist { border:1px solid var(--dsw-alias-border-l1,rgba(15,23,42,.1));border-radius:10px;overflow:hidden }
+      .rd-flist { border:1px solid var(--dsw-alias-border-l1,rgba(15,23,42,.1));border-radius:var(--dsw-radius-md,12px);overflow:hidden }
       .rd-frow { display:grid;grid-template-columns:18px minmax(0,1fr) 84px 92px auto;align-items:center;gap:8px;padding:8px 12px;border-top:1px solid var(--dsw-alias-border-l1,rgba(15,23,42,.06));font-size:12.5px;color:var(--dsw-alias-label-primary,#1f2329) }
       .rd-frow:first-child { border-top:0 }
       .rd-frow:hover { background:rgba(15,23,42,.035) }
@@ -1185,7 +1185,7 @@ window.__ModuleLoader__.load({
       .rd-frow:hover .rd-factions { opacity:1 }
       [data-rd-theme="dark"] .rd-crumb:hover, [data-rd-theme="dark"] .rd-frow:hover { background:rgba(255,255,255,.06) }
       [data-rd-theme="dark"] .rd-fnotice { background:rgba(99,182,255,.14);color:#8ecbff }
-      .rd-ctx { position:fixed;z-index:1300;width:196px;box-sizing:border-box;padding:4px;background:var(--dsw-alias-bg-layer-1,#fff);color:var(--dsw-alias-label-primary,#1f2329);border:1px solid var(--dsw-alias-border-l1,#e8e8ec);border-radius:10px;box-shadow:0 18px 44px rgba(16,24,40,.2),0 2px 6px rgba(16,24,40,.06);font-size:11.5px }
+      .rd-ctx { position:fixed;z-index:1300;width:196px;box-sizing:border-box;padding:4px;background:var(--dsw-alias-bg-layer-1,#fff);color:var(--dsw-alias-label-primary,#1f2329);border:1px solid var(--dsw-alias-border-l1,#e8e8ec);border-radius:var(--dsw-radius-md,12px);box-shadow:0 18px 44px rgba(16,24,40,.2),0 2px 6px rgba(16,24,40,.06);font-size:11.5px }
       .rd-ctx-i { display:flex;align-items:center;gap:7px;width:100%;height:28px;box-sizing:border-box;padding:0 8px;border:0;border-radius:7px;background:transparent;color:inherit;font:inherit;font-size:11.5px;text-align:left;cursor:pointer }
       .rd-ctx-i:hover { background:var(--dsw-alias-bg-layer-2,rgba(15,23,42,.04)) }
       .rd-ctx-i svg { flex:none;opacity:.75 }
@@ -1238,7 +1238,7 @@ window.__ModuleLoader__.load({
       .rd-rf-promptinput { flex:1;min-width:120px;height:26px;box-sizing:border-box;padding:0 8px;border:1px solid var(--dsw-alias-border-l2,#e8e8ec);border-radius:var(--dsw-radius-sm,8px);background:var(--dsw-alias-bg-layer-1,#fff);color:var(--dsw-alias-label-primary,#1f2329);font:inherit;font-size:12px;outline:none }
       .rd-rf-promptinput.bad { border-color:var(--dsw-alias-state-error-primary,#c0392b) }
       [data-rd-theme="dark"] .rd-rf-filter, [data-rd-theme="dark"] .rd-rf-promptinput { background:var(--dsw-alias-bg-layer-1,#1b1e23);border-color:#2c3138 }
-      .rd-rf-row { display:flex;align-items:center;gap:9px;height:32px;box-sizing:border-box;padding:0 8px;border-radius:8px }
+      .rd-rf-row { display:grid;grid-template-columns:18px minmax(0,1fr) 92px 132px;align-items:center;gap:9px;height:32px;box-sizing:border-box;padding:0 8px;border-radius:8px }
       .rd-rf-row.dir { cursor:pointer }
       .rd-rf-row:hover { background:var(--dsw-alias-interactive-bg-hover,rgba(15,23,42,.05)) }
       .rd-rf-row.sel { background:rgba(47,125,221,.12) }
@@ -1248,12 +1248,12 @@ window.__ModuleLoader__.load({
       .rd-rf-body:focus-visible { outline:none }
       .rd-rf-rowicon { flex:none;display:inline-flex;align-items:center;justify-content:center;width:16px;color:var(--dsw-alias-label-tertiary,#8f959e) }
       .rd-rf-row.dir .rd-rf-rowicon { color:#e0a92e }
-      .rd-rf-rowname { flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12.5px }
+      .rd-rf-rowname { min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12.5px }
       .rd-rf-linkname { display:flex;align-items:center;gap:4px;min-width:0 }
       .rd-rf-linkarrow { flex:none;color:var(--dsw-alias-label-tertiary,#8f959e) }
       .rd-rf-linktarget { min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--dsw-alias-label-secondary,#8f959e) }
-      .rd-rf-rowsize { flex:none;min-width:56px;text-align:right;color:var(--dsw-alias-label-secondary,#8f959e);font-size:11px;font-variant-numeric:tabular-nums }
-      .rd-rf-rowtime { flex:none;min-width:62px;text-align:right;color:var(--dsw-alias-label-tertiary,#8f959e);font-size:11px;font-variant-numeric:tabular-nums }
+      .rd-rf-rowsize { min-width:0;text-align:right;color:var(--dsw-alias-label-secondary,#8f959e);font-size:11px;font-variant-numeric:tabular-nums }
+      .rd-rf-rowtime { min-width:0;text-align:right;color:var(--dsw-alias-label-tertiary,#8f959e);font-size:11px;font-variant-numeric:tabular-nums }
       .rd-rf-state { flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:24px 20px;text-align:center }
       .rd-rf-stateicon { display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:12px;background:var(--dsw-alias-bg-layer-2,rgba(15,23,42,.04));color:var(--dsw-alias-label-tertiary,#8f959e) }
       .rd-rf-statetitle { font-size:12.5px;font-weight:600 }
@@ -1427,7 +1427,7 @@ window.__ModuleLoader__.load({
       .rd-wscrumbs .sep3 { color:#c6ccd4 }
       .rd-wsfilter { display:flex;align-items:center;gap:6px;height:28px;border:1px solid var(--dsw-alias-border-l1, rgba(15,23,42,.12));border-radius:7px;padding:0 8px;margin-bottom:8px;color:var(--dsw-alias-label-secondary,#8f959e) }
       .rd-wsfilter input { flex:1;border:0;outline:none;background:transparent;font-size:11.5px;color:inherit;min-width:0 }
-      .rd-wtable { flex:1;min-height:0;border:1px solid var(--dsw-alias-border-l1, rgba(15,23,42,.1));border-radius:10px;overflow:auto;outline:none }
+      .rd-wtable { flex:1;min-height:0;border:1px solid var(--dsw-alias-border-l1, rgba(15,23,42,.1));border-radius:var(--dsw-radius-md,12px);overflow:auto;outline:none }
       .rd-wtable:focus { border-color:#a9c9ec;box-shadow:0 0 0 3px rgba(29,111,196,.1) }
       .rd-wthead { display:grid;grid-template-columns:1fr 92px 60px;gap:10px;padding:8px 12px;background:var(--dsw-alias-bg-layer-2, rgba(15,23,42,.03));border-bottom:1px solid var(--dsw-alias-border-l1, rgba(15,23,42,.07));font-size:10.5px;color:var(--dsw-alias-label-secondary,#8f959e);position:sticky;top:0 }
       .rd-wsrow { padding:10px 12px }
@@ -1457,6 +1457,23 @@ window.__ModuleLoader__.load({
       .rd-tab { border:0;background:transparent;padding:7px 11px;font-size:12px;color:var(--dsw-alias-label-secondary,#8f959e);border-bottom:2px solid transparent;margin-bottom:-1px;cursor:pointer }
       .rd-tab.on { color:var(--dsw-alias-label-primary,#1f2329);font-weight:600;border-bottom-color:var(--dsw-alias-label-primary,#1f2329) }
       .rd-terminal { display:flex;flex-direction:column;gap:0;flex:1;min-height:0 }
+      /* ---- wide screens: DSH pages cap their content column too ---- */
+      .rd-cwrap { width:100%;max-width:1120px }
+      .rd-cwrap.wide { max-width:1400px }
+      .rd-cpane > .rd-overview { width:100%;max-width:1120px }
+      .rd-cpane.term > .rd-overview, .rd-cpane.term > .rd-cwrap { max-width:none;width:100% }
+      .rd-wtable { max-width:100% }
+      .rd-porttable { max-width:100% }
+      /* Container queries, not media queries: the panel narrows when DSH's own
+         sidebar opens, and the window width says nothing about that. */
+      @container rdpane (max-width:899px) {
+        .rd-stats { grid-template-columns:repeat(2,1fr) }
+        .rd-cards { grid-template-columns:1fr }
+      }
+      @container rdpane (max-width:699px) {
+        .rd-rf-row { grid-template-columns:18px minmax(0,1fr) 84px }
+        .rd-rf-rowtime { display:none }
+      }
       .rd-cpane.term { display:flex;flex-direction:column;overflow:hidden;padding:0 }
       /* The tab strip keeps its own inset; the terminal below it runs edge to edge. */
       .rd-cpane.term > .rd-tabs { flex:none;padding:0 14px;margin:0 }
@@ -1484,17 +1501,17 @@ window.__ModuleLoader__.load({
       .rd-termerror { color:#f85149;background:#161b22;padding:8px 12px;font-size:11px }
       .rd-ports { display:flex;flex-direction:column }
       .rd-porthead { display:flex;align-items:center;gap:8px }
-      .rd-portrow { display:flex;align-items:center;gap:9px;padding:10px 12px;border:1px solid var(--dsw-alias-border-l1, rgba(15,23,42,.1));border-radius:10px;margin-bottom:8px;font-size:11.5px }
+      .rd-portrow { display:flex;align-items:center;gap:9px;padding:10px 12px;border:1px solid var(--dsw-alias-border-l1, rgba(15,23,42,.1));border-radius:var(--dsw-radius-md,12px);margin-bottom:8px;font-size:11.5px }
       .rd-portmap { font-family:var(--rd-term-font,ui-monospace,Consolas,monospace);font-size:11px;color:var(--dsw-alias-label-secondary,#5f6672) }
       .rd-portarrow { color:var(--dsw-alias-label-secondary,#8f959e) }
       .rd-portactions { margin-left:auto;display:flex;gap:6px }
-      .rd-porttable { border:1px solid var(--dsw-alias-border-l1, rgba(15,23,42,.1));border-radius:10px;overflow:hidden }
+      .rd-porttable { border:1px solid var(--dsw-alias-border-l1, rgba(15,23,42,.1));border-radius:var(--dsw-radius-md,12px);overflow:hidden }
       .rd-portheadrow { display:grid;grid-template-columns:90px 1fr 120px;gap:10px;padding:8px 12px;background:var(--dsw-alias-bg-layer-2, rgba(15,23,42,.03));border-bottom:1px solid var(--dsw-alias-border-l1, rgba(15,23,42,.07));font-size:10.5px;color:var(--dsw-alias-label-secondary,#8f959e) }
       .rd-portrow2 { display:grid;grid-template-columns:90px 1fr 120px;gap:10px;align-items:center;padding:8px 12px;border-bottom:1px solid var(--dsw-alias-border-l1, rgba(15,23,42,.05));font-size:11.5px }
       .rd-portrow2:last-child { border-bottom:0 }
       .rd-portrow2 .mono { font-family:var(--rd-term-font,ui-monospace,Consolas,monospace) }
       .rd-portempty { padding:14px 12px;font-size:11px;color:var(--dsw-alias-label-secondary,#8f959e) }
-      .rd-portadd { display:flex;align-items:center;gap:8px;margin-top:12px;padding:10px 12px;border:1px dashed rgba(15,23,42,.18);border-radius:10px }
+      .rd-portadd { display:flex;align-items:center;gap:8px;margin-top:12px;padding:10px 12px;border:1px dashed rgba(15,23,42,.18);border-radius:var(--dsw-radius-md,12px) }
       .rd-origin { display:inline-flex;align-items:center;height:16px;padding:0 5px;border-radius:4px;background:rgba(15,23,42,.06);color:var(--dsw-alias-label-secondary,#8f959e);font-size:10px;flex:none }
       .rd-origin.agent { background:rgba(47,125,221,.12);color:#1d6fc4 }
       [data-rd-theme="dark"] .rd-origin { background:rgba(255,255,255,.08);color:#a8b0bb }
@@ -4270,7 +4287,13 @@ window.__ModuleLoader__.load({
               h('span', { className: 't', title: hostIssue ? (hostIssue.title + ' — ' + hostIssue.hint) : '' },
                 hostIssue ? hostIssue.title : (host.status === 'connected' ? t('连接正常') : t('未连接'))),
             ),
-            tab === 'overview' ? null : (tab === 'terminal' ? h(TerminalPanel, { host }) : tab === 'files' ? h(FilePanel, { host }) : h(PortsPanel, { host })),
+            tab === 'terminal'
+              ? h(TerminalPanel, { host })
+              : tab === 'files'
+                ? h('div', { className: 'rd-cwrap wide' }, h(FilePanel, { host }))
+                : tab === 'ports'
+                  ? h('div', { className: 'rd-cwrap' }, h(PortsPanel, { host }))
+                  : null,
             h('div', { className: 'rd-overview', style: { display: tab === 'overview' ? 'contents' : 'none' } },
             h('div', { className: 'rd-chead' },
               h('span', { className: 'rd-cavatar', style: { background: color } }, h(Icon, { name: 'server', size: 24 })),

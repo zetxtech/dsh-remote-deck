@@ -11,6 +11,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - v1.1.0: full xterm.js terminal, i18n (zh/en), explicit debug switch, virtualized large folders.
 
+## [1.30.0] - 2026-11-13
+
+### Changed
+
+- **远程开发 no longer stretches across the whole window.** The console had no content-width limit at all, so on a wide screen a
+  row's label sat at one edge and its action or value at the other, a thousand pixels away. The tabs now render inside a
+  content column (`max-width:1120px`, left-aligned so it does not shift when DSH's sidebar opens; the file page gets
+  1400px because it is tabular). The terminal keeps its full-bleed behaviour. File rows became a fixed grid — icon, name,
+  92px size, 132px time, numbers right-aligned and tabular — so a value lines up under the one above instead of being
+  pushed to the row's far end, and the overview/port tables follow the column rather than the window.
+- The two narrow-width rules are **container queries on the pane**, not media queries on the window: the panel narrows
+  when DSH's own sidebar opens, and the window width says nothing about that. Below 900px the stat grid drops to two
+  columns and the card list to one; below 700px the file row hides its time column.
+- Section rhythm and radii converged: 24px between sections, matching card padding, and every 10/11px corner replaced
+  by `var(--dsw-radius-md,12px)`.
+
+### Notes
+
+- The layout was verified by CSS assertions only; how it reads on a wide screen is for the user to judge. The column
+  width and the 92/132px file columns are one-line changes if they feel wrong.
+
 ## [1.29.0] - 2026-11-13
 
 ### Changed
