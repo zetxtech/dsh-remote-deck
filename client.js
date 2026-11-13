@@ -314,9 +314,6 @@ window.__ModuleLoader__.load({
       "正在启动 shell…": "Starting the shell…",
       "等待远端 shell 就绪": "Waiting for the remote shell",
       "家目录（登录目录）": "Home directory (login directory)",
-      "项目目录": "Project directory",
-      "项目目录：{dir}": "Project directory: {dir}",
-      "还没有访问记录": "No directory visited yet",
       "控制台终端字号（9–24）": "Console terminal font size (9–24)",
       "作用于「远程开发 → 控制台」里的终端；DSH 侧栏终端的字号由 DSH 自身控制": "Applies to the terminal in Remote Dev → Console; the DSH sidebar terminal sets its own font size",
       "正在加载远程连接…": "Loading remote connections…",
@@ -5935,41 +5932,6 @@ window.__ModuleLoader__.load({
      * the console file page and this page cannot drift apart.
      */
     const SHOW_HIDDEN_KEY = 'rd-show-hidden'
-    const LAST_DIR_KEY = 'rd-last-dir'
-
-    /** connectionId -> the last directory the user opened (one per connection). */
-    function loadLastDirs() {
-      try {
-        const raw = globalThis.localStorage === undefined || globalThis.localStorage === null
-          ? null
-          : globalThis.localStorage.getItem(LAST_DIR_KEY)
-        const parsed = raw === null || raw === undefined ? null : JSON.parse(raw)
-        return parsed !== null && typeof parsed === 'object' ? parsed : {}
-      } catch {
-        return {}
-      }
-    }
-
-    function lastDirFor(connectionId) {
-      if (typeof connectionId !== 'string' || connectionId.length === 0) return ''
-      const value = loadLastDirs()[connectionId]
-      return typeof value === 'string' ? value : ''
-    }
-
-    /** Only directories the user actually walked into: `/` would pin the fallback. */
-    function rememberLastDir(connectionId, dir) {
-      if (typeof connectionId !== 'string' || connectionId.length === 0) return
-      if (typeof dir !== 'string' || dir.length === 0 || dir === '/') return
-      try {
-        const all = loadLastDirs()
-        all[connectionId] = dir
-        if (globalThis.localStorage !== undefined && globalThis.localStorage !== null) {
-          globalThis.localStorage.setItem(LAST_DIR_KEY, JSON.stringify(all))
-        }
-      } catch {
-        /* private mode */
-      }
-    }
     const FILE_CLIPBOARD_KEY = 'rd-file-clipboard'
     /** Only our own list accepts this payload type. */
     const FILE_DRAG_TYPE = 'application/x-remote-deck-paths'
@@ -6843,10 +6805,6 @@ window.__ModuleLoader__.load({
       const [clipboard, setClipboard] = React.useState(loadFileClipboard)
       const [dropPath, setDropPath] = React.useState('')
       const [pathDraft, setPathDraft] = React.useState(null)
-      const [projectDir, setProjectDir] = React.useState('')
-      // Only directories the user actually navigated to are remembered: the
-      // automatic first load of the workspace root is not a choice.
-      const bootedRef = React.useRef(false)
       const [pathError, setPathError] = React.useState('')
       const [menu, setMenu] = React.useState(null)
       const [confirming, setConfirming] = React.useState(null)
@@ -6865,33 +6823,22 @@ window.__ModuleLoader__.load({
       const archive = useArchiveDownload(tasks)
       useContextMenuDismiss(menu !== null, closeMenu, menuRef)
 
-      const load = React.useCallback(async (dir, options) => {
+      const load = React.useCallback(async (dir) => {
         if (connectionId === '') return
-        const silentFallback = options !== null && options !== undefined && options.fallback === true
         setLoading(true)
         setError('')
         try {
           const data = await call('/connections/' + encodeURIComponent(connectionId) + '/files?path=' + encodeURIComponent(dir))
-          const resolved = typeof data.path === 'string' ? data.path : dir
-          setPath(resolved)
+          setPath(typeof data.path === 'string' ? data.path : dir)
           setEntries(Array.isArray(data.entries) ? data.entries : [])
           setSelection([])
           setAnchor('')
-          if (bootedRef.current === true) rememberLastDir(connectionId, resolved)
-          bootedRef.current = true
-          // "Project directory" mirrors the record, so visiting / never wipes it.
-          setProjectDir(lastDirFor(connectionId))
         } catch (failure) {
-          // A remembered directory that no longer exists falls back quietly.
-          if (silentFallback && rootPath !== '' && dir !== rootPath) {
-            void load(rootPath)
-            return
-          }
           setError(failure instanceof Error ? failure.message : String(failure))
         } finally {
           setLoading(false)
         }
-      }, [connectionId, rootPath])
+      }, [connectionId])
 
       // The built-in 工作区文件 page opens this one with the directory it is
       // showing, so both surfaces always land in the same place.
@@ -6913,14 +6860,6 @@ window.__ModuleLoader__.load({
           return
         }
         if (rootPath === '') return
-        // Navigation params win, then the directory this connection last used,
-        // then the workspace root.
-        const remembered = lastDirFor(connectionId)
-        setProjectDir(remembered)
-        if (remembered !== '' && remembered !== rootPath) {
-          void load(remembered, { fallback: true })
-          return
-        }
         void load(rootPath)
       }, [connectionId, rootPath, requestedPath])
 
@@ -7512,16 +7451,6 @@ window.__ModuleLoader__.load({
               title: t('家目录（登录目录）'),
               'aria-label': t('家目录（登录目录）'),
               onClick: () => void load('~'),
-            }, h(Icon, { name: 'folder', size: 14 })),
-            h('button', {
-              className: 'rd-rf-act',
-              type: 'button',
-              disabled: projectDir === '',
-              title: projectDir === '' ? t('还没有访问记录') : t('项目目录：{dir}', { dir: projectDir }),
-              'aria-label': t('项目目录'),
-              onClick: () => {
-                if (projectDir !== '' && projectDir !== path) void load(projectDir)
-              },
             }, h(Icon, { name: 'folder', size: 14 })),
             h('button', {
               className: 'rd-rf-act',

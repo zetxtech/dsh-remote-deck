@@ -11,6 +11,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - v1.1.0: full xterm.js terminal, i18n (zh/en), explicit debug switch, virtualized large folders.
 
+## [1.27.1] - 2026-11-13
+
+### Removed
+
+- The 项目目录 button and the "remember the last directory" behaviour it was built on. That premise was wrong: the
+  workspace already is the directory in question, so the page opens at the workspace root (or at the directory a caller
+  passes in) again. The 家目录 button stays, along with the icon alignment, the terminal startup card and the
+  clarified font-size label.
+
 ## [1.27.0] - 2026-11-13
 
 ### Added
