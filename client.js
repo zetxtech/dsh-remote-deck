@@ -309,6 +309,16 @@ window.__ModuleLoader__.load({
       "正在保存…": "Saving…",
       "正在加载 host…": "Loading hosts…",
       "正在加载完整终端…": "Loading full terminal…",
+      "正在连接 {host}…": "Connecting to {host}…",
+      "建立 SSH 通道": "Opening the SSH channel",
+      "正在启动 shell…": "Starting the shell…",
+      "等待远端 shell 就绪": "Waiting for the remote shell",
+      "家目录（登录目录）": "Home directory (login directory)",
+      "项目目录": "Project directory",
+      "项目目录：{dir}": "Project directory: {dir}",
+      "还没有访问记录": "No directory visited yet",
+      "控制台终端字号（9–24）": "Console terminal font size (9–24)",
+      "作用于「远程开发 → 控制台」里的终端；DSH 侧栏终端的字号由 DSH 自身控制": "Applies to the terminal in Remote Dev → Console; the DSH sidebar terminal sets its own font size",
       "正在加载远程连接…": "Loading remote connections…",
       "正在打包 {n} 项…": "Archiving {n} items…",
       "正在打开远端 shell…": "Opening remote shell…",
@@ -1194,7 +1204,10 @@ window.__ModuleLoader__.load({
       .rd-rf { display:flex;flex-direction:column;height:100%;min-height:0;font-size:12px;color:var(--dsw-alias-label-primary,#1f2329) }
       .rd-rf-head { flex:none;display:flex;align-items:center;flex-wrap:wrap;gap:8px;padding:10px 10px 8px;min-width:0 }
       .rd-rf-title { flex:1;min-width:0;display:flex;align-items:center;gap:8px;flex-wrap:wrap }
-      .rd-rf-hostname { flex:none;display:inline-flex;align-items:center;gap:6px;min-width:0;color:var(--dsw-alias-label-secondary,#5f6672) }
+      .rd-rf-hostname { flex:none;display:inline-flex;align-items:center;gap:6px;min-width:0;line-height:1;color:var(--dsw-alias-label-secondary,#5f6672) }
+      .rd-rf-hostmark { flex:none;display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;line-height:0 }
+      .rd-rf-hostmark svg { display:block;width:14px;height:14px }
+      .rd-rf-host { display:block;line-height:1 }
       .rd-rf-actionbtn { display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;padding:0;border:0;border-radius:var(--dsw-radius-sm,8px);background:transparent;color:var(--dsw-alias-label-secondary,#5f6672);cursor:pointer }
       .rd-rf-actionbtn:hover { background:var(--dsw-alias-interactive-bg-hover,rgba(15,23,42,.06));color:var(--dsw-alias-label-primary,#1f2329) }
       [data-rd-theme="dark"] .rd-rf-actionbtn { color:var(--dsw-alias-label-secondary,#a8b0bb) }
@@ -1461,7 +1474,14 @@ window.__ModuleLoader__.load({
       .rd-termout:focus { box-shadow:inset 0 0 0 1px rgba(99,182,255,.35) }
       .rd-xterm { flex:1;min-height:0;background:#0f1216;border:1px solid #1c232c;border-top:0;border-radius:0 0 11px 11px;padding:8px 10px;overflow:hidden }
       .rd-xterm .xterm { height:100% }
-      .rd-xterm-placeholder { flex:1;min-height:0;display:grid;place-items:center;color:#5b6674;background:#0f1216;border:1px solid #1c232c;border-top:0;border-radius:0 0 11px 11px;font-size:12px }
+      .rd-xterm-placeholder { flex:1;min-height:0;display:grid;place-items:center;color:#8b95a3;background:#0f1216;border:1px solid #1c232c;border-top:0;border-radius:0 0 11px 11px;font-size:12px }
+      .rd-term-boot { display:flex;align-items:center;gap:10px;padding:12px 16px;border:1px solid #1c232c;border-radius:10px;background:#131820 }
+      .rd-term-spinner { flex:none;width:16px;height:16px;border-radius:999px;border:2px solid rgba(139,149,163,.28);border-top-color:#6ea8fe;animation:rd-term-spin .8s linear infinite }
+      @keyframes rd-term-spin { to { transform:rotate(360deg) } }
+      .rd-term-boottext { min-width:0;display:flex;flex-direction:column;gap:2px }
+      .rd-term-boottitle { color:#e6e9ee;font-size:12.5px;line-height:18px }
+      .rd-term-boothint { color:#7d8797;font-size:11.5px;line-height:16px }
+      @media (prefers-reduced-motion: reduce) { .rd-term-spinner { animation:none } }
       .rd-termplaceholder { color:#5b6674 }
       .rd-termerror { color:#f85149;background:#161b22;border:1px solid #3a1d1d;border-top:0;padding:8px 12px;font-size:11px }
       .rd-ports { display:flex;flex-direction:column }
@@ -2868,10 +2888,13 @@ window.__ModuleLoader__.load({
 
     function TerminalPanel({ host }) {
       const [engine, setEngine] = React.useState('loading')
+      const [assetsReady, setAssetsReady] = React.useState(false)
       React.useEffect(() => {
         let alive = true
         loadXterm().then((ok) => {
-          if (alive) setEngine(ok ? 'xterm' : 'lines')
+          if (!alive) return
+          setAssetsReady(true)
+          setEngine(ok ? 'xterm' : 'lines')
         })
         return () => {
           alive = false
@@ -2884,7 +2907,17 @@ window.__ModuleLoader__.load({
             h('span', { className: 'rd-termtab' }, host.name + ' — bash'),
             h('span', { className: 'rd-termstatus' }, h(Dot, { state: 'connecting' }), t('加载终端…')),
           ),
-          h('div', { className: 'rd-xterm-placeholder' }, t('正在加载完整终端…')),
+          h('div', { className: 'rd-xterm-placeholder' },
+            h('div', { className: 'rd-term-boot' },
+              h('span', { className: 'rd-term-spinner', 'aria-hidden': 'true' }),
+              h('div', { className: 'rd-term-boottext' },
+                h('div', { className: 'rd-term-boottitle' }, assetsReady
+                  ? t('正在启动 shell…')
+                  : t('正在连接 {host}…', { host: host.name })),
+                h('div', { className: 'rd-term-boothint' }, assetsReady ? t('等待远端 shell 就绪') : t('建立 SSH 通道')),
+              ),
+            ),
+          ),
         )
       }
       return engine === 'xterm' ? h(XtermTerminal, { host }) : h(LineTerminal, { host })
@@ -4104,8 +4137,9 @@ window.__ModuleLoader__.load({
             ),
             t('留空即使用 DSH 内置等宽字体'),
           ),
-          settingsRow(t('字号（9–24）'),
+          settingsRow(t('控制台终端字号（9–24）'),
             settingsNumber('terminal.fontSize', draft.fontSize, FONT_SIZE_MIN, FONT_SIZE_MAX, FONT_SIZE_STEP, (value) => patch({ fontSize: value })),
+            t('作用于「远程开发 → 控制台」里的终端；DSH 侧栏终端的字号由 DSH 自身控制'),
           ),
           settingsRow(t('行高（1.0–2.0）'),
             settingsNumber('terminal.lineHeight', draft.lineHeight, LINE_HEIGHT_MIN, LINE_HEIGHT_MAX, 0.05, (value) => patch({ lineHeight: value })),
@@ -5901,6 +5935,41 @@ window.__ModuleLoader__.load({
      * the console file page and this page cannot drift apart.
      */
     const SHOW_HIDDEN_KEY = 'rd-show-hidden'
+    const LAST_DIR_KEY = 'rd-last-dir'
+
+    /** connectionId -> the last directory the user opened (one per connection). */
+    function loadLastDirs() {
+      try {
+        const raw = globalThis.localStorage === undefined || globalThis.localStorage === null
+          ? null
+          : globalThis.localStorage.getItem(LAST_DIR_KEY)
+        const parsed = raw === null || raw === undefined ? null : JSON.parse(raw)
+        return parsed !== null && typeof parsed === 'object' ? parsed : {}
+      } catch {
+        return {}
+      }
+    }
+
+    function lastDirFor(connectionId) {
+      if (typeof connectionId !== 'string' || connectionId.length === 0) return ''
+      const value = loadLastDirs()[connectionId]
+      return typeof value === 'string' ? value : ''
+    }
+
+    /** Only directories the user actually walked into: `/` would pin the fallback. */
+    function rememberLastDir(connectionId, dir) {
+      if (typeof connectionId !== 'string' || connectionId.length === 0) return
+      if (typeof dir !== 'string' || dir.length === 0 || dir === '/') return
+      try {
+        const all = loadLastDirs()
+        all[connectionId] = dir
+        if (globalThis.localStorage !== undefined && globalThis.localStorage !== null) {
+          globalThis.localStorage.setItem(LAST_DIR_KEY, JSON.stringify(all))
+        }
+      } catch {
+        /* private mode */
+      }
+    }
     const FILE_CLIPBOARD_KEY = 'rd-file-clipboard'
     /** Only our own list accepts this payload type. */
     const FILE_DRAG_TYPE = 'application/x-remote-deck-paths'
@@ -6774,6 +6843,10 @@ window.__ModuleLoader__.load({
       const [clipboard, setClipboard] = React.useState(loadFileClipboard)
       const [dropPath, setDropPath] = React.useState('')
       const [pathDraft, setPathDraft] = React.useState(null)
+      const [projectDir, setProjectDir] = React.useState('')
+      // Only directories the user actually navigated to are remembered: the
+      // automatic first load of the workspace root is not a choice.
+      const bootedRef = React.useRef(false)
       const [pathError, setPathError] = React.useState('')
       const [menu, setMenu] = React.useState(null)
       const [confirming, setConfirming] = React.useState(null)
@@ -6792,22 +6865,33 @@ window.__ModuleLoader__.load({
       const archive = useArchiveDownload(tasks)
       useContextMenuDismiss(menu !== null, closeMenu, menuRef)
 
-      const load = React.useCallback(async (dir) => {
+      const load = React.useCallback(async (dir, options) => {
         if (connectionId === '') return
+        const silentFallback = options !== null && options !== undefined && options.fallback === true
         setLoading(true)
         setError('')
         try {
           const data = await call('/connections/' + encodeURIComponent(connectionId) + '/files?path=' + encodeURIComponent(dir))
-          setPath(typeof data.path === 'string' ? data.path : dir)
+          const resolved = typeof data.path === 'string' ? data.path : dir
+          setPath(resolved)
           setEntries(Array.isArray(data.entries) ? data.entries : [])
           setSelection([])
           setAnchor('')
+          if (bootedRef.current === true) rememberLastDir(connectionId, resolved)
+          bootedRef.current = true
+          // "Project directory" mirrors the record, so visiting / never wipes it.
+          setProjectDir(lastDirFor(connectionId))
         } catch (failure) {
+          // A remembered directory that no longer exists falls back quietly.
+          if (silentFallback && rootPath !== '' && dir !== rootPath) {
+            void load(rootPath)
+            return
+          }
           setError(failure instanceof Error ? failure.message : String(failure))
         } finally {
           setLoading(false)
         }
-      }, [connectionId])
+      }, [connectionId, rootPath])
 
       // The built-in 工作区文件 page opens this one with the directory it is
       // showing, so both surfaces always land in the same place.
@@ -6829,6 +6913,14 @@ window.__ModuleLoader__.load({
           return
         }
         if (rootPath === '') return
+        // Navigation params win, then the directory this connection last used,
+        // then the workspace root.
+        const remembered = lastDirFor(connectionId)
+        setProjectDir(remembered)
+        if (remembered !== '' && remembered !== rootPath) {
+          void load(remembered, { fallback: true })
+          return
+        }
         void load(rootPath)
       }, [connectionId, rootPath, requestedPath])
 
@@ -7363,7 +7455,7 @@ window.__ModuleLoader__.load({
         h('div', { className: 'rd-rf-head' },
           h('div', { className: 'rd-rf-title' },
             h('span', { className: 'rd-rf-hostname', title: remote.path },
-              h(Icon, { name: 'folder', size: 13 }),
+              h('span', { className: 'rd-rf-hostmark' }, h(Icon, { name: 'folder', size: 14 })),
               h('span', { className: 'rd-rf-host' }, remote.host + ' · ' + (remote.folder || remote.title)),
             ),
             pathDraft === null
@@ -7414,6 +7506,23 @@ window.__ModuleLoader__.load({
                 }
               },
             }),
+            h('button', {
+              className: 'rd-rf-act',
+              type: 'button',
+              title: t('家目录（登录目录）'),
+              'aria-label': t('家目录（登录目录）'),
+              onClick: () => void load('~'),
+            }, h(Icon, { name: 'folder', size: 14 })),
+            h('button', {
+              className: 'rd-rf-act',
+              type: 'button',
+              disabled: projectDir === '',
+              title: projectDir === '' ? t('还没有访问记录') : t('项目目录：{dir}', { dir: projectDir }),
+              'aria-label': t('项目目录'),
+              onClick: () => {
+                if (projectDir !== '' && projectDir !== path) void load(projectDir)
+              },
+            }, h(Icon, { name: 'folder', size: 14 })),
             h('button', {
               className: 'rd-rf-act',
               type: 'button',

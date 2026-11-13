@@ -11,6 +11,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - v1.1.0: full xterm.js terminal, i18n (zh/en), explicit debug switch, virtualized large folders.
 
+## [1.27.0] - 2026-11-13
+
+### Added
+
+- **远端文件 remembers where you were.** The last directory you actually navigated to is kept per connection, so the
+  page reopens there instead of at the workspace root, and it falls back silently when that directory is gone. The
+  header gained 家目录 (the login directory, resolved by the host from `~`) and 项目目录 (that remembered directory,
+  disabled until there is one) buttons.
+
+### Changed
+
+- The terminal's starting state is a proper card now: a spinner (CSS, with `prefers-reduced-motion` respected), a
+  status line and a stage hint — 正在连接 <host> while the assets load, then 正在启动 shell — instead of one plain line
+  of text. Failures still show the error and the retry button.
+- The 字号 setting is labelled 控制台终端字号 and says what it covers, because it cannot cover DSH's own sidebar
+  terminal: that xterm belongs to DSH, the plugin has no handle to it, and forcing the size through CSS would break
+  xterm's cell metrics. The setting does apply, live, to the terminal inside 远程开发 → 控制台.
+
+### Fixed
+
+- The folder icon in the file page header no longer sits off-baseline: it is a fixed 14px box with a block-level SVG,
+  centred against the host name.
+
+### Notes
+
+- Verified on the real host that `~` resolves to the login directory and lists. The icon alignment and the startup
+  animation are covered by CSS assertions only — no pixel comparison was made.
+
 ## [1.26.0] - 2026-11-13
 
 ### Fixed

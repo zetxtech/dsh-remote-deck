@@ -443,5 +443,15 @@
   "（{n} 个由 Agent 创建）": "({n} created by Agent)",
   "（已停止）": "(stopped)",
   "（已删除 {files} 个文件、{dirs} 个目录）": "({files} files and {dirs} folders deleted)",
-  "（空目录）": "(empty folder)"
+  "（空目录）": "(empty folder)",
+  "正在连接 {host}…": "Connecting to {host}…",
+  "建立 SSH 通道": "Opening the SSH channel",
+  "正在启动 shell…": "Starting the shell…",
+  "等待远端 shell 就绪": "Waiting for the remote shell",
+  "家目录（登录目录）": "Home directory (login directory)",
+  "项目目录": "Project directory",
+  "项目目录：{dir}": "Project directory: {dir}",
+  "还没有访问记录": "No directory visited yet",
+  "控制台终端字号（9–24）": "Console terminal font size (9–24)",
+  "作用于「远程开发 → 控制台」里的终端；DSH 侧栏终端的字号由 DSH 自身控制": "Applies to the terminal in Remote Dev → Console; the DSH sidebar terminal sets its own font size"
 }
