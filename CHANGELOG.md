@@ -11,6 +11,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - v1.1.0: full xterm.js terminal, i18n (zh/en), explicit debug switch, virtualized large folders.
 
+## [1.26.0] - 2026-11-13
+
+### Fixed
+
+- **Symlinks are browsable and openable.** Double-clicking a link used to say 该路径不是普通文件 and open DSH's preview,
+  because a link was neither a directory nor a regular file. The listing now resolves each link (its `readlink` target
+  plus a following `stat`), so the row reads `name → target` and a double click does the right thing: a link to a
+  folder is entered at the link path, a link to a text file opens in the editor, and a dangling link answers
+  链接指向的目标不存在 instead of opening a preview that cannot render it. Links sort with directories when they point
+  at one, and 打开为工作区 appears for them.
+- **Saving through a symlink keeps the link.** The save wrote a temp file and renamed it over the path, which replaced
+  the link with a regular file. The write now resolves the link first — through `realpath`, or by hand for a dangling
+  one — and replaces the target, so the link survives and the bytes land where it points (the answer names the file it
+  wrote through).
+
+### Added
+
+- **The editor opens in view mode.** A file is read-only until 编辑 is pressed; 完成 saves any pending change and
+  returns to viewing, and stays in edit mode when the save fails or hits a conflict. Auto-save, drafts and
+  `Ctrl/Cmd+S` apply in edit mode only, `Ctrl/Cmd+E` toggles, and a file whose encoding cannot be written back has no
+  edit button at all.
+- The draft banner's 恢复 switches to edit mode, so a restored buffer is immediately editable.
+
+### Notes
+
+- Verified on the real host: a link survives a save while the target receives the bytes, and a dangling link's target
+  is created. The in-app link navigation and the view/edit toggle are covered by client assertions, not by a real
+  screenshot.
+
 ## [1.25.0] - 2026-11-13
 
 ### Added

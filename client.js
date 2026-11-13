@@ -298,6 +298,8 @@ window.__ModuleLoader__.load({
       "本地显示": "Show in folder",
       "本地端口（自动）": "Local port (auto)",
       "查看": "View",
+      "完成": "Done",
+      "链接指向的目标不存在": "That link points at something that is not there",
       "检查主机地址、DNS 或 /etc/hosts。": "Check the host address, DNS or /etc/hosts.",
       "检查用户名、密钥或密码；新机器需要先在控制台配置密钥。": "Check the username, key or password. A new machine needs its key set up in the console first.",
       "检查远端用户对该目录的权限。": "Check the remote user's permissions on that folder.",
@@ -716,6 +718,12 @@ window.__ModuleLoader__.load({
       const make = (title, hint) => ({ level: 'error', title, hint, detail: message })
       // A code the client knows is translated here; the host's own wording stays
       // in `detail` rather than becoming the visible sentence.
+      // `remote-deck: <sentence>` keeps an intentionally worded message as the
+      // visible title instead of folding it into the generic failure copy.
+      if (message.startsWith('remote-deck: ')) {
+        const intended = message.slice('remote-deck: '.length)
+        return { level: 'error', title: intended, hint: '', detail: message }
+      }
       const codeText = describeCode(raw !== null && raw !== undefined && typeof raw === 'object' ? raw.code : '')
       if (codeText !== null) {
         return { level: 'error', title: codeText, hint: message, detail: message }
@@ -1230,6 +1238,9 @@ window.__ModuleLoader__.load({
       .rd-rf-rowicon { flex:none;display:inline-flex;align-items:center;justify-content:center;width:16px;color:var(--dsw-alias-label-tertiary,#8f959e) }
       .rd-rf-row.dir .rd-rf-rowicon { color:#e0a92e }
       .rd-rf-rowname { flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12.5px }
+      .rd-rf-linkname { display:flex;align-items:center;gap:4px;min-width:0 }
+      .rd-rf-linkarrow { flex:none;color:var(--dsw-alias-label-tertiary,#8f959e) }
+      .rd-rf-linktarget { min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--dsw-alias-label-secondary,#8f959e) }
       .rd-rf-rowsize { flex:none;min-width:56px;text-align:right;color:var(--dsw-alias-label-secondary,#8f959e);font-size:11px;font-variant-numeric:tabular-nums }
       .rd-rf-rowtime { flex:none;min-width:62px;text-align:right;color:var(--dsw-alias-label-tertiary,#8f959e);font-size:11px;font-variant-numeric:tabular-nums }
       .rd-rf-state { flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:24px 20px;text-align:center }
@@ -5977,7 +5988,14 @@ window.__ModuleLoader__.load({
 
     function isRemoteDir(entry) {
       if (entry === null || entry === undefined) return false
-      return entry.type === 'dir' || entry.kind === 'dir'
+      // A symlink to a directory behaves like a directory; the row keeps the
+      // link glyph and the link path, never the target.
+      return entry.type === 'dir' || entry.kind === 'dir' || entry.linkKind === 'dir'
+    }
+
+    /** A link whose target is gone: never handed to the preview. */
+    function isBrokenLink(entry) {
+      return entry !== null && entry !== undefined && entry.kind === 'link' && entry.linkKind === 'broken'
     }
 
     function remoteEntryName(entry) {
@@ -6022,8 +6040,9 @@ window.__ModuleLoader__.load({
     function remoteIconName(entry) {
       if (entry === null || entry === undefined) return 'file'
       const kind = typeof entry.kind === 'string' && entry.kind.length > 0 ? entry.kind : ''
-      if (isRemoteDir(entry)) return 'folder'
+      // The link glyph wins even when the link points at a directory.
       if (kind === 'link') return 'symlink'
+      if (isRemoteDir(entry)) return 'folder'
       if (REMOTE_SPECIAL_ICON[kind] !== undefined) return REMOTE_SPECIAL_ICON[kind]
       // Only a known regular file gets its extension glyph; an unknown or
       // missing kind reads as the generic file instead of nothing at all.
@@ -6079,7 +6098,10 @@ window.__ModuleLoader__.load({
     function isEditableTextPath(entry) {
       if (entry === null || entry === undefined) return false
       if (isRemoteDir(entry)) return false
-      if (entry.kind !== undefined && entry.kind !== null && entry.kind !== 'file' && entry.kind !== '') return false
+      // A link to a regular file is judged exactly like a regular file.
+      const link = entry.kind === 'link'
+      if (!link && entry.kind !== undefined && entry.kind !== null && entry.kind !== 'file' && entry.kind !== '') return false
+      if (link && entry.linkKind !== undefined && entry.linkKind !== null && entry.linkKind !== 'file') return false
       const name = remoteEntryName(entry)
       if (name.length === 0) return false
       if (EDIT_TEXT_EXT.test(name)) return true
@@ -6277,6 +6299,14 @@ window.__ModuleLoader__.load({
       const [saving, setSaving] = React.useState(false)
       const [savedAt, setSavedAt] = React.useState('')
       const [engine, setEngine] = React.useState('pending')
+      // Watching first: opening a file never writes anything on its own.
+      const [mode, setMode] = React.useState('view')
+      const modeRef = React.useRef('view')
+      const autoPausedRef = React.useRef(false)
+      const readonlyRef = React.useRef(false)
+      const canEditRef = React.useRef(false)
+      const dirtyRef = React.useRef(false)
+      modeRef.current = mode
       const [saveKind, setSaveKind] = React.useState('')
       const [savingNow, setSavingNow] = React.useState(false)
       const [autoPaused, setAutoPaused] = React.useState(false)
@@ -6316,9 +6346,13 @@ window.__ModuleLoader__.load({
           indentUnit: 2,
           tabSize: 2,
           viewportMargin: Infinity,
+          // Watch mode is read-only; the same instance is reused on toggle.
+          readOnly: readonly === true || mode === 'view',
           extraKeys: {
-            'Ctrl-S': () => { void save(false) },
-            'Cmd-S': () => { void save(false) },
+            'Ctrl-S': () => { void save(false, 'manual') },
+            'Cmd-S': () => { void save(false, 'manual') },
+            'Ctrl-E': () => { if (canEditRef.current === true) setMode((current) => (current === 'edit' ? 'view' : 'edit')) },
+            'Cmd-E': () => { if (canEditRef.current === true) setMode((current) => (current === 'edit' ? 'view' : 'edit')) },
             // `findPersistent` keeps the dialog open while you jump between
             // matches, which is what every editor does for Ctrl-F.
             'Ctrl-F': 'findPersistent',
@@ -6352,7 +6386,17 @@ window.__ModuleLoader__.load({
       // A file whose bytes cannot be reproduced byte for byte stays read-only:
       // Big5 and Shift_JIS have no encoder here, and a truncated or inexact
       // decode is a guess. Editing one would save mojibake over the original.
+      readonlyRef.current = meta !== null && meta !== undefined && meta.writable === false
+      canEditRef.current = readonlyRef.current !== true
       const readonly = meta !== null && meta !== undefined && meta.writable === false
+      const canEdit = readonly !== true
+
+      // Same instance, same buffer, same cursor: only the editable flag moves.
+      React.useEffect(() => {
+        const instance = cmRef.current
+        if (instance === null) return
+        instance.setOption('readOnly', readonly === true || mode === 'view')
+      }, [mode, readonly])
       // A non-UTF-8 file is shown read-only until the reader confirms its
       // encoding: writing the gb18030 guess over a Big5 file would corrupt it.
       const guessedEncoding = meta === null || meta === undefined ? '' : (() => {
@@ -6363,6 +6407,8 @@ window.__ModuleLoader__.load({
       const editText = (value) => {
         if (readonly) return
         setText(value)
+        // View mode never schedules an auto save or a draft.
+        if (modeRef.current !== 'edit') return
         liveRef.current.text = value
         const live = liveRef.current
         if (draftTimerRef.current !== null) clearTimeout(draftTimerRef.current)
@@ -6371,7 +6417,12 @@ window.__ModuleLoader__.load({
           flushDraft()
         }, EDITOR_DRAFT_DELAY_MS)
         if (autoSaveTimerRef.current !== null) clearTimeout(autoSaveTimerRef.current)
-        if (editorSettings.autoSave !== false && autoPaused !== true && conflict !== true) {
+        // Any fresh edit re-arms auto save, including after a failure.
+        if (autoPausedRef.current === true) {
+          autoPausedRef.current = false
+          setAutoPaused(false)
+        }
+        if (editorSettings.autoSave !== false && autoPausedRef.current !== true && conflict !== true) {
           const delay = clampInt(editorSettings.autoSaveDelayMs, 300, 10000, SETTINGS_FALLBACK.editor.autoSaveDelayMs)
           autoSaveTimerRef.current = setTimeout(() => {
             autoSaveTimerRef.current = null
@@ -6428,6 +6479,11 @@ window.__ModuleLoader__.load({
         void load()
       }, [load])
 
+      // Every newly opened file starts in watch mode.
+      React.useEffect(() => {
+        setMode('view')
+      }, [filePath])
+
       // Leaving the tab flushes the draft from the registry, not from state.
       React.useEffect(() => () => {
         if (draftTimerRef.current !== null) clearTimeout(draftTimerRef.current)
@@ -6459,12 +6515,15 @@ window.__ModuleLoader__.load({
         }
       }
       const dirty = state === 'ready' && text !== savedText
+      dirtyRef.current = dirty
       const save = async (force, kind) => {
-        if (saving || state !== 'ready') return
+        if (saving || state !== 'ready') return false
+        if (modeRef.current !== 'edit' && force !== true) return false
         if (autoSaveTimerRef.current !== null) {
           clearTimeout(autoSaveTimerRef.current)
           autoSaveTimerRef.current = null
         }
+        autoPausedRef.current = false
         // The timer closes over the render that armed it, so the live buffer
         // (not the captured `text`) is what gets written.
         if (meta !== null && meta !== undefined && meta.writable === false) return
@@ -6487,13 +6546,13 @@ window.__ModuleLoader__.load({
             // Stop writing until the user picks reload or force.
             setConflict(true)
             setAutoPaused(true)
-            return
+            return false
           }
           if (result.status < 200 || result.status >= 300 || payload === null || payload.ok === false) {
             // Auto save backs off until the next edit or a manual save.
             setAutoPaused(true)
             pushToast(new Error(payload !== null && payload !== undefined && payload.message ? payload.message : 'HTTP ' + result.status))
-            return
+            return false
           }
           setSavedText(content)
           liveRef.current.savedText = content
@@ -6503,9 +6562,11 @@ window.__ModuleLoader__.load({
           setSaveKind(kind === 'auto' ? 'auto' : 'manual')
           setSavedAt(new Date().toISOString())
           void dropEditorDraft(connectionId, filePath)
+          return true
         } catch (error) {
           setAutoPaused(true)
           pushToast(error)
+          return false
         } finally {
           setSaving(false)
           setSavingNow(false)
@@ -6513,9 +6574,24 @@ window.__ModuleLoader__.load({
       }
       const onKeyDown = (event) => {
         if (event.ctrlKey !== true && event.metaKey !== true) return
-        if (String(event.key === undefined ? '' : event.key).toLowerCase() !== 's') return
+        const key = String(event.key === undefined ? '' : event.key).toLowerCase()
+        if (key === 'e') {
+          event.preventDefault()
+          if (canEditRef.current === true) setMode((current) => (current === 'edit' ? 'view' : 'edit'))
+          return
+        }
+        if (key !== 's' || modeRef.current !== 'edit') return
         event.preventDefault()
         void save(false, 'manual')
+      }
+      /** \u5b8c\u6210: save first when needed, then leave edit mode. */
+      const finishEdit = async () => {
+        if (readonlyRef.current === true || dirtyRef.current !== true) {
+          setMode('view')
+          return
+        }
+        const saved = await save(false, 'manual')
+        if (saved === true) setMode('view')
       }
       // No close-hook API is available on `tab.actions` (only open/close and
       // navigation), so an unsaved tab cannot veto its own close: the header
@@ -6527,7 +6603,9 @@ window.__ModuleLoader__.load({
       const bytes = dirty ? text.length : (meta !== null && meta.size > 0 ? meta.size : text.length)
       const statusText = state === 'loading'
         ? t('读取中…')
-        : savingNow
+        : mode === 'view'
+          ? t('查看')
+          : savingNow
           ? t('正在保存…')
           : dirty
             ? t('未保存')
@@ -6575,7 +6653,14 @@ window.__ModuleLoader__.load({
           h('span', { className: 'rd-edit-name', title: filePath }, editorBaseName(filePath)),
           dirty ? h('span', { className: 'rd-edit-flag' }, t('未保存')) : null,
           h('div', { className: 'rd-edit-acts' },
-            readonly ? h('span', { className: 'rd-edit-ro' }, t('只读')) : null,
+            canEdit
+              ? h('button', {
+                className: 'rd-edit-btn primary',
+                type: 'button',
+                disabled: saving,
+                onClick: () => { if (mode === 'view') setMode('edit'); else void finishEdit() },
+              }, mode === 'view' ? t('编辑') : t('完成'))
+              : h('span', { className: 'rd-edit-ro' }, t('只读')),
             readonly && guessedEncoding.length > 0
               ? h('button', {
                 className: 'rd-edit-btn',
@@ -6584,7 +6669,7 @@ window.__ModuleLoader__.load({
                 onClick: () => void load(guessedEncoding),
               }, t("按 {encoding} 打开", { encoding: (guessedEncoding.toUpperCase()) }))
               : null,
-            !readonly && dirty ? h('button', { className: 'rd-edit-btn primary', type: 'button', disabled: saving, onClick: () => void save(false, 'manual') }, saving ? t('保存中…') : t('保存')) : null,
+            !readonly && mode === 'edit' && dirty ? h('button', { className: 'rd-edit-btn', type: 'button', disabled: saving, onClick: () => void save(false, 'manual') }, saving ? t('保存中…') : t('保存')) : null,
             h('button', { className: 'rd-edit-btn', type: 'button', onClick: () => void load() }, t('重新读取')),
             dirty ? h('button', { className: 'rd-edit-btn', type: 'button', onClick: closeTab }, t('放弃修改并关闭')) : null,
           ),
@@ -6602,6 +6687,9 @@ window.__ModuleLoader__.load({
                 liveRef.current.text = restored
                 setDraftOffer(null)
                 setAutoPaused(false)
+                // Taking the draft over means editing it: watch mode would show
+                // unsaved bytes with no way to save them.
+                if (canEditRef.current === true) setMode('edit')
               },
             }, t('恢复')),
             h('button', {
@@ -6627,10 +6715,10 @@ window.__ModuleLoader__.load({
               // swaps to CodeMirror when the lazy engine reports in.
               className: 'rd-edit-area' + (readonly ? ' readonly' : ''),
               value: text,
-              readOnly: readonly,
+              readOnly: readonly || mode === 'view',
               spellCheck: false,
               onChange: (event) => editText(event.target.value),
-              onKeyDown: readonly ? undefined : onKeyDown,
+              onKeyDown: readonly || mode === 'view' ? undefined : onKeyDown,
             }),
         h('div', { className: 'rd-edit-status' }, statusLine),
       )
@@ -6955,6 +7043,10 @@ window.__ModuleLoader__.load({
         return true
       }
       const onRowDoubleClick = (entry) => {
+        if (isBrokenLink(entry)) {
+          pushToast(new Error('remote-deck: ' + t('链接指向的目标不存在')))
+          return
+        }
         if (isRemoteDir(entry)) {
           enter(entry)
           return
@@ -6969,7 +7061,7 @@ window.__ModuleLoader__.load({
         }
       }
       const startDownload = (entry) => {
-        if (entry.type === 'dir') void archive.run({ connectionId, path: entry.path, name: entry.name })
+        if (isRemoteDir(entry)) void archive.run({ connectionId, path: entry.path, name: entry.name })
         else startFileDownload(connectionId, entry.path, entry.name, { tasks })
       }
       const writeClipboard = (paths, mode) => {
@@ -7454,7 +7546,14 @@ window.__ModuleLoader__.load({
                     },
                   },
                     h('span', { className: 'rd-rf-rowicon' }, h(Icon, { name: remoteIconName(entry), size: 14 })),
-                    h('span', { className: 'rd-rf-rowname' }, entry.name),
+                    h('span', { className: 'rd-rf-rowname' },
+                      entry.kind === 'link' && typeof entry.linkTarget === 'string' && entry.linkTarget.length > 0
+                        ? h('span', { className: 'rd-rf-linkname', title: entry.path + ' \u2192 ' + entry.linkTarget },
+                          entry.name,
+                          h('span', { className: 'rd-rf-linkarrow' }, ' \u2192 '),
+                          h('span', { className: 'rd-rf-linktarget' }, entry.linkTarget + (entry.linkKind === 'dir' ? '/' : '')),
+                        )
+                        : entry.name),
                     h('span', { className: 'rd-rf-rowsize' }, remoteSizeText(entry)),
                     h('span', { className: 'rd-rf-rowtime' }, remoteTimeText(entry)),
                   ))),
