@@ -33,13 +33,24 @@ function entry(filename, methods, extra) {
   return { filename, longname: filename, attrs: attrsOf(methods, extra) }
 }
 
-async function startApi(entries, resolved = '/data') {
+async function startApi(entries, resolved = '/data', linkProbe = null) {
   const sftp = {
     realpath(path, callback) {
       callback(null, resolved)
     },
     readdir(path, callback) {
       callback(null, entries)
+    },
+    // `linkProbe` lets a test say what a link points at and what follows it.
+    readlink(path, callback) {
+      const target = linkProbe === null || linkProbe.readlink === undefined ? null : linkProbe.readlink(path)
+      if (target === null) return callback(Object.assign(new Error('not a link'), { code: 4 }))
+      callback(null, target)
+    },
+    stat(path, callback) {
+      const attrs = linkProbe === null || linkProbe.stat === undefined ? null : linkProbe.stat(path)
+      if (attrs === null) return callback(Object.assign(new Error('no such file'), { code: 2 }))
+      callback(null, attrs)
     },
   }
   const host = { ensure: async () => {}, requireSftp: () => sftp }
@@ -170,6 +181,38 @@ test('directories sort first, names ascend, and hidden entries are not filtered'
   assert.equal(body.path, '/data')
   assert.equal(body.parent, '/')
   assert.equal(body.entries[0].path, '/data/Beta')
+})
+
+test('a symlink reports where it points and what it is', async () => {
+  const attrs = (mode) => ({ mode, size: 0, mtime: 0 })
+  const api = await startApi([
+    { filename: 'dirlink', longname: 'dirlink', attrs: attrs(0o120777) },
+    { filename: 'filelink', longname: 'filelink', attrs: attrs(0o120777) },
+    { filename: 'deadlink', longname: 'deadlink', attrs: attrs(0o120777) },
+  ], '/data', {
+    readlink: (path) => (path.endsWith('deadlink') ? '/data/missing' : path.endsWith('dirlink') ? 'sub' : '/data/plain.txt'),
+    stat: (path) => {
+      if (path.endsWith('deadlink')) return null
+      if (path.endsWith('dirlink')) return { mode: 0o040755, size: 0, mtime: 10 }
+      return { mode: 0o100644, size: 42, mtime: 20 }
+    },
+  })
+  try {
+    const response = await fetch(`${api.base}/connections/c1/files?path=/data`, { headers: { [TOKEN_HEADER]: TOKEN } })
+    const body = await response.json()
+    assert.equal(response.status, 200)
+    const byName = Object.fromEntries(body.entries.map((row) => [row.name, row]))
+    assert.equal(byName.dirlink.kind, 'link')
+    assert.equal(byName.dirlink.linkKind, 'dir', 'a link to a folder is identified as one')
+    assert.equal(byName.dirlink.linkTarget, 'sub', 'and its target is reported verbatim')
+    assert.equal(byName.filelink.linkKind, 'file')
+    assert.equal(byName.filelink.linkTarget, '/data/plain.txt')
+    assert.equal(byName.filelink.size, 42, 'size comes from the target')
+    assert.equal(byName.filelink.mtime, 20000, 'mtime comes from the target, in milliseconds')
+    assert.equal(byName.deadlink.linkKind, 'broken', 'a dangling link is marked broken')
+  } finally {
+    await api.close()
+  }
 })
 
 test('a query parameter cannot filter the listing by kind', async () => {

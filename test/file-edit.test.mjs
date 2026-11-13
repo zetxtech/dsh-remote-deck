@@ -9,7 +9,7 @@ import test from 'node:test'
 import assert from 'node:assert/strict'
 import { mkdtempSync } from 'node:fs'
 import { tmpdir } from 'node:os'
-import { join } from 'node:path'
+import { join, posix } from 'node:path'
 import { Readable } from 'node:stream'
 import { createApi } from '../lib/api.js'
 import {
@@ -76,6 +76,28 @@ function makeSftp(initial, options = {}) {
     calls.push([op, path])
   }
   const sftp = {
+    /** Follow a chain of links the way a real server does, with a loop guard. */
+    realpath(path, callback) {
+      record('realpath', path)
+      const seen = new Set()
+      let current = path
+      for (;;) {
+        const node = nodes.get(current)
+        if (node === undefined) return callback(notFound(current))
+        if (node.type !== 'link') return callback(null, current)
+        if (seen.has(current)) return callback(Object.assign(new Error('too many links'), { code: 4 }))
+        seen.add(current)
+        current = posix.isAbsolute(node.target) ? node.target : posix.join(posix.dirname(current), node.target)
+      }
+    },
+    readlink(path, callback) {
+      record('readlink', path)
+      const node = nodes.get(path)
+      if (node === undefined || node.type !== 'link') {
+        return callback(Object.assign(new Error('not a symbolic link'), { code: 4 }))
+      }
+      callback(null, node.target)
+    },
     stat(path, callback) {
       record('stat', path)
       let node = nodes.get(path)
@@ -593,6 +615,43 @@ test('writing a directory is refused without touching it', async () => {
     assert.equal(response.status, 400)
     assert.equal((await response.json()).code, EDIT_NOT_FILE_CODE)
     assert.ok(!api.calls.some((call) => call[0] === 'writeFile'))
+  } finally {
+    await api.close()
+  }
+})
+
+test('a save through a symlink writes the target and keeps the link', async () => {
+  const api = await startApi({
+    '/d': { type: 'dir' },
+    '/d/target.txt': { type: 'file', content: Buffer.from('old') },
+    '/d/link.txt': { type: 'link', target: '/d/target.txt' },
+  })
+  try {
+    const response = await writeRequest(api.base, { path: '/d/link.txt', content: 'new' })
+    assert.equal(response.status, 200)
+    const body = await response.json()
+    assert.equal(body.ok, true)
+    assert.equal(body.wroteThrough, '/d/target.txt', 'the answer names the real file')
+    assert.equal(api.nodes.get('/d/target.txt').content.toString('utf8'), 'new', 'the target holds the bytes')
+    assert.equal(api.nodes.get('/d/link.txt').type, 'link', 'the link itself survives')
+    assert.equal(api.nodes.get('/d/link.txt').target, '/d/target.txt')
+    assert.equal(api.calls.some((call) => call[0] === 'rename' && call[2] === '/d/link.txt'), false,
+      'the link path is never the rename destination')
+  } finally {
+    await api.close()
+  }
+})
+
+test('a save through a dangling symlink creates what it points at', async () => {
+  const api = await startApi({
+    '/d': { type: 'dir' },
+    '/d/dead.txt': { type: 'link', target: 'missing.txt' },
+  })
+  try {
+    const response = await writeRequest(api.base, { path: '/d/dead.txt', content: 'made' })
+    assert.equal(response.status, 200)
+    assert.equal(api.nodes.get('/d/missing.txt').content.toString('utf8'), 'made', 'the relative target is resolved next to the link')
+    assert.equal(api.nodes.get('/d/dead.txt').type, 'link', 'the link is still a link')
   } finally {
     await api.close()
   }
