@@ -11,6 +11,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - v1.1.0: full xterm.js terminal, i18n (zh/en), explicit debug switch, virtualized large folders.
 
+## [1.30.1] - 2026-11-13
+
+### Fixed
+
+- **The 工作区 section no longer wastes half the panel on a button.** The card grid appended a big dashed
+  从远程目录新建工作区 card beside the real cards, and with a two-column grid that card owned the entire right half —
+  while the section header already carried 新建工作区. The duplicate card (and its style) is gone, and the grid is now
+  `repeat(auto-fill, minmax(260px, 1fr))`: cards fill the column and wrap, instead of a fixed two columns stretched to
+  whatever width is available.
+
 ## [1.30.0] - 2026-11-13
 
 ### Changed

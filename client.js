@@ -1141,7 +1141,7 @@ window.__ModuleLoader__.load({
       .rd-csect .st2 { font-size:13px;font-weight:600 }
       .rd-csect .ct2 { margin-left:8px;font-size:11px;color:var(--dsw-alias-label-secondary,#8f959e) }
       .rd-csect .rt2 { margin-left:auto;display:flex;gap:7px }
-      .rd-cards { display:grid;grid-template-columns:1fr 1fr;gap:10px }
+      .rd-cards { display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px }
       .rd-card { border:1px solid var(--dsw-alias-border-l1, rgba(15,23,42,.1));border-radius:var(--dsw-radius-md,12px);padding:12px 14px;background:var(--dsw-alias-bg-layer-1,#fff);position:relative;cursor:pointer }
       .rd-card:hover { border-color:rgba(15,23,42,.22);box-shadow:0 2px 8px rgba(16,24,40,.05) }
       .rd-card .stripe2 { position:absolute;left:0;top:10px;bottom:10px;width:3px;border-radius:0 3px 3px 0 }
@@ -1150,8 +1150,6 @@ window.__ModuleLoader__.load({
       .rd-card .path2 { margin-top:7px;font-family:var(--rd-term-font,ui-monospace,Consolas,monospace);font-size:10.5px;color:var(--dsw-alias-label-secondary,#5f6672);background:var(--dsw-alias-bg-layer-2, rgba(15,23,42,.035));border-radius:6px;padding:5px 7px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap }
       .rd-card .foot2 { display:flex;align-items:center;gap:8px;margin-top:9px;font-size:10.5px;color:var(--dsw-alias-label-secondary,#8f959e) }
       .rd-card .foot2 .go2 { margin-left:auto;color:#1d6fc4;font-size:11px }
-      .rd-card.add2 { border-style:dashed;display:flex;align-items:center;justify-content:center;gap:7px;color:var(--dsw-alias-label-secondary,#8f959e);font-size:12px;min-height:96px;cursor:pointer }
-      .rd-card.add2:hover { border-color:#a9c9ec;color:#1d6fc4 }
       .rd-sess { display:flex;align-items:center;gap:10px;padding:9px 4px;border-bottom:1px solid var(--dsw-alias-border-l1, rgba(15,23,42,.06));cursor:pointer }
       .rd-sess:hover { background:var(--dsw-alias-bg-layer-2, rgba(15,23,42,.03)) }
       .rd-sess .t2 { font-size:12.5px }
@@ -1469,6 +1467,7 @@ window.__ModuleLoader__.load({
       @container rdpane (max-width:899px) {
         .rd-stats { grid-template-columns:repeat(2,1fr) }
         .rd-cards { grid-template-columns:1fr }
+        .rd-cards > .rd-card { min-height:0 }
       }
       @container rdpane (max-width:699px) {
         .rd-rf-row { grid-template-columns:18px minmax(0,1fr) 84px }
@@ -1611,7 +1610,6 @@ window.__ModuleLoader__.load({
       .rd-card .path2 { background:transparent;border:.5px solid var(--dsw-alias-border-l2,#e8e8ec);border-radius:8px;color:var(--dsw-alias-label-secondary,#8f959e) }
       .rd-card .foot2 { gap:8px;font-size:11.5px }
       .rd-card .foot2 .go2 { color:var(--dsw-alias-label-primary,#1f2329);font-weight:600 }
-      .rd-card.add2 { border-radius:12px;min-height:88px }
       .rd-chead .rd-cavatar { width:36px;height:36px;border-radius:8px;background:var(--dsw-alias-bg-layer-2,rgba(15,23,42,.05)) !important;color:var(--dsw-alias-label-secondary,#5f6672) !important }
       .rd-ctitle { font-size:13px;font-weight:600 }
       .rd-ws .fi, .rd-host .box { background:var(--dsw-alias-bg-layer-2,rgba(15,23,42,.05)) !important;color:var(--dsw-alias-label-secondary,#5f6672) !important }
@@ -4371,8 +4369,6 @@ window.__ModuleLoader__.load({
                     ),
                   )
                 }),
-                h('div', { className: 'rd-card add2', onClick: () => startBrowserFromConsole(host) },
-                  h(Icon, { name: 'plus', size: 14 }), t('从远程目录新建工作区')),
               ),
 
             h('div', { className: 'rd-csect' },
