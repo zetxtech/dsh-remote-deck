@@ -660,10 +660,66 @@ window.__ModuleLoader__.load({
 
     store.quickPins = loadQuickPins()
 
+    /**
+     * Every error the host answers carries a code; the words are the client's
+     * own, because a host message is written in the host's language and would
+     * otherwise show through an English interface (and vice versa).
+     */
+    const ERROR_TEXT = {
+      NOT_REMOTE_PATH: { zh: '需要一个远端绝对路径', en: 'A remote absolute path is required' },
+      BAD_NAME: { zh: '名字不合法（不能含 / 或 ..）', en: 'That name is not allowed (no / or ..)' },
+      NOT_FOUND: { zh: '目标不存在', en: 'That path does not exist' },
+      EXISTS: { zh: '这个名字已经存在', en: 'That name already exists' },
+      NOT_REGULAR_FILE: { zh: '这不是普通文件', en: 'That is not a regular file' },
+      NOT_REMOTE_DIR: { zh: '这不是目录', en: 'That is not a directory' },
+      NOT_TEXT: { zh: '不是文本内容', en: 'That is not text' },
+      TOO_LARGE: { zh: '内容超过大小上限', en: 'The content is larger than the limit' },
+      TOO_MANY_PATHS: { zh: '一次选择的条目过多', en: 'Too many entries in one request' },
+      TRANSFER_TOO_LARGE: { zh: '文件超过传输上限', en: 'The file is larger than the transfer limit' },
+      STALE: { zh: '文件已被外部修改', en: 'The file changed outside the editor' },
+      UNSUPPORTED_ENCODING: { zh: '该编码无法写回，已拒绝保存', en: 'That encoding cannot be written back; the save was refused' },
+      DEST_INSIDE_SOURCE: { zh: '目标位于被传输的目录内部', en: 'The destination is inside the transferred folder' },
+      DEST_NOT_DIR: { zh: '目标目录不存在', en: 'The destination folder does not exist' },
+      OFFSET_MISMATCH: { zh: '远端已收到的字节数与本地不一致，已按远端校正', en: 'The host has a different byte count; resynced to it' },
+      BAD_OFFSET: { zh: '分片偏移量不合法', en: 'That chunk offset is not valid' },
+      EMPTY_PART: { zh: '分片为空', en: 'The chunk was empty' },
+      PART_TOO_LARGE: { zh: '分片超过大小上限', en: 'The chunk is larger than the limit' },
+      REMOTE_DECK_DELETE_ROOT: { zh: '不能删除工作区根目录', en: 'A workspace root cannot be deleted' },
+      REMOTE_DECK_DELETE_MISSING: { zh: '要删除的条目已不存在', en: 'What you asked to delete is already gone' },
+      REMOTE_DECK_TRANSFER_CANCELLED: { zh: '传输已取消', en: 'The transfer was cancelled' },
+      REMOTE_DECK_EDIT_CANCELLED: { zh: '操作已取消', en: 'The operation was cancelled' },
+    }
+
+    /** The localized sentence for a host code, or null when the code is unknown to us. */
+    function describeCode(code) {
+      if (typeof code !== 'string' || code.length === 0) return null
+      const entry = ERROR_TEXT[code]
+      if (entry === undefined) return null
+      return uiLanguage() === 'en' ? entry.en : entry.zh
+    }
+
+    /**
+     * A message for the reader: the localized sentence when the host named a
+     * code, otherwise the client's own diagnosis — never the host's raw prose,
+     * which is in the host's language.
+     */
+    function describeError(code, fallback) {
+      const described = describeCode(code)
+      if (described !== null) return described
+      const info = friendlyError(fallback)
+      return info.title
+    }
+
     function friendlyError(raw) {
       const message = raw instanceof Error ? raw.message : String(raw || '')
       const lower = message.toLowerCase()
       const make = (title, hint) => ({ level: 'error', title, hint, detail: message })
+      // A code the client knows is translated here; the host's own wording stays
+      // in `detail` rather than becoming the visible sentence.
+      const codeText = describeCode(raw !== null && raw !== undefined && typeof raw === 'object' ? raw.code : '')
+      if (codeText !== null) {
+        return { level: 'error', title: codeText, hint: message, detail: message }
+      }
       if (/failed to fetch|networkerror|load failed/.test(lower)) {
         return make(t('Remote Deck 服务未连接'), t('请完全退出 DSH 后重新打开；如果刚更新插件，这一步会重新注入服务地址。'))
       }
@@ -4942,6 +4998,33 @@ window.__ModuleLoader__.load({
         + '?path=' + encodeURIComponent(dir) + '&name=' + encodeURIComponent(name)
     }
 
+    /**
+     * Finish a chunked upload whose bytes are already on the remote.
+     *
+     * Asked when a same-named entry is in the way: the temp file is intact, so
+     * the only decision left is whether the rename may replace the target.
+     */
+    async function commitChunkedUpload(connectionId, dir, name, overwrite) {
+      const info = boot()
+      if (info === null) return { ok: false, message: 'remote-deck is not active yet; restart DSH' }
+      try {
+        const response = await fetch(uploadJobUrl(connectionId, dir, name, 'commit') + (overwrite === true ? '&overwrite=1' : ''), {
+          method: 'POST',
+          headers: { 'x-dsh-remote-token': info.token, 'content-type': 'application/json' },
+          body: '{}',
+        })
+        const payload = await response.json().catch(() => null)
+        if (response.ok === true && payload !== null && payload.ok === true) return { ok: true, message: '' }
+        const code = payload !== null && typeof payload.code === 'string' ? payload.code : ''
+        const detail = payload !== null && typeof payload.message === 'string' && payload.message.length > 0
+          ? payload.message
+          : 'HTTP ' + response.status
+        return { ok: false, exists: code === 'EXISTS', message: code.length > 0 ? code + '：' + detail : detail }
+      } catch (failure) {
+        return { ok: false, message: failure instanceof Error ? failure.message : String(failure) }
+      }
+    }
+
     /** How many bytes the remote says it has, or null when it cannot be asked. */
     async function fetchUploadStatus(connectionId, dir, name) {
       const info = boot()
@@ -5137,13 +5220,14 @@ window.__ModuleLoader__.load({
         setPrompt(null)
         if (resolve !== null) resolve(choice)
       }
-      const send = (connectionId, dir, file, name, taskId) => new Promise((resolve) => {
+      const send = (connectionId, dir, file, name, taskId, overwrite) => new Promise((resolve) => {
         const info = boot()
         if (info === null) {
           resolve({ ok: false, message: 'remote-deck is not active yet; restart DSH' })
           return
         }
-        const url = apiBase() + '/connections/' + encodeURIComponent(connectionId) + '/upload?path=' + encodeURIComponent(dir) + '&name=' + encodeURIComponent(name)
+        const url = apiBase() + '/connections/' + encodeURIComponent(connectionId) + '/upload?path=' + encodeURIComponent(dir)
+          + '&name=' + encodeURIComponent(name) + (overwrite === true ? '&overwrite=1' : '')
         const xhr = new XMLHttpRequest()
         let settled = false
         const settle = (result) => {
@@ -5173,6 +5257,11 @@ window.__ModuleLoader__.load({
           }
           const code = payload && payload.code ? payload.code : ''
           const message = payload && payload.message ? payload.message : 'HTTP ' + xhr.status
+          if (code === 'EXISTS') {
+            // Never replace silently: the caller asks, then re-sends overwrite=1.
+            settle({ ok: false, exists: true, message })
+            return
+          }
           if (code === 'TRANSFER_TOO_LARGE') {
             settle({ ok: false, message: t("「{name}」超过远端 {limit} 上限，未上传。", { name: (name), limit: (uploadLimitLabel(uploadLimitBytes())) }) })
             return
@@ -5315,7 +5404,7 @@ window.__ModuleLoader__.load({
               return { ok: true, message: '' }
             }
             if (response.status === 409 && code === 'EXISTS') {
-              return { ok: false, message: t("远端已存在同名文件，未覆盖：{name}", { name: (name) }) }
+              return { ok: false, exists: true, message: detail }
             }
             if (response.status === 404 && code === 'NOT_FOUND') {
               return { ok: false, message: t("远端临时文件已不存在，请重新上传：{name}", { name: (name) }) }
@@ -5392,6 +5481,9 @@ window.__ModuleLoader__.load({
         setBusy(true)
         setNote(t("上传中 0/{total}", { total: (list.length) }))
         const skipDirs = new Set()
+        // `ask` per file would be maddening in a batch, so a decision can be
+        // remembered for the rest of it.
+        let overwritePolicy = 'ask'
         let done = 0
         let failed = 0
         let skipped = 0
@@ -5437,6 +5529,51 @@ window.__ModuleLoader__.load({
             sink.cancelled(taskId)
             stopped = true
             break
+          }
+          if (result.exists === true) {
+            // A same-named entry is there. Nothing was written yet, so the
+            // question is asked before anything is lost.
+            let decision = overwritePolicy
+            if (decision === 'ask') {
+              const picked = await ask({
+                kind: 'overwrite',
+                title: t("远端已存在 {name}", { name: (name) }),
+                subtitle: targetDir + '/' + name,
+                body: t('覆盖会永久替换远端已有的同名文件。'),
+                actions: [
+                  { value: 'overwrite', label: t('覆盖'), tone: 'danger' },
+                  { value: 'overwriteAll', label: t('全部覆盖'), tone: 'ghost' },
+                  { value: 'skip', label: t('跳过'), tone: 'primary' },
+                  { value: 'skipAll', label: t('全部跳过'), tone: 'ghost' },
+                ],
+              })
+              if (picked === 'overwriteAll') overwritePolicy = 'overwrite'
+              if (picked === 'skipAll') overwritePolicy = 'skip'
+              decision = picked === 'overwrite' || picked === 'overwriteAll' ? 'overwrite' : 'skip'
+              if (picked === 'stop' || picked === undefined || picked === null) decision = 'skip'
+            }
+            if (decision === 'overwrite') {
+              let retried
+              if (size > UPLOAD_CHUNK_MIN_BYTES) {
+                retried = await commitChunkedUpload(connectionId, targetDir, name, true)
+              } else {
+                retried = await send(connectionId, targetDir, file, name, taskId, true)
+              }
+              if (retried.ok === true) {
+                dropUploadJob(connectionId, targetDir, name)
+                clearResumeHint(connectionId, targetDir, name)
+                sink.done(taskId)
+                done += 1
+                setNote(t("上传中 {current}/{total}", { current: ((done + failed + skipped)), total: (list.length) }))
+                continue
+              }
+              result = retried
+            } else {
+              sink.cancelled(taskId)
+              skipped += 1
+              setNote(t("上传中 {current}/{total}", { current: ((done + failed + skipped)), total: (list.length) }))
+              continue
+            }
           }
           sink.fail(taskId, result.message)
           failed += 1
@@ -6787,7 +6924,7 @@ window.__ModuleLoader__.load({
         } catch (failure) {
           const message = failure instanceof Error ? failure.message : String(failure)
           const code = failure !== null && failure !== undefined && typeof failure.code === 'string' ? failure.code : ''
-          setActionPrompt({ ...actionPrompt, error: code === 'EXISTS' ? t('这个名字已经存在') : message })
+          setActionPrompt({ ...actionPrompt, error: describeError(code, message) })
         }
       }
       const submitPathInput = () => {

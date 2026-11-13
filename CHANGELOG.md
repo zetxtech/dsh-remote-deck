@@ -11,6 +11,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - v1.1.0: full xterm.js terminal, i18n (zh/en), explicit debug switch, virtualized large folders.
 
+## [1.25.0] - 2026-11-13
+
+### Added
+
+- **Overwriting a remote file now asks first.** Both upload paths used to replace a same-named file silently while the
+  chunked one refused with `409 EXISTS`, which was worse than either behaviour alone. Now neither writes anything on a
+  collision: the page names the file and offers 覆盖 / 全部覆盖 / 跳过 / 全部跳过, and only a confirmed choice re-sends the
+  request with `overwrite=1` (a chunked upload whose bytes are already on the host only repeats the commit). A
+  directory is never replaced, even with `overwrite=1`.
+
+### Fixed
+
+- **Host error text no longer shows through the English interface.** Every answer carries a code, and the client now
+  owns the wording for 22 of them (`EXISTS`, `STALE`, `NOT_FOUND`, `TOO_LARGE`, `OFFSET_MISMATCH`, …) in both
+  languages; the host's own sentence is kept as the detail line instead of becoming the visible message.
+
+### Notes
+
+- Verified on the real host: a refused commit leaves the original byte-identical, the confirmed one replaces it, and a
+  directory survives an `overwrite=1` attempt.
+
 ## [1.24.0] - 2026-11-13
 
 ### Added

@@ -259,8 +259,9 @@ function partRequest(base, options = {}) {
 }
 
 function jsonRequest(base, operation, options = {}) {
-  const { id = RECORD.id, token = TOKEN } = options
-  return fetch(`${base}/connections/${id}/upload/${operation}?${queryOf(options)}`, {
+  const { id = RECORD.id, token = TOKEN, overwrite } = options
+  const extra = overwrite === undefined ? '' : `&overwrite=${encodeURIComponent(String(overwrite))}`
+  return fetch(`${base}/connections/${id}/upload/${operation}?${queryOf(options)}${extra}`, {
     method: 'POST',
     headers: withToken({ 'content-type': 'application/json' }, token),
     body: '{}',
@@ -493,6 +494,40 @@ test('commit refuses to replace an existing destination with 409 EXISTS', async 
     assert.equal(api.nodes.get('/d/big.bin').content.toString('utf8'), 'old', 'never replaced')
     assert.equal(api.nodes.has('/d/' + tempName('big.bin')), true, 'the temporary file stays for a retry')
     assert.deepEqual(api.calls.filter((call) => call[0] === 'rename'), [])
+  } finally {
+    await api.close()
+  }
+})
+
+test('commit with overwrite=1 replaces the file and still renames the temp', async () => {
+  const api = await startApi({
+    '/d': { type: 'dir' },
+    '/d/big.bin': { type: 'file', content: Buffer.from('old') },
+  })
+  try {
+    await partRequest(api.base, { offset: 0, data: Buffer.from('new') })
+    const response = await jsonRequest(api.base, 'commit', { overwrite: '1' })
+    assert.equal(response.status, 200)
+    const body = await bodyOf(response)
+    assert.equal(body.ok, true)
+    assert.equal(api.nodes.get('/d/big.bin').content.toString('utf8'), 'new', 'the confirmed overwrite lands')
+    assert.equal(api.nodes.has('/d/' + tempName('big.bin')), false, 'the temp file is consumed')
+    assert.deepEqual(api.calls.filter((call) => call[0] === 'rename').length, 1)
+  } finally {
+    await api.close()
+  }
+})
+
+test('commit with overwrite=1 still refuses to replace a directory', async () => {
+  const api = await startApi({ '/d': { type: 'dir' }, '/d/sub': { type: 'dir' } })
+  try {
+    await partRequest(api.base, { offset: 0, data: Buffer.from('x'), name: 'sub' })
+    const response = await jsonRequest(api.base, 'commit', { name: 'sub', overwrite: '1' })
+    assert.equal(response.status, 409)
+    const body = await bodyOf(response)
+    assert.equal(body.code, UPLOAD_EXISTS_CODE)
+    assert.equal(api.nodes.get('/d/sub').type, 'dir', 'the directory is untouched')
+    assert.deepEqual(api.calls.filter((call) => call[0] === 'rmdir' || call[0] === 'unlink'), [])
   } finally {
     await api.close()
   }

@@ -26,9 +26,28 @@ const RECORD = {
   color: 'blue',
 }
 
-function makeSftp({ written, isDirectory }) {
+function makeSftp({ written, isDirectory, existing }) {
+  const attrsFor = (path) => ({
+    isDirectory: () => isDirectory(path),
+    isFile: () => !isDirectory(path),
+    size: 0,
+    mtime: 0,
+  })
+  const missing = (path) => {
+    const error = new Error('No such file: ' + path)
+    error.code = 2
+    return error
+  }
+  const known = (path) => written.has(path) || (existing !== undefined && existing.has(path))
   return {
+    // The upload route asks before it replaces anything, so the fake has to be
+    // able to say "that name is taken".
+    lstat(path, callback) {
+      if (known(path)) return callback(null, attrsFor(path))
+      return callback(missing(path))
+    },
     stat(path, callback) {
+      if (existing !== undefined && !known(path)) return callback(missing(path))
       const attrs = {
         isDirectory: () => isDirectory(path),
         isFile: () => !isDirectory(path),
@@ -38,6 +57,8 @@ function makeSftp({ written, isDirectory }) {
       callback(null, attrs)
     },
     createWriteStream(path) {
+      // A real SFTP write stream opens with 'w', so an overwrite starts empty.
+      written.delete(path)
       const sink = new Writable({
         write(chunk, _encoding, done) {
           written.set(path, Buffer.concat([written.get(path) ?? Buffer.alloc(0), Buffer.from(chunk)]))
@@ -49,9 +70,13 @@ function makeSftp({ written, isDirectory }) {
   }
 }
 
-async function startApi({ transferLimitBytes, archiveBytes = 'FAKEGZIP', isDirectory = () => true } = {}) {
+async function startApi({ transferLimitBytes, archiveBytes = 'FAKEGZIP', isDirectory = () => true, existingFiles } = {}) {
   const written = new Map()
-  const sftp = makeSftp({ written, isDirectory })
+  const existing = existingFiles === undefined ? undefined : new Set(Object.keys(existingFiles))
+  if (existingFiles !== undefined) {
+    for (const [path, content] of Object.entries(existingFiles)) written.set(path, Buffer.from(content))
+  }
+  const sftp = makeSftp({ written, isDirectory, existing })
   const host = {
     ensure: async () => {},
     requireSftp: () => sftp,
@@ -93,6 +118,32 @@ test('uploads a file to the requested directory', async () => {
     assert.equal(body.path, '/srv/app/notes.txt')
     assert.equal(body.bytes, 11)
     assert.equal(api.written.get('/srv/app/notes.txt').toString('utf8'), 'hello world')
+  } finally {
+    await api.close()
+  }
+})
+
+test('a same-named file is never replaced without overwrite=1', async () => {
+  const api = await startApi({ existingFiles: { '/srv/app/notes.txt': 'old' } })
+  try {
+    const target = `${api.base}/connections/c1/upload?path=/srv/app&name=notes.txt`
+    const refused = await fetch(target, {
+      method: 'POST',
+      headers: { 'x-dsh-remote-token': TOKEN, 'content-type': 'application/octet-stream' },
+      body: 'new',
+    })
+    assert.equal(refused.status, 409)
+    const body = await refused.json()
+    assert.equal(body.code, 'EXISTS')
+    assert.equal(api.written.get('/srv/app/notes.txt').toString('utf8'), 'old', 'the original survives')
+
+    const allowed = await fetch(target + '&overwrite=1', {
+      method: 'POST',
+      headers: { 'x-dsh-remote-token': TOKEN, 'content-type': 'application/octet-stream' },
+      body: 'new',
+    })
+    assert.equal(allowed.status, 200)
+    assert.equal(api.written.get('/srv/app/notes.txt').toString('utf8'), 'new', 'the confirmed overwrite lands')
   } finally {
     await api.close()
   }
