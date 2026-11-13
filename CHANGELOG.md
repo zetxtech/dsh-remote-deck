@@ -11,6 +11,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - v1.1.0: full xterm.js terminal, i18n (zh/en), explicit debug switch, virtualized large folders.
 
+## [1.28.0] - 2026-11-13
+
+### Changed
+
+- **The terminal font and size now follow DSH's own settings instead of a second, private pair.** DSH already owns
+  both: its theme presenter writes `--dsh-font-family-terminal` and `--dsh-terminal-font-size` (`terminalFontSize`,
+  default 13, range 10–20) onto `body`, and its sidebar terminal reads them. This plugin now reads the same two
+  variables — plus `ctx.configForms.get('ui-theme')` when that service is there — and uses them for the console
+  terminal, the editor and every other monospace surface, following a change live. The duplicated 字体族 and 字号 rows
+  are gone, replaced by a line that says where the setting lives; 行高 and 字距 stay, labelled as this plugin's own
+  (DSH has no equivalent). A client that cannot read either source falls back to the stored value and then to the
+  built-in stack, so nothing breaks when the services are absent.
+
+### Fixed
+
+- Clearing the terminal font in DSH left the previous family in place, because an empty answer was treated as "no
+  answer" and merged over the old value. DSH's answer now wins even when it is empty.
+
+### Notes
+
+- Verified from the installed package that DSH names the variables `--dsh-terminal-font-size` /
+  `--dsh-font-family-terminal` and exposes `terminalFontSize` in `ui-theme`. The read path, the live follow and the
+  fallback are covered by client assertions; the rendered result on a real screen is not.
+
 ## [1.27.1] - 2026-11-13
 
 ### Removed

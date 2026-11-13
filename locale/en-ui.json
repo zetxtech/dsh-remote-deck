@@ -449,6 +449,9 @@
   "正在启动 shell…": "Starting the shell…",
   "等待远端 shell 就绪": "Waiting for the remote shell",
   "家目录（登录目录）": "Home directory (login directory)",
-  "控制台终端字号（9–24）": "Console terminal font size (9–24)",
-  "作用于「远程开发 → 控制台」里的终端；DSH 侧栏终端的字号由 DSH 自身控制": "Applies to the terminal in Remote Dev → Console; the DSH sidebar terminal sets its own font size"
+  "作用于「远程开发 → 控制台」里的终端；DSH 侧栏终端的字号由 DSH 自身控制": "Applies to the terminal in Remote Dev → Console; the DSH sidebar terminal sets its own font size",
+  "终端字体与字号": "Terminal font and size",
+  "跟随 DSH 设置：设置 → 通用 → 终端字体 / 终端字号；控制台终端与侧栏终端共用同一份值": "Follows the DSH settings (Settings → General → terminal font / terminal size); the console terminal and the sidebar terminal share one value",
+  "行高（1.0–2.0，本插件额外项）": "Line height (1.0-2.0, plugin extra)",
+  "字距（−0.5–2，本插件额外项）": "Letter spacing (-0.5-2, plugin extra)"
 }

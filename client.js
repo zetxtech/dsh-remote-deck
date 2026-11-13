@@ -310,11 +310,14 @@ window.__ModuleLoader__.load({
       "正在加载 host…": "Loading hosts…",
       "正在加载完整终端…": "Loading full terminal…",
       "正在连接 {host}…": "Connecting to {host}…",
+      "终端字体与字号": "Terminal font and size",
+      "跟随 DSH 设置：设置 → 通用 → 终端字体 / 终端字号；控制台终端与侧栏终端共用同一份值": "Follows the DSH settings (Settings → General → terminal font / terminal size); the console terminal and the sidebar terminal share one value",
+      "行高（1.0–2.0，本插件额外项）": "Line height (1.0-2.0, plugin extra)",
+      "字距（−0.5–2，本插件额外项）": "Letter spacing (-0.5-2, plugin extra)",
       "建立 SSH 通道": "Opening the SSH channel",
       "正在启动 shell…": "Starting the shell…",
       "等待远端 shell 就绪": "Waiting for the remote shell",
       "家目录（登录目录）": "Home directory (login directory)",
-      "控制台终端字号（9–24）": "Console terminal font size (9–24)",
       "作用于「远程开发 → 控制台」里的终端；DSH 侧栏终端的字号由 DSH 自身控制": "Applies to the terminal in Remote Dev → Console; the DSH sidebar terminal sets its own font size",
       "正在加载远程连接…": "Loading remote connections…",
       "正在打包 {n} 项…": "Archiving {n} items…",
@@ -2711,7 +2714,9 @@ window.__ModuleLoader__.load({
       const observerRef = React.useRef(null)
       const settingsSnapshot = useSettingsSnapshot()
       const appearance = (settingsSnapshot === null ? SETTINGS_FALLBACK : settingsSnapshot).terminal
-      const terminalFont = appearance.fontFamily.length > 0 ? appearance.fontFamily : FALLBACK_TERMINAL_FONT
+      const dshAppearance = useDshAppearance()
+      const terminalFont = effectiveTerminalFont(appearance.fontFamily.length > 0 ? appearance.fontFamily : FALLBACK_TERMINAL_FONT)
+      const terminalFontSize = effectiveTerminalFontSize(appearance.fontSize)
 
       const cleanup = React.useCallback(() => {
         abortRef.current?.abort()
@@ -2739,7 +2744,7 @@ window.__ModuleLoader__.load({
         const term = termRef.current
         if (term === null || term === undefined || term.options === undefined) return
         term.options.fontFamily = terminalFont
-        term.options.fontSize = appearance.fontSize
+        term.options.fontSize = terminalFontSize
         term.options.lineHeight = appearance.lineHeight
         term.options.letterSpacing = appearance.letterSpacing
         const fit = fitRef.current
@@ -2750,7 +2755,7 @@ window.__ModuleLoader__.load({
             /* not measured yet */
           }
         }
-      }, [terminalFont, appearance.fontSize, appearance.lineHeight, appearance.letterSpacing])
+      }, [terminalFont, terminalFontSize, appearance.lineHeight, appearance.letterSpacing, dshAppearance])
 
       const open = React.useCallback(async () => {
         cleanup()
@@ -3730,17 +3735,144 @@ window.__ModuleLoader__.load({
     }
 
     /** The monospace stack for plain-text surfaces follows the terminal family. */
+    // DSH's own terminal font settings live in the `ui-theme` entry
+    // (`terminalFontFamily` / `terminalFontSize`, 10-20 px, default 13). The
+    // appearance plugin mirrors the effective values onto `body` as
+    // `--dsh-font-family-terminal` and `--dsh-terminal-font-size`, which is the
+    // cheapest reliable read; `configForms` fills in whatever the variables omit.
+    const DSH_THEME_NAMESPACE = 'ui-theme'
+    const DSH_TERMINAL_SIZE_VAR = '--dsh-terminal-font-size'
+    const DSH_TERMINAL_FAMILY_VAR = '--dsh-font-family-terminal'
+    const DSH_TERMINAL_FONT_SIZE_DEFAULT = 13
+
+    const dshAppearanceStore = { value: { fontFamily: '', fontSize: DSH_TERMINAL_FONT_SIZE_DEFAULT, available: false } }
+    const dshAppearanceSubs = new Set()
+
+    function readDshAppearanceVars() {
+      const empty = { fontFamily: '', fontSize: DSH_TERMINAL_FONT_SIZE_DEFAULT, available: false }
+      if (typeof window === 'undefined' || typeof document === 'undefined') return empty
+      if (typeof window.getComputedStyle !== 'function') return empty
+      const target = document.body !== null && document.body !== undefined ? document.body : document.documentElement
+      if (target === null || target === undefined) return empty
+      let style = null
+      try {
+        style = window.getComputedStyle(target)
+      } catch {
+        return empty
+      }
+      if (style === null || style === undefined || typeof style.getPropertyValue !== 'function') return empty
+      let rawSize = ''
+      let rawFamily = ''
+      try {
+        rawSize = String(style.getPropertyValue(DSH_TERMINAL_SIZE_VAR) || '').trim()
+        rawFamily = String(style.getPropertyValue(DSH_TERMINAL_FAMILY_VAR) || '').trim()
+      } catch {
+        return empty
+      }
+      const parsed = Number.parseFloat(rawSize)
+      const hasSize = Number.isFinite(parsed) && parsed >= 6 && parsed <= 40
+      return {
+        fontFamily: rawFamily,
+        fontSize: hasSize ? Math.round(parsed * 2) / 2 : DSH_TERMINAL_FONT_SIZE_DEFAULT,
+        available: hasSize || rawFamily.length > 0,
+      }
+    }
+
+    /** Effective DSH values; `available: false` means "no DSH answer, use ours". */
+    function readDshTerminalAppearance() {
+      return dshAppearanceStore.value
+    }
+
+    function applyDshAppearance(patch) {
+      const current = dshAppearanceStore.value
+      const next = {
+        // DSH's answer wins even when it is empty: keeping the previous family
+        // would leave a stale font after the user clears the setting. An empty
+        // DSH family is not a loss — `effectiveTerminalFont` then falls back to
+        // the family this plugin stored.
+        fontFamily: typeof patch.fontFamily === 'string' ? patch.fontFamily : current.fontFamily,
+        fontSize: typeof patch.fontSize === 'number' && Number.isFinite(patch.fontSize) ? patch.fontSize : current.fontSize,
+        available: patch.available === true || current.available === true,
+      }
+      if (next.fontFamily === current.fontFamily && next.fontSize === current.fontSize && next.available === current.available) return
+      dshAppearanceStore.value = next
+      // Keep the shared monospace surfaces and any open terminal in step.
+      applyTerminalAppearance(settingsStore.value.terminal)
+      for (const fn of dshAppearanceSubs) fn()
+    }
+
+    function refreshDshAppearance() {
+      applyDshAppearance(readDshAppearanceVars())
+    }
+
+    function subscribeDshAppearance(fn) {
+      dshAppearanceSubs.add(fn)
+      return () => { dshAppearanceSubs.delete(fn) }
+    }
+
+    function useDshAppearance() {
+      return React.useSyncExternalStore(subscribeDshAppearance, readDshTerminalAppearance)
+    }
+
+    function observeDshAppearance() {
+      if (typeof window === 'undefined' || typeof MutationObserver !== 'function') return
+      const targets = [document.body, document.documentElement]
+      for (const node of targets) {
+        if (node === null || node === undefined) continue
+        try {
+          const observer = new MutationObserver(() => refreshDshAppearance())
+          observer.observe(node, { attributes: true, attributeFilter: ['style'] })
+        } catch {
+          /* not observable here */
+        }
+      }
+      refreshDshAppearance()
+    }
+
+    /** DSH wins; our stored value is only a fallback when DSH has no answer. */
+    function effectiveTerminalFont(ourFont) {
+      const dsh = dshAppearanceStore.value
+      if (dsh.fontFamily.length > 0) return dsh.fontFamily
+      if (typeof ourFont === 'string' && ourFont.length > 0) return ourFont
+      return ''
+    }
+
+    function effectiveTerminalFontSize(ourSize) {
+      const dsh = dshAppearanceStore.value
+      if (dsh.available === true) return dsh.fontSize
+      return typeof ourSize === 'number' && Number.isFinite(ourSize) ? ourSize : DSH_TERMINAL_FONT_SIZE_DEFAULT
+    }
+
     function applyTerminalAppearance(terminal) {
       try {
         const root = document.documentElement
         if (root === null || root === undefined || root.style === undefined) return
-        if (typeof terminal.fontFamily === 'string' && terminal.fontFamily.length > 0) {
-          root.style.setProperty('--rd-term-font', terminal.fontFamily + ', ui-monospace, monospace')
+        const family = effectiveTerminalFont(terminal === null || terminal === undefined ? '' : terminal.fontFamily)
+        if (family.length > 0) {
+          root.style.setProperty('--rd-term-font', family + ', ui-monospace, monospace')
         } else {
           root.style.removeProperty('--rd-term-font')
         }
+        return
       } catch {
         /* not a page context */
+      }
+    }
+
+    /** The loader entry id is `ui-theme`; the service may be absent. */
+    function adoptConfigForms(scope) {
+      try {
+        if (scope === null || scope === undefined || scope.configForms === undefined) return
+        const document_ = scope.configForms.get(DSH_THEME_NAMESPACE)
+        if (document_ === null || document_ === undefined || typeof document_ !== 'object') return
+        const size = Number.parseInt(String(document_.terminalFontSize), 10)
+        applyDshAppearance({
+          fontFamily: typeof document_.terminalFontFamily === 'string' ? document_.terminalFontFamily.trim() : '',
+          fontSize: Number.isFinite(size) ? size : undefined,
+          available: Number.isFinite(size) || (typeof document_.terminalFontFamily === 'string' && document_.terminalFontFamily.trim().length > 0),
+        })
+      } catch {
+        /* the setting is optional: fall back to the variables or our defaults */
       }
     }
 
@@ -4112,36 +4244,18 @@ window.__ModuleLoader__.load({
         ),
         h('div', { className: 'rd-set-group' },
           h('div', { className: 'rd-set-title' }, t('终端外观')),
-          settingsRow(t('字体族'),
-            h('div', { className: 'rd-set-font' },
-              h('select', {
-                id: settingsFieldId('terminal.fontId'),
-                'data-field': 'terminal.fontId',
-                value: draft.fontId,
-                onChange: (event) => pickFont(event.target.value),
-              }, TERMINAL_FONT_PRESETS.map((preset) => h('option', { key: preset.id, value: preset.id }, t(preset.label)))),
-              draft.fontId === CUSTOM_FONT_ID
-                ? h('input', {
-                  type: 'text',
-                  id: settingsFieldId('terminal.fontFamily'),
-                  className: 'rd-set-text',
-                  'data-field': 'terminal.fontFamily',
-                  placeholder: 'JetBrains Mono, Consolas, monospace',
-                  value: draft.fontFamily,
-                  onChange: (event) => patch({ fontFamily: event.target.value }),
-                })
-                : null,
+          h('div', { className: 'rd-set-row' },
+            h('div', { className: 'rd-set-textcol' },
+              h('span', { className: 'rd-set-label' }, t('终端字体与字号')),
+              h('span', { className: 'rd-set-desc' }, t('跟随 DSH 设置：设置 → 通用 → 终端字体 / 终端字号；控制台终端与侧栏终端共用同一份值')),
             ),
-            t('留空即使用 DSH 内置等宽字体'),
           ),
-          settingsRow(t('控制台终端字号（9–24）'),
-            settingsNumber('terminal.fontSize', draft.fontSize, FONT_SIZE_MIN, FONT_SIZE_MAX, FONT_SIZE_STEP, (value) => patch({ fontSize: value })),
-            t('作用于「远程开发 → 控制台」里的终端；DSH 侧栏终端的字号由 DSH 自身控制'),
-          ),
-          settingsRow(t('行高（1.0–2.0）'),
+          // DSH has no line-height / letter-spacing setting: these two stay as
+          // plugin-extra rows.
+          settingsRow(t('行高（1.0–2.0，本插件额外项）'),
             settingsNumber('terminal.lineHeight', draft.lineHeight, LINE_HEIGHT_MIN, LINE_HEIGHT_MAX, 0.05, (value) => patch({ lineHeight: value })),
           ),
-          settingsRow(t('字距（−0.5–2）'),
+          settingsRow(t('字距（−0.5–2，本插件额外项）'),
             settingsNumber('terminal.letterSpacing', draft.letterSpacing, LETTER_SPACING_MIN, LETTER_SPACING_MAX, 0.1, (value) => patch({ letterSpacing: value })),
           ),
           h('div', { className: 'rd-set-previewrow' },
@@ -7903,6 +8017,12 @@ window.__ModuleLoader__.load({
     // ---------------------------------------------------------------- apply
 
     function apply(ctx) {
+      // DSH owns the terminal font; mirror its effective values into ours.
+      try {
+        observeDshAppearance()
+      } catch {
+        /* no DOM here */
+      }
       ctxRef = ctx
       ensureStyle()
       try {
@@ -8043,6 +8163,7 @@ window.__ModuleLoader__.load({
           scope.effect(() => () => setSidebarRightService(null), 'remote-deck: sidebarRight handle')
         })
         ctx.inject(['sidebarRightTabs'], (scope) => {
+          adoptConfigForms(scope)
           scope.effect(() => scope.sidebarRightTabs.register({
             id: REMOTE_FILES_ID,
             kind: REMOTE_FILES_KIND,
