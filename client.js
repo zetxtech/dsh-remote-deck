@@ -909,6 +909,14 @@ window.__ModuleLoader__.load({
       rose: '#e04f6a',
       cyan: '#0e9bb5',
     }
+    /** Connection state decides the sidebar tile colour (the row has no dot). */
+    function stateColorOf(status) {
+      if (status === 'connected') return 'var(--dsw-alias-state-success-primary, #2e9e5b)'
+      if (status === 'connecting') return 'var(--dsw-alias-state-business-primary, #1d6fc4)'
+      if (status === 'error') return 'var(--dsw-alias-state-error-primary, #b42318)'
+      return 'var(--dsw-alias-bg-layer-2, rgba(15,23,42,.08))'
+    }
+
     const colorOf = (name) => COLORS[name] || COLORS.blue
 
     function shortKernel(kernel) {
@@ -1473,20 +1481,25 @@ window.__ModuleLoader__.load({
       .rd-confirm { margin-left:auto;display:flex;gap:4px }
 
       /* ---- console tabs, terminal, ports ---- */
-      .rd-tabs { display:flex;gap:2px;border-bottom:1px solid var(--dsw-alias-border-l1, rgba(15,23,42,.08));margin:-6px 0 16px }
+      .rd-tabrow { display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--dsw-alias-border-l1, rgba(15,23,42,.08));margin:-6px 0 16px }
+      .rd-tabs { display:flex;gap:2px;border-bottom:0 }
+      .rd-tabstate { margin-left:auto;display:inline-flex;align-items:center;gap:6px;min-width:0;color:var(--dsw-alias-label-secondary,#8f959e);font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis }
+      .rd-tabstate.bad { color:#b42318 }
+      [data-rd-theme="dark"] .rd-tabstate { color:var(--dsw-alias-label-secondary,#a8b0bb) }
+      [data-rd-theme="dark"] .rd-tabstate.bad { color:#ff9a9a }
       .rd-tab { border:0;background:transparent;padding:7px 11px;font-size:12px;color:var(--dsw-alias-label-secondary,#8f959e);border-bottom:2px solid transparent;margin-bottom:-1px;cursor:pointer }
       .rd-tab.on { color:var(--dsw-alias-label-primary,#1f2329);font-weight:600;border-bottom-color:var(--dsw-alias-label-primary,#1f2329) }
       .rd-terminal { display:flex;flex-direction:column;gap:0;flex:1;min-height:0 }
       /* ---- wide screens: DSH pages cap their content column too ---- */
-      .rd-cwrap { width:100%;max-width:1120px }
-      .rd-cwrap.wide { max-width:1400px }
+      .rd-cwrap { width:100%;max-width:920px;margin:0 auto }
+      .rd-cwrap.wide { max-width:1200px;margin:0 auto }
       .rd-cwrap.full { max-width:none }
-      .rd-cpane.term > .rd-cwrap { max-width:none;width:100% }
+      .rd-cpane.term > .rd-cwrap { max-width:none;width:100%;margin:0 }
       .rd-wtable { max-width:100% }
       .rd-porttable { max-width:100% }
       /* Container queries, not media queries: the panel narrows when DSH's own
          sidebar opens, and the window width says nothing about that. */
-      @container rdpane (max-width:899px) {
+      @container rdpane (max-width:1019px) {
         .rd-stats { grid-template-columns:repeat(2,1fr) }
         .rd-cards { grid-template-columns:1fr }
         .rd-cards > .rd-card { min-height:0 }
@@ -1497,7 +1510,8 @@ window.__ModuleLoader__.load({
       }
       .rd-cpane.term { display:flex;flex-direction:column;overflow:hidden;padding:0 }
       /* The tab strip keeps its own inset; the terminal below it runs edge to edge. */
-      .rd-cpane.term > .rd-tabs { flex:none;padding:0 14px;margin:0 }
+      .rd-cpane.term > .rd-tabrow { flex:none;padding:0 14px;margin:0;flex-wrap:nowrap }
+      .rd-cpane.term > .rd-tabrow > .rd-tabs { padding:0;margin:0 }
       .rd-cpane.term > .rd-tabs, .rd-cpane.term > .rd-status { flex:none }
       .rd-cpane.term > .rd-terminal { flex:1;min-height:0 }
       .rd-termstate { flex:none;display:flex;align-items:center;gap:8px;padding:6px 12px;background:#0f1216;border-top:1px solid #1c232c;color:#8b949e;font-size:11px }
@@ -1617,7 +1631,11 @@ window.__ModuleLoader__.load({
       .rd-host2 { padding:7px 8px;border-radius:8px;gap:8px }
       .rd-host2:hover { background:var(--dsw-alias-interactive-bg-hover,rgba(15,23,42,.05)) }
       .rd-host2[data-active="true"] { background:var(--dsw-alias-interactive-bg-hover,rgba(15,23,42,.06));border-color:transparent;box-shadow:none }
-      .rd-host2 .ico2 { width:24px;height:24px;border-radius:8px;background:var(--dsw-alias-bg-layer-2,rgba(15,23,42,.05)) !important;color:var(--dsw-alias-label-secondary,#5f6672) !important }
+      .rd-host2 .ico2 { width:24px;height:24px;border-radius:8px;color:#fff }
+      .rd-host2 .ico2[data-state="connected"] { background:var(--dsw-alias-state-success-primary,#2e9e5b) }
+      .rd-host2 .ico2[data-state="connecting"] { background:var(--dsw-alias-state-business-primary,#1d6fc4) }
+      .rd-host2 .ico2[data-state="error"] { background:var(--dsw-alias-state-error-primary,#b42318) }
+      .rd-host2 .ico2[data-state="idle"], .rd-host2 .ico2[data-state="disconnected"], .rd-host2 .ico2[data-state="closed"] { background:var(--dsw-alias-bg-layer-2,rgba(15,23,42,.08));color:var(--dsw-alias-label-secondary,#5f6672) }
       .rd-host2 .nm2 { font-size:13px;font-weight:600 }
       .rd-host2 .meta2, .rd-host2 .lat2 { font-family:inherit;font-size:11.5px;color:var(--dsw-alias-label-secondary,#8f959e) }
       .rd-cpane { padding:16px 16px 24px }
@@ -1642,7 +1660,8 @@ window.__ModuleLoader__.load({
       [data-rd-theme="dark"] .rd-ctop, [data-rd-theme="dark"] .rd-rail2, [data-rd-theme="dark"] .rd-tabs { border-color:#2c3138 }
       [data-rd-theme="dark"] .rd-card { border-color:#2c3138 }
       [data-rd-theme="dark"] .rd-card .path2 { border-color:#2c3138 }
-      [data-rd-theme="dark"] .rd-host2 .ico2, [data-rd-theme="dark"] .rd-chead .rd-cavatar { background:rgba(255,255,255,.06) !important;color:var(--dsw-alias-label-secondary,#a8b0bb) !important }
+      [data-rd-theme="dark"] .rd-chead .rd-cavatar { background:rgba(255,255,255,.06) !important;color:var(--dsw-alias-label-secondary,#a8b0bb) !important }
+      [data-rd-theme="dark"] .rd-host2 .ico2[data-state="idle"], [data-rd-theme="dark"] .rd-host2 .ico2[data-state="disconnected"], [data-rd-theme="dark"] .rd-host2 .ico2[data-state="closed"] { background:rgba(255,255,255,.12);color:#c9ced6 }
       [data-rd-theme="dark"] .rd-tab:hover, [data-rd-theme="dark"] .rd-host2:hover { background:rgba(255,255,255,.07) }
 
       /* ---- settings rows: values copied verbatim from DSH's own settings rows ----
@@ -4249,13 +4268,12 @@ window.__ModuleLoader__.load({
           'data-active': String(host.id === row.id),
           onClick: () => { store.consoleHost = row.id; emit() },
         },
-          h('span', { className: 'ico2', style: { background: colorOf(row.color) } }, h(Icon, { name: 'server', size: 14 })),
+          h('span', { className: 'ico2', 'data-state': row.status, style: { background: stateColorOf(row.status) } }, h(Icon, { name: 'server', size: 14 })),
           h('div', { style: { minWidth: 0 } },
             h('div', { className: 'nm2' }, row.name),
             h('div', { className: 'meta2' }, row.username + '@' + row.host),
           ),
           h('div', { className: 'rt2' },
-            h(Dot, { state: row.status }),
             row.status === 'connected' && row.latencyMs ? h('span', { className: 'lat2' }, row.latencyMs + 'ms') : null,
             h('span', {
               className: 'rd-qpin' + (quickPins.includes(row.id) ? ' on' : ''),
@@ -4281,14 +4299,9 @@ window.__ModuleLoader__.load({
             : null,
           h('div', { className: 'r' },
             h('span', {
-              className: 'rd-chip' + (hostIssue ? ' bad' : host.status === 'connected' ? '' : ' idle'),
-              title: hostIssue ? hostIssue.title + ' — ' + hostIssue.hint : host.name + ' · ' + host.status,
-            },
-              h(Dot, { state: hostIssue ? 'error' : host.status }),
-              h('span', { className: 't' }, hostIssue
-                ? hostIssue.title
-                : host.status === 'connected' ? t('已连接') : host.status === 'connecting' ? t('连接中') : host.status === 'error' ? t('连接失败') : t('未连接')),
-            ),
+              className: 'rd-chip' + (host.status === 'connected' ? '' : ' idle'),
+              title: t('往返延迟'),
+            }, h('span', { className: 't' }, host.status === 'connected' && host.latencyMs ? host.latencyMs + ' ms' : '—')),
             h('button', { className: 'rd-btn primary', onClick: () => openHostDialog() },
               h(Icon, { name: 'plus', size: 13 }), t('添加机器')),
           ),
@@ -4305,12 +4318,23 @@ window.__ModuleLoader__.load({
             ),
           ),
           h('section', { className: 'rd-cpane' + (tab === 'terminal' ? ' term' : '') },
-            h('div', { className: 'rd-tabs' },
-              [['overview', t('概览')], ['terminal', t('终端')], ['files', t('文件')], ['ports', t('端口转发')]].map(([id, label]) => h('button', {
-                key: id,
-                className: 'rd-tab' + (tab === id ? ' on' : ''),
-                onClick: () => { store.consoleTab = id; emit() },
-              }, label)),
+            h('div', { className: 'rd-tabrow' },
+              h('div', { className: 'rd-tabs' },
+                [['overview', t('概览')], ['terminal', t('终端')], ['files', t('文件')], ['ports', t('端口转发')]].map(([id, label]) => h('button', {
+                  key: id,
+                  className: 'rd-tab' + (tab === id ? ' on' : ''),
+                  onClick: () => { store.consoleTab = id; emit() },
+                }, label)),
+              ),
+              h('span', {
+                className: 'rd-tabstate' + (hostIssue ? ' bad' : ''),
+                title: hostIssue ? hostIssue.title + ' — ' + hostIssue.hint : '',
+              },
+                h(Dot, { state: hostIssue ? 'error' : host.status }),
+                h('span', { className: 't' }, hostIssue
+                  ? hostIssue.title
+                  : host.status === 'connected' ? t('已连接') : host.status === 'connecting' ? t('连接中') : host.status === 'error' ? t('连接失败') : t('未连接')),
+              ),
             ),
             tab === 'overview'
               ? null

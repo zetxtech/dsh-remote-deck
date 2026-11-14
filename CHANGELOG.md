@@ -11,6 +11,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - v1.1.0: full xterm.js terminal, i18n (zh/en), explicit debug switch, virtualized large folders.
 
+## [1.32.0] - 2026-11-15
+
+### Changed
+
+- **Connection state is carried by the host icon, not by a dot beside it.** The rail's server tile is now coloured by state —
+  green connected, blue connecting, red failed, neutral otherwise — and the small status dot at the row's end is gone, so
+  the same fact is not stated twice. This also removes the `!important` rules that had flattened every tile to grey.
+- **The top-right corner shows the round-trip latency** (`312 ms`, or `—` when unknown) instead of a status pill.
+- **The status moved down to the tab row**, right-aligned beside 概览 / 终端 / 文件 / 端口转发 — the row that owns the
+  underline, so there is only one line where there used to be a strip plus a border.
+- **The content column is narrower and centred**: 920px (file page 1200px) with `margin: 0 auto`, and the narrow-panel
+  breakpoint moved to 1019px so the four stat cards drop to two columns before they get cramped. The terminal keeps its
+  full-width treatment.
+
 ## [1.31.0] - 2026-11-14
 
 ### Fixed
