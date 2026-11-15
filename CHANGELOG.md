@@ -11,6 +11,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - v1.1.0: full xterm.js terminal, i18n (zh/en), explicit debug switch, virtualized large folders.
 
+## [1.33.0] - 2026-11-15
+
+### Changed
+
+- **Buttons now use DSH's own fills.** The primary action was this plugin's own blue; it is now
+  `background: var(--dsw-alias-button-primary-fill)` with `color: var(--dsw-alias-label-primary-foreground)` — the recipe
+  copied from the installed primitives, which reads as a white button in the dark theme and a dark one in the light theme.
+  Secondary buttons follow the native shape too (28px, `.5px` border, transparent, hover fill). No `#1d6fc4` fill
+  remains anywhere.
+- **The tabs are a native segmented control.** The underline is gone — it had been moved onto the whole row, so it ran
+  under the status text as well and read as detached from the tabs. The active tab now takes
+  `--dsw-alias-interactive-bg-active`, the row has no border, and the status sits at its right end.
+- **The console is a centred page**: the rail and content together are capped at 1280px and centred, with the inner
+  column caps removed so there is only one level of constraint. The terminal tab is the exception — the cap is lifted
+  while it is active, so the emulator keeps filling the window; a `ResizeObserver` on the terminal already refits it when
+  that happens.
+- Cards, tables and inputs converged on the native scale (`.5px` `border-l2` edges, `--dsw-radius-sm`/`md`), so the
+  console no longer mixes its own radii with DSH's.
+
 ## [1.32.0] - 2026-11-15
 
 ### Changed
