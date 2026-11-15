@@ -11,6 +11,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - v1.1.0: full xterm.js terminal, i18n (zh/en), explicit debug switch, virtualized large folders.
 
+## [1.35.1] - 2026-11-15
+
+### Changed
+
+- **The host list is a rounded panel, not a full-height band.** A rail painted edge to edge read as a second surface beside
+  the page; it is now an inset rounded box (`--dsw-radius-lg`, `bg-layer-2`, no border) that behaves like a table of
+  contents: the hosts inside it, the page around it.
+- **The connection state sits beside the tabs** instead of at the far end of the content column, so it reads as part of
+  the tab row rather than as a detached label.
+
 ## [1.35.0] - 2026-11-15
 
 ### Changed
