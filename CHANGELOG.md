@@ -11,6 +11,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - v1.1.0: full xterm.js terminal, i18n (zh/en), explicit debug switch, virtualized large folders.
 
+## [1.35.2] - 2026-11-15
+
+### Fixed
+
+- **The status label sat two pixels below the tab labels.** Measured on the render rather than guessed: the tab text occupied
+  rows 78–95 and 已连接 84–95. It now shares the tabs' 13px size and 30px row, so the two share one baseline.
+- **Host rows in the rail were nearly touching** — a 2px gap between 48px rows. The gap is 8px, so a selected row's fill
+  reads as its own row instead of running into its neighbours.
+
 ## [1.35.1] - 2026-11-15
 
 ### Changed
