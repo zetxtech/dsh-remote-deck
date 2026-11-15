@@ -1,7 +1,6 @@
 {
   " · 只读（编码无法无损写回）": " · Read-only (encoding can't be written back losslessly)",
   " 等": " and more",
-  "Agent 可以用 remote_forward 创建，也能在控制台的端口页手动添加。": "Agents can create them with remote_forward, or you can add them manually on the console's Ports page.",
   "DSH 启动后自动拨通": "Connects when DSH starts",
   "DSH 需要重启一次才能加载 Remote Deck 的 host 部分。重启后这里会显示连接列表。": "DSH needs a restart to load Remote Deck's host part. The connection list appears here after that.",
   "Remote Deck 服务未连接": "Remote Deck service not connected",
@@ -255,6 +254,7 @@
   "新建文件夹": "New folder",
   "新建远程工作区": "New remote workspace",
   "显示隐藏文件（以 . 开头）": "Show hidden files (starting with .)",
+  "更多操作": "More actions",
   "更新于 {time}": "Updated {time}",
   "最近会话": "Recent sessions",
   "有未完成的上传": "Unfinished uploads",
@@ -268,6 +268,7 @@
   "未命名会话": "Untitled session",
   "未注册": "Not registered",
   "未连接": "Disconnected",
+  "未连接到 {host}": "Not connected to {host}",
   "未连接机器": "No connected hosts",
   "未配置": "Not configured",
   "本地显示": "Show in folder",
@@ -409,9 +410,9 @@
   "这个页面只浏览远端文件；在远程工作区的会话里打开它。": "This page only browses remote files; open it in a session that's in a remote workspace.",
   "这台机器上还没有会话。": "No sessions on this machine yet.",
   "这台机器还没有工作区。": "No workspaces on this machine yet.",
-  "进入远程开发": "Open Remote Development",
   "进行中": "In progress",
   "远程开发": "Remote Development",
+  "远程开发管理": "Manage Remote Development",
   "远程控制台": "Remote console",
   "远程端口": "Remote port",
   "远程终端": "Remote terminal",
@@ -426,6 +427,7 @@
   "连接": "Connect",
   "连接中": "Connecting",
   "连接中…": "Connecting…",
+  "连接后即可使用终端、文件与端口转发": "Connect to use the terminal, files and port forwarding",
   "连接失败": "Connection failed",
   "连接成功": "Connection succeeded",
   "连接正常": "Connected",
@@ -454,8 +456,5 @@
   "（{n} 个由 Agent 创建）": "({n} created by Agent)",
   "（已停止）": "(stopped)",
   "（已删除 {files} 个文件、{dirs} 个目录）": "({files} files and {dirs} folders deleted)",
-  "（空目录）": "(empty folder)",
-  "连接后即可使用终端、文件与端口转发": "Connect to use the terminal, files and port forwarding",
-  "未连接到 {host}": "Not connected to {host}",
-  "更多操作": "More actions"
+  "（空目录）": "(empty folder)"
 }

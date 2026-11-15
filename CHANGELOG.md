@@ -11,6 +11,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - v1.1.0: full xterm.js terminal, i18n (zh/en), explicit debug switch, virtualized large folders.
 
+## [1.34.0] - 2026-11-15
+
+### Changed
+
+- **The console is composed like a DSH page, not a narrowed panel.** A page title with a subtitle and the actions at the
+  top right (刷新 as a secondary button, 添加机器 as the primary one), section headers in secondary text, and lists of
+  rows — icon tile, title, description, trailing meta — instead of bordered cards. The four statistics became inline
+  metrics, the workspace became a row, and session rows settled at 44px with no divider lines. The outer 1280px centred
+  cap is gone: the content column is left-aligned at 1100px, and the terminal is still full width.
+- **The left host list stays a panel, but it is drawn with DSH's own tokens now** — `bg-layer-2` behind,
+  a `.5px border-l2` edge, rows whose hover and selected states come from `interactive-bg-hover` /
+  `interactive-bg-active` rather than hand-made fills and borders.
+- **69 standalone literal colours were replaced with tokens** (primary fills, error and warning states, borders, foregrounds).
+  `var(--dsw-alias-*, #fallback)` fallbacks were left alone, as the extension guide allows. The terminal surface and the
+  xterm theme now read their colours from the tokens at runtime, so the emulator follows the app theme; the remaining
+  `[data-rd-theme="dark"]` rules are the ones a token genuinely cannot express (terminal ANSI foregrounds, dark-only
+  warning edges).
+
+### Fixed
+
+- **A sentence that explained this plugin's internals to the reader is gone.** The port-forward menu's empty state said
+  「Agent 可以用 remote_forward 创建，也能在控制台的端口页手动添加。」— a tool name and a prompt-shaped explanation in the
+  user's face. The empty state keeps its title, and the button below it already leads where it needs to.
+- The label 进入远程开发 is now 远程开发管理, in the button, the inlined catalogue and `locale/en-ui.json`.
+
 ## [1.33.0] - 2026-11-15
 
 ### Changed
