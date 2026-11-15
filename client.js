@@ -991,7 +991,7 @@ window.__ModuleLoader__.load({
       .rd-head .t { font-size:13px;font-weight:700 }
       .rd-head .s { font-size:10.5px;color:var(--dsw-alias-label-secondary,#8f959e);margin-top:1px }
       .rd-head .r { margin-left:auto;display:flex;gap:2px }
-      .rd-ibtn { width:26px;height:26px;display:grid;place-items:center;border-radius:7px;border:0;background:transparent;color:var(--dsw-alias-label-secondary,#8f959e);cursor:pointer }
+      .rd-ibtn { width:26px;height:26px;display:grid;place-items:center;border-radius:7px;border:0;background:transparent;color:var(--dsw-alias-label-secondary,#8f959e);cursor:pointer ;font:inherit}
       .rd-ibtn:hover { background:var(--dsw-alias-border-l1, rgba(15,23,42,.06)) }
       .rd-body { overflow:auto;padding:0 14px 4px;display:flex;flex-direction:column;gap:8px }
 
@@ -1255,7 +1255,7 @@ window.__ModuleLoader__.load({
       [data-rd-theme="dark"] .rd-rf-actionbtn:hover { background:rgba(255,255,255,.08);color:var(--dsw-alias-label-primary,#e6e8eb) }
       .rd-rf-host { min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12.5px;font-weight:600 }
       .rd-rf-acts { flex:none;display:flex;align-items:center;gap:2px }
-      .rd-rf-act { width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;padding:0;border:0;border-radius:8px;background:transparent;color:var(--dsw-alias-label-secondary,#5f6672);cursor:pointer }
+      .rd-rf-act { width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;padding:0;border:0;border-radius:8px;background:transparent;color:var(--dsw-alias-label-secondary,#5f6672);cursor:pointer ;font:inherit}
       .rd-rf-act:hover:not([disabled]) { background:var(--dsw-alias-interactive-bg-hover,rgba(15,23,42,.06));color:var(--dsw-alias-label-primary,#1f2329) }
       .rd-rf-act[disabled] { opacity:.4;cursor:default }
       .rd-rf-act.on { background:rgba(47,125,221,.14);color:var(--dsw-alias-state-business-primary) }
@@ -1357,7 +1357,7 @@ window.__ModuleLoader__.load({
       .rd-tf-dlg .ds { margin-top:4px;font-size:11.5px;line-height:1.55;color:var(--dsw-alias-label-secondary,#8f959e);word-break:break-word }
       .rd-tf-dlg .db { margin-top:8px;font-size:12px;line-height:1.65 }
       .rd-tf-dlg .da { display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8px;margin-top:14px }
-      .rd-tf-btn { appearance:none;border:1px solid var(--dsw-alias-border-l1,#e8e8ec);background:transparent;color:inherit;border-radius:8px;padding:5px 10px;font-size:12px;line-height:16px;cursor:pointer }
+      .rd-tf-btn { appearance:none;border:1px solid var(--dsw-alias-border-l1,#e8e8ec);background:transparent;color:inherit;border-radius:8px;padding:5px 10px;font-size:12px;line-height:16px;cursor:pointer ;font:inherit}
       .rd-tf-btn:hover { background:rgba(15,23,42,.06) }
       .rd-tf-btn.primary { color:var(--dsw-alias-label-primary-foreground,#fff);background:var(--dsw-alias-button-primary-fill,#1d6fc4);border-color:transparent;font-weight:500 }
       .rd-tf-btn.primary:hover { background:#2a6fc4 }
@@ -1400,7 +1400,7 @@ window.__ModuleLoader__.load({
       .rd-recover .rchips { margin-top: 8px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
       .rd-chip { display: inline-flex; align-items: center; height: 22px; padding: 0 8px; border-radius: 6px; background: rgba(15,23,42,.06); color: var(--dsw-alias-label-secondary, #5f6672); font-size: 11px; }
       .rd-recover .ractions { margin-top: 9px; display: flex; align-items: center; gap: 8px; }
-      .rd-rbtn { height: 27px; padding: 0 12px; border-radius: 7px; font-size: 12px; border: 1px solid transparent; }
+      .rd-rbtn { height: 27px; padding: 0 12px; border-radius: 7px; font-size: 12px; border: 1px solid transparent; ;font:inherit}
       .rd-rbtn.primary { color:var(--dsw-alias-label-primary-foreground,#fff);background:var(--dsw-alias-button-primary-fill,#1d6fc4);border-color:transparent;font-weight:500; }
       .rd-rbtn.ghost { background: transparent; color: var(--dsw-alias-label-secondary, #5f6672); }
       .rd-recover .rhint { margin-top: 6px; font-size: 10.5px; color: #a3a8b0; }
@@ -1800,7 +1800,10 @@ window.__ModuleLoader__.load({
       .rd-tabs { display:inline-flex;gap:2px;padding:0;background:transparent }
       /* Flex-centre the label so the tab and the status beside it align by
          geometry, not by whatever the platform's font metrics do to a line box. */
-      .rd-tab { display:inline-flex;align-items:center;justify-content:center;height:30px;padding:0 12px;border:0;border-radius:var(--dsw-radius-sm,8px);font-size:13px;line-height:1;color:var(--dsw-alias-label-secondary);background:transparent }
+      /* font:inherit matters: a button does not inherit the page font, and a
+         system-UI label beside a page-font label sits a few pixels off no matter
+         how the boxes are aligned. */
+      .rd-tab { display:inline-flex;align-items:center;justify-content:center;height:30px;padding:0 12px;border:0;border-radius:var(--dsw-radius-sm,8px);font:inherit;font-size:13px;line-height:1;color:var(--dsw-alias-label-secondary);background:transparent }
       .rd-tab:hover { background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary) }
       .rd-tab.on { background:var(--dsw-alias-interactive-bg-active);color:var(--dsw-alias-label-primary);font-weight:500 }
       .rd-tabstate { margin-left:14px;display:inline-flex;align-items:center;gap:6px;height:30px;font-size:13px;line-height:1;color:var(--dsw-alias-label-secondary) }
@@ -1823,7 +1826,7 @@ window.__ModuleLoader__.load({
       .rd-wrowmeta, .rd-sess .m2 { font-size:12px;color:var(--dsw-alias-label-tertiary);font-variant-numeric:tabular-nums }
       .rd-wrowgo { margin-left:auto;font-size:13px;color:var(--dsw-alias-label-secondary) }
       .rd-wrow:hover, .rd-sess:hover { background:var(--dsw-alias-interactive-bg-hover) }
-      .rd-btn { height:36px;padding:0 14px;border:0;border-radius:var(--dsw-radius-md,12px);background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary);font-size:13px }
+      .rd-btn { height:36px;padding:0 14px;border:0;border-radius:var(--dsw-radius-md,12px);background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary);font:inherit;font-size:13px }
       .rd-btn:hover:not([disabled]) { background:var(--dsw-alias-interactive-bg-active) }
       .rd-btn.primary { background:var(--dsw-alias-button-primary-fill);color:var(--dsw-alias-label-primary-foreground);font-weight:500 }
       .rd-btn.primary:hover:not([disabled]) { filter:brightness(.94) }

@@ -11,6 +11,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - v1.1.0: full xterm.js terminal, i18n (zh/en), explicit debug switch, virtualized large folders.
 
+## [1.35.4] - 2026-11-15
+
+### Fixed
+
+- **The tab labels and the status beside them were rendering in two different fonts.** A `<button>` does not inherit the
+  page font, so 概览 / 终端 / 文件 / 端口转发 were drawn in the platform's UI font while 已连接 used the page font — two sets of
+  vertical metrics inside identically sized boxes, which is why matching heights and sizes never fixed the two-pixel
+  offset. Tabs, buttons and rows now declare `font: inherit`, so one font's metrics govern the whole row.
+- The same fix applies to the other control classes that were missing it (rail actions, icon buttons, transfer and form
+  buttons), so no control silently switches fonts any more.
+
 ## [1.35.3] - 2026-11-15
 
 ### Fixed
