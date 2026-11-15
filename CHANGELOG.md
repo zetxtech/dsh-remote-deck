@@ -11,6 +11,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - v1.1.0: full xterm.js terminal, i18n (zh/en), explicit debug switch, virtualized large folders.
 
+## [1.35.3] - 2026-11-15
+
+### Fixed
+
+- **The status now aligns with the tabs by geometry, not by font metrics.** Matching font sizes was not enough: a `<button>`
+  centres its label through its line box, which the platform's fonts shift by a pixel or two, so a render on one machine
+  looked aligned while another did not. Both the tab and the status are now 30px flex containers that centre a
+  `line-height: 1` label, so they line up wherever the app runs.
+
 ## [1.35.2] - 2026-11-15
 
 ### Fixed

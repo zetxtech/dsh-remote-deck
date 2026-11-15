@@ -1798,10 +1798,12 @@ window.__ModuleLoader__.load({
       .rd-cpane.term { padding:0 }
       .rd-tabrow { display:flex;align-items:center;gap:8px;margin:0 0 20px }
       .rd-tabs { display:inline-flex;gap:2px;padding:0;background:transparent }
-      .rd-tab { height:30px;padding:0 12px;border:0;border-radius:var(--dsw-radius-sm,8px);font-size:13px;color:var(--dsw-alias-label-secondary);background:transparent }
+      /* Flex-centre the label so the tab and the status beside it align by
+         geometry, not by whatever the platform's font metrics do to a line box. */
+      .rd-tab { display:inline-flex;align-items:center;justify-content:center;height:30px;padding:0 12px;border:0;border-radius:var(--dsw-radius-sm,8px);font-size:13px;line-height:1;color:var(--dsw-alias-label-secondary);background:transparent }
       .rd-tab:hover { background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary) }
       .rd-tab.on { background:var(--dsw-alias-interactive-bg-active);color:var(--dsw-alias-label-primary);font-weight:500 }
-      .rd-tabstate { margin-left:14px;display:inline-flex;align-items:center;gap:6px;height:30px;font-size:13px;line-height:30px;color:var(--dsw-alias-label-secondary) }
+      .rd-tabstate { margin-left:14px;display:inline-flex;align-items:center;gap:6px;height:30px;font-size:13px;line-height:1;color:var(--dsw-alias-label-secondary) }
       .rd-chead { display:flex;align-items:center;gap:12px;padding:0 0 16px;border-bottom:.5px solid var(--dsw-alias-border-l2) }
       .rd-cavatar { width:40px;height:40px;border-radius:12px }
       .rd-ctitle { font-size:15px;font-weight:600 }
