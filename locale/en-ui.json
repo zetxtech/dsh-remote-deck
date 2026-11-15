@@ -412,6 +412,7 @@
   "这台机器还没有工作区。": "No workspaces on this machine yet.",
   "进行中": "In progress",
   "远程开发": "Remote Development",
+  "远程开发 {version}": "Remote Deck {version}",
   "远程开发管理": "Manage Remote Development",
   "远程控制台": "Remote console",
   "远程端口": "Remote port",

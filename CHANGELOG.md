@@ -11,6 +11,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - v1.1.0: full xterm.js terminal, i18n (zh/en), explicit debug switch, virtualized large folders.
 
+## [1.35.0] - 2026-11-15
+
+### Changed
+
+- **The console got a deliberate design pass** instead of chasing one screenshot at a time. It keeps DSH's flat language
+  (no cards, no panel borders, everything on the app background) and adds the hierarchy that was missing:
+  - a page header — 远程开发 at 20px/600 with one quiet line of context under it, and the actions at the right
+    (刷新 as a filled-quiet button, 添加机器 as the white primary one),
+  - native segmented tabs with no container and no underline, the active one filled, the connection state at the row's end,
+  - a host header closed by a hairline rule, then a quiet metric cluster — small secondary label over a 20px/600 number,
+  - section headers 工作区 / 最近会话 that carry their own action and are underlined by the same hairline,
+  - 48px rows that read as rows: a 32px tile, a 13.5px/500 title, 12px secondary facts, hover fill and no borders,
+  - 36px controls with `--dsw-radius-md`, and every radius and colour from a token — no literal 10/11px corners.
+- The rail keeps a quiet `bg-layer-2` panel with no border, so it reads as a column without becoming a card.
+- The footer's placeholder line (`Data: <DSH_HOME>/remote-deck`) is gone; it shows the build stamp, or nothing at all.
+
+### Notes
+
+- Reviewing a design no longer needs an install: `/tmp/preview/build.mjs` renders the real component with the real
+  stylesheet and the app's own theme tokens, and headless Chrome screenshots it — so the result can be looked at before
+  it ships.
+
 ## [1.34.0] - 2026-11-15
 
 ### Changed

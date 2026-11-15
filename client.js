@@ -1157,15 +1157,15 @@ window.__ModuleLoader__.load({
       .rd-rail2 .sep2 { height:1px;background:var(--dsw-alias-border-l1, rgba(15,23,42,.07));margin:8px }
       .rd-rail2 .railfoot2 { margin-top:auto;padding:10px 8px 2px;font-size:10px;color:var(--dsw-alias-label-secondary,#8f959e);line-height:1.7;border-top:1px solid var(--dsw-alias-border-l1, rgba(15,23,42,.07)) }
       .rd-cpane { flex:1;min-width:0;overflow:auto;padding:0 0 32px;container-type:inline-size;container-name:rdpane }
-      .rd-cpane > .rd-cwrap, .rd-cpane > .rd-tabrow, .rd-cpane > .rd-overview { max-width:1100px }
+      .rd-cpane > .rd-cwrap, .rd-cpane > .rd-tabrow, .rd-cpane > .rd-overview { max-width:820px }
       .rd-chead { display:flex;align-items:flex-start;gap:14px }
       .rd-cavatar { width:46px;height:46px;border-radius:12px;color:#fff;display:grid;place-items:center;flex:none }
       .rd-ctitle { font-size:19px;font-weight:700;letter-spacing:-.3px;display:flex;align-items:center;gap:8px }
       .rd-cmeta { display:flex;align-items:center;gap:8px;margin-top:5px;font-size:11.5px;color:var(--dsw-alias-label-secondary,#8f959e);flex-wrap:wrap }
       .rd-cmeta .mono { font-family:var(--rd-term-font,ui-monospace,Consolas,monospace);font-size:11px;color:var(--dsw-alias-label-secondary,#5f6672) }
       .rd-chead .acts { margin-left:auto;display:flex;gap:7px;flex-wrap:wrap;justify-content:flex-end }
-      .rd-metrics { display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:20px 0 4px }
-      .rd-metric { min-width:0 }
+      .rd-metrics { display:flex;flex-wrap:wrap;gap:8px 32px;margin:18px 0 2px }
+      .rd-metric { min-width:96px;display:flex;flex-direction:column;gap:2px }
       .rd-metric .k { font-size:11.5px;line-height:16px;color:var(--dsw-alias-label-secondary,#8f959e) }
       .rd-metric .v { margin-top:2px;font-size:18px;font-weight:600;line-height:24px;font-variant-numeric:tabular-nums }
       .rd-metric .v small { margin-left:3px;font-size:11px;font-weight:400;color:var(--dsw-alias-label-tertiary,#8f959e) }
@@ -1634,8 +1634,9 @@ window.__ModuleLoader__.load({
       .rd-host2 .ico2[data-state="error"] { background:var(--dsw-alias-state-error-primary,#b42318) }
       .rd-host2 .ico2[data-state="idle"], .rd-host2 .ico2[data-state="disconnected"], .rd-host2 .ico2[data-state="closed"] { background:var(--dsw-alias-bg-layer-2,rgba(15,23,42,.08));color:var(--dsw-alias-label-secondary,#5f6672) }
       .rd-host2 .nm2 { font-size:13px;font-weight:500 }
-      .rd-host2 .meta2 { font-size:12px;color:var(--dsw-alias-label-secondary,#8f959e) }
-      .rd-host2 .lat2 { font-size:11.5px;font-variant-numeric:tabular-nums;color:var(--dsw-alias-label-tertiary,#8f959e) }
+      .rd-host2 .meta2 { font-size:11.5px;color:var(--dsw-alias-label-secondary,#8f959e);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:150px }
+      .rd-host2 .lat2 { font-size:11px;font-variant-numeric:tabular-nums;color:var(--dsw-alias-label-tertiary,#8f959e) }
+      .rd-host2 .rt2 { flex:none;display:flex;align-items:center;gap:6px;margin-left:auto }
       .rd-cpane { padding:16px 16px 24px }
       .rd-tabs { gap:2px;margin:0 0 16px;padding:2px }
       .rd-tab { height:26px;padding:0 12px;font-size:12.5px;border-radius:var(--dsw-radius-sm,8px) }
@@ -1739,7 +1740,94 @@ window.__ModuleLoader__.load({
       [data-rd-theme="dark"] .rd-err { color:var(--dsw-alias-state-error-primary) }
       [data-rd-theme="dark"] .rd-edit-area { background:var(--dsw-alias-bg-layer-1,#1b1e23);border-color:var(--dsw-alias-border-l2) }
       [data-rd-theme="dark"] .rd-console { background:var(--dsw-alias-bg-layer-1,#1b1e23) }
-      [data-rd-theme="dark"] .rd-ctop, [data-rd-theme="dark"] .rd-rail2, [data-rd-theme="dark"] .rd-tabs { border-color:var(--dsw-alias-border-l2) }    `
+      [data-rd-theme="dark"] .rd-ctop, [data-rd-theme="dark"] .rd-rail2, [data-rd-theme="dark"] .rd-tabs { border-color:var(--dsw-alias-border-l2) }
+      /* ---- native language: quiet buttons, pill tabs, flat panel, 48px rows ---- */
+      .rd-ctop { padding:26px 32px 0;align-items:center }
+      .rd-ctop .t { font-size:20px;font-weight:600;line-height:28px }
+      .rd-ctop .r { margin-left:auto;display:flex;gap:8px;align-items:center }
+      .rd-btn { height:36px;padding:0 14px;border:0;border-radius:var(--dsw-radius-md,12px);background:var(--dsw-alias-interactive-bg-hover,rgba(15,23,42,.05));color:var(--dsw-alias-label-primary,#1f2329);font-size:13px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;justify-content:center }
+      .rd-btn:hover:not([disabled]) { background:var(--dsw-alias-interactive-bg-active,rgba(15,23,42,.09)) }
+      .rd-btn[disabled] { opacity:.5;cursor:default }
+      .rd-btn.sm { height:28px;padding:0 10px;font-size:12px;border-radius:var(--dsw-radius-sm,8px) }
+      .rd-tabs { display:flex;gap:20px;padding:0;border-radius:0;background:transparent }
+      .rd-tab { height:32px;padding:0 12px;border-radius:var(--dsw-radius-sm,8px);background:transparent;color:var(--dsw-alias-label-secondary,#8f959e);font-size:13px }
+      .rd-tab:hover:not(.on) { background:var(--dsw-alias-interactive-bg-hover,rgba(15,23,42,.05));color:var(--dsw-alias-label-primary,#1f2329) }
+      .rd-tab.on { background:var(--dsw-alias-interactive-bg-active,rgba(15,23,42,.09));color:var(--dsw-alias-label-primary,#1f2329);font-weight:500 }
+      .rd-tabrow { gap:12px;margin:0 0 20px }
+      .rd-rail2 { border-right:0;background:transparent;padding:0 24px 16px 0 }
+      .rd-rail2 .railfoot2 { margin-top:auto;padding:12px 0 0;border-top:.5px solid var(--dsw-alias-border-l2,#e8e8ec);font-size:10px;line-height:1.5;color:var(--dsw-alias-label-tertiary,#8f959e);white-space:nowrap;overflow:hidden;text-overflow:ellipsis }
+      .rd-host2 { min-height:48px }
+      .rd-host2 .ico2 { width:36px;height:36px;border-radius:var(--dsw-radius-md,12px) }
+      .rd-wrow { min-height:48px }
+      .rd-wrowicon { width:36px;height:36px;border-radius:var(--dsw-radius-md,12px) }
+      .rd-wrowname { font-size:13.5px;font-weight:500 }
+      .rd-wrowpath, .rd-wrowmeta { font-size:12px }
+      .rd-rf-row { height:48px }
+      .rd-rf-filter { height:36px;border:1px solid var(--dsw-alias-border-l2,#e8e8ec);border-radius:var(--dsw-radius-md,12px);padding:0 12px;font-size:13px;background:transparent }
+      .rd-flist, .rd-wtable, .rd-porttable, .rd-portrow, .rd-portadd { border:0 }
+      .rd-metrics { display:flex;flex-wrap:wrap;gap:14px 56px;margin:22px 0 2px }
+      .rd-metric { flex:none }
+      .rd-rf-filter { width:200px }
+      .rd-rf-state, .rd-empty { justify-content:center;text-align:center;padding:44px 16px;gap:10px }
+      .rd-rf-statetitle, .rd-empty { font-size:13px;color:var(--dsw-alias-label-secondary,#8f959e) }
+      .rd-sess { min-height:48px }
+      .rd-csect { margin:28px 0 10px }
+      /* ================= 远程开发 · 统一设计层 =================
+         One authoritative layer for the console: flat like a DSH page, with real
+         hierarchy — a page header, section rules, 48px rows, a quiet metric
+         cluster. Earlier fragments for the same selectors remain above; this
+         block sits last inside the stylesheet and therefore wins. */
+      .rd-console { background:var(--dsw-alias-bg-base) }
+      .rd-ctop { display:flex;align-items:flex-start;gap:16px;padding:22px 28px 16px;border-bottom:0 }
+      .rd-ctop .t { font-size:20px;font-weight:600;line-height:28px;letter-spacing:-.01em }
+      .rd-ctop .s { display:block;margin-top:3px;font-size:12.5px;line-height:18px;color:var(--dsw-alias-label-secondary) }
+      .rd-ctop .r { margin-left:auto;display:flex;align-items:center;gap:8px;flex:none }
+      .rd-cbody { flex:1;min-height:0;display:flex;padding:0 }
+      .rd-rail2 { width:232px;flex:none;padding:6px 12px 16px;background:var(--dsw-alias-bg-layer-2);border-right:0;gap:2px }
+      .rd-rail2 .rh2 { padding:12px 10px 6px;font-size:11.5px;font-weight:500;color:var(--dsw-alias-label-tertiary) }
+      .rd-rail2 .railfoot2 { border-top:0;padding:12px 10px 0;font-size:11px;color:var(--dsw-alias-label-tertiary);line-height:1.6 }
+      .rd-host2 { min-height:48px;padding:6px 10px;border:0;border-radius:var(--dsw-radius-sm,8px) }
+      .rd-host2:hover { background:var(--dsw-alias-interactive-bg-hover) }
+      .rd-host2[data-active="true"] { background:var(--dsw-alias-interactive-bg-active);border:0;box-shadow:none }
+      .rd-host2 .ico2 { width:32px;height:32px;border-radius:var(--dsw-radius-md,12px) }
+      .rd-host2 .nm2 { font-size:13.5px;font-weight:500 }
+      .rd-host2 .meta2 { font-size:11.5px;color:var(--dsw-alias-label-secondary) }
+      .rd-host2 .lat2 { font-size:11.5px;color:var(--dsw-alias-label-tertiary);font-variant-numeric:tabular-nums }
+      .rd-cpane { padding:20px 28px 32px }
+      .rd-cpane > .rd-cwrap, .rd-cpane > .rd-overview, .rd-cpane > .rd-tabrow { max-width:900px }
+      .rd-cpane.term { padding:0 }
+      .rd-tabrow { display:flex;align-items:center;gap:8px;margin:0 0 20px }
+      .rd-tabs { display:inline-flex;gap:2px;padding:0;background:transparent }
+      .rd-tab { height:30px;padding:0 12px;border:0;border-radius:var(--dsw-radius-sm,8px);font-size:13px;color:var(--dsw-alias-label-secondary);background:transparent }
+      .rd-tab:hover { background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary) }
+      .rd-tab.on { background:var(--dsw-alias-interactive-bg-active);color:var(--dsw-alias-label-primary);font-weight:500 }
+      .rd-tabstate { margin-left:auto;display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--dsw-alias-label-secondary) }
+      .rd-chead { display:flex;align-items:center;gap:12px;padding:0 0 16px;border-bottom:.5px solid var(--dsw-alias-border-l2) }
+      .rd-cavatar { width:40px;height:40px;border-radius:12px }
+      .rd-ctitle { font-size:15px;font-weight:600 }
+      .rd-cmeta { margin-top:3px;font-size:12px;color:var(--dsw-alias-label-secondary);gap:10px }
+      .rd-metrics { display:flex;gap:40px;margin:16px 0 4px }
+      .rd-metric { min-width:0 }
+      .rd-metric .k { font-size:11.5px;color:var(--dsw-alias-label-tertiary) }
+      .rd-metric .v { margin-top:2px;font-size:20px;font-weight:600;letter-spacing:-.02em;font-variant-numeric:tabular-nums }
+      .rd-csect { display:flex;align-items:center;gap:8px;margin:28px 0 4px;padding-bottom:8px;border-bottom:.5px solid var(--dsw-alias-border-l2) }
+      .rd-csect .st2 { font-size:13px;font-weight:500 }
+      .rd-csect .ct2 { margin-left:2px;font-size:12px;color:var(--dsw-alias-label-tertiary) }
+      .rd-csect .rt2 { margin-left:auto;display:flex;gap:6px }
+      .rd-wrow, .rd-sess { min-height:48px;padding:6px 10px;gap:12px;border:0;border-radius:var(--dsw-radius-sm,8px) }
+      .rd-wrowicon { width:32px;height:32px;border-radius:var(--dsw-radius-md,12px) }
+      .rd-wrowname, .rd-sess .t2 { font-size:13.5px;font-weight:500 }
+      .rd-wrowpath { font-size:12px;color:var(--dsw-alias-label-secondary) }
+      .rd-wrowmeta, .rd-sess .m2 { font-size:12px;color:var(--dsw-alias-label-tertiary);font-variant-numeric:tabular-nums }
+      .rd-wrowgo { margin-left:auto;font-size:13px;color:var(--dsw-alias-label-secondary) }
+      .rd-wrow:hover, .rd-sess:hover { background:var(--dsw-alias-interactive-bg-hover) }
+      .rd-btn { height:36px;padding:0 14px;border:0;border-radius:var(--dsw-radius-md,12px);background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary);font-size:13px }
+      .rd-btn:hover:not([disabled]) { background:var(--dsw-alias-interactive-bg-active) }
+      .rd-btn.primary { background:var(--dsw-alias-button-primary-fill);color:var(--dsw-alias-label-primary-foreground);font-weight:500 }
+      .rd-btn.primary:hover:not([disabled]) { filter:brightness(.94) }
+      .rd-btn.sm { height:28px;padding:0 10px;font-size:12px;border-radius:var(--dsw-radius-sm,8px) }
+
+    `
 
     let styleInjected = false
     function ensureStyle() {
@@ -4318,12 +4406,7 @@ window.__ModuleLoader__.load({
 
       return h('div', { className: 'rd-console', 'data-tab': tab },
         h('div', { className: 'rd-ctop' },
-          h('div', { className: 'ctext' },
-            h('span', { className: 't' }, t('远程开发')),
-            h('span', { className: 's' }, host === null || host === undefined
-              ? t("{connected} 台在线 · {workspaces} 个工作区", { connected: (connected.length), workspaces: (workspaces.length) })
-              : host.name + ' · ' + host.username + '@' + host.host + ' · ' + (host.status === 'connected' ? t('已连接') : host.status === 'connecting' ? t('连接中') : host.status === 'error' ? t('连接失败') : t('未连接'))),
-          ),
+          h('div', { className: 'ctext' }, h('span', { className: 't' }, t('远程开发'))),
           h('div', { className: 'r' },
             h('button', { className: 'rd-btn', disabled: busy !== '', onClick: () => void refresh() }, h(Icon, { name: 'refresh', size: 13 }), t('刷新')),
             h('button', { className: 'rd-btn primary', onClick: () => openHostDialog() },
@@ -4336,10 +4419,11 @@ window.__ModuleLoader__.load({
             rail(connected, t('已连接')),
             connected.length > 0 ? h('div', { className: 'sep2' }) : null,
             rail(connections.filter((row) => row.status !== 'connected'), t('未连接')),
-            h('div', { className: 'railfoot2' },
-              h('div', null, 'Data: <DSH_HOME>/remote-deck'),
-              h('div', null, 'Host ' + (state ? state.build : '')),
-            ),
+            // Quiet build stamp; with no version to name, show nothing at all.
+            state && state.build
+              ? h('div', { className: 'railfoot2' },
+                h('div', null, t("远程开发 {version}", { version: (state.build) })))
+              : null,
           ),
           h('section', { className: 'rd-cpane' + (tab === 'terminal' ? ' term' : '') },
             h('div', { className: 'rd-tabrow' },
