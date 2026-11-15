@@ -1803,10 +1803,13 @@ window.__ModuleLoader__.load({
       /* font:inherit matters: a button does not inherit the page font, and a
          system-UI label beside a page-font label sits a few pixels off no matter
          how the boxes are aligned. */
-      .rd-tab { display:inline-flex;align-items:center;justify-content:center;height:30px;padding:0 12px;border:0;border-radius:var(--dsw-radius-sm,8px);font:inherit;font-size:13px;line-height:1;color:var(--dsw-alias-label-secondary);background:transparent }
+      .rd-tab { display:inline-flex;align-items:center;justify-content:center;height:32px;padding:0 12px;border:0;border-radius:var(--dsw-radius-sm,8px);font:inherit;font-size:13px;line-height:32px;color:var(--dsw-alias-label-secondary);background:transparent }
       .rd-tab:hover { background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary) }
       .rd-tab.on { background:var(--dsw-alias-interactive-bg-active);color:var(--dsw-alias-label-primary);font-weight:500 }
-      .rd-tabstate { margin-left:14px;display:inline-flex;align-items:center;gap:6px;height:30px;font-size:13px;line-height:1;color:var(--dsw-alias-label-secondary) }
+      /* Same font, same 32px line box as the tab: the two texts then sit on one
+         baseline by construction, whatever font the platform resolves. */
+      .rd-tabstate { margin-left:14px;display:inline-flex;align-items:center;gap:6px;height:32px;font:inherit;font-size:13px;line-height:32px;color:var(--dsw-alias-label-secondary) }
+      .rd-tabstate .rd-tabstate-text { font:inherit;font-size:13px;line-height:32px }
       .rd-chead { display:flex;align-items:center;gap:12px;padding:0 0 16px;border-bottom:.5px solid var(--dsw-alias-border-l2) }
       .rd-cavatar { width:40px;height:40px;border-radius:12px }
       .rd-ctitle { font-size:15px;font-weight:600 }
@@ -4444,7 +4447,7 @@ window.__ModuleLoader__.load({
                 title: hostIssue ? hostIssue.title + ' — ' + hostIssue.hint : '',
               },
                 h(Dot, { state: hostIssue ? 'error' : host.status }),
-                h('span', { className: 't' }, hostIssue
+                h('span', { className: 'rd-tabstate-text' }, hostIssue
                   ? hostIssue.title
                   : host.status === 'connected' ? t('已连接') : host.status === 'connecting' ? t('连接中') : host.status === 'error' ? t('连接失败') : t('未连接')),
               ),

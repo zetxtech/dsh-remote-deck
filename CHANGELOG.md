@@ -11,6 +11,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - v1.1.0: full xterm.js terminal, i18n (zh/en), explicit debug switch, virtualized large folders.
 
+## [1.35.5] - 2026-11-15
+
+### Fixed
+
+- **The tab label and the status now share one line box.** They had identical heights and sizes and still disagreed, because
+  one was centred by flex and the other by its line box. Both are 32px line boxes in the same 13px inherited font now, so
+  the two texts sit on one baseline however the platform resolves fonts — and the status text has its own class name
+  (`rd-tabstate-text`) instead of the shared `t`, so no other rule can reach it.
+
 ## [1.35.4] - 2026-11-15
 
 ### Fixed
