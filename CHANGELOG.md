@@ -11,6 +11,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - v1.1.0: full xterm.js terminal, i18n (zh/en), explicit debug switch, virtualized large folders.
 
+## [1.35.6] - 2026-11-15
+
+### Fixed
+
+- **The status sat eight pixels below the tabs, and now it does not.** Chasing font sizes and line heights was the wrong
+  hunt: the tab strip carried a leftover `margin: 0 0 16px`, and with `align-items: center` a child whose *margin* box is
+  16px taller centres half that distance lower — exactly the 8px that survived every font change. The strip's margin is
+  pinned to zero and the row owns the spacing, so the tab label and 已连接 share one baseline by geometry.
+  Measured in a browser rather than reasoned about: tab `top=68`, tabs `top=68`, status `top=68`, delta `0.0`.
+
 ## [1.35.5] - 2026-11-15
 
 ### Fixed

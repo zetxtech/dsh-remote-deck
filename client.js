@@ -1797,19 +1797,24 @@ window.__ModuleLoader__.load({
       .rd-cpane > .rd-cwrap, .rd-cpane > .rd-overview, .rd-cpane > .rd-tabrow { max-width:900px }
       .rd-cpane.term { padding:0 }
       .rd-tabrow { display:flex;align-items:center;gap:8px;margin:0 0 20px }
-      .rd-tabs { display:inline-flex;gap:2px;padding:0;background:transparent }
+      /* Same outer height as the tab and the status: without it, align-items
+         centres three boxes whose line boxes differ and the texts drift apart. */
+      /* margin must be zero: a stray 16px bottom margin on the tab strip makes its
+         margin box taller than its neighbour's, so centring pushes the status 8px
+         down. The row owns the spacing. */
+      .rd-tabs { display:inline-flex;align-items:center;height:32px;gap:2px;margin:0;padding:0;background:transparent }
       /* Flex-centre the label so the tab and the status beside it align by
          geometry, not by whatever the platform's font metrics do to a line box. */
       /* font:inherit matters: a button does not inherit the page font, and a
          system-UI label beside a page-font label sits a few pixels off no matter
          how the boxes are aligned. */
-      .rd-tab { display:inline-flex;align-items:center;justify-content:center;height:32px;padding:0 12px;border:0;border-radius:var(--dsw-radius-sm,8px);font:inherit;font-size:13px;line-height:32px;color:var(--dsw-alias-label-secondary);background:transparent }
+      .rd-tab { display:inline-flex;align-items:center;justify-content:center;height:32px;box-sizing:border-box;padding:0 12px;border:0;border-radius:var(--dsw-radius-sm,8px);font:inherit;font-size:13px;line-height:normal;color:var(--dsw-alias-label-secondary);background:transparent }
       .rd-tab:hover { background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-primary) }
       .rd-tab.on { background:var(--dsw-alias-interactive-bg-active);color:var(--dsw-alias-label-primary);font-weight:500 }
       /* Same font, same 32px line box as the tab: the two texts then sit on one
          baseline by construction, whatever font the platform resolves. */
-      .rd-tabstate { margin-left:14px;display:inline-flex;align-items:center;gap:6px;height:32px;font:inherit;font-size:13px;line-height:32px;color:var(--dsw-alias-label-secondary) }
-      .rd-tabstate .rd-tabstate-text { font:inherit;font-size:13px;line-height:32px }
+      .rd-tabstate { margin-left:14px;display:inline-flex;align-items:center;gap:6px;height:32px;box-sizing:border-box;font:inherit;font-size:13px;line-height:normal;color:var(--dsw-alias-label-secondary) }
+      .rd-tabstate .rd-tabstate-text { font:inherit;font-size:13px;line-height:normal }
       .rd-chead { display:flex;align-items:center;gap:12px;padding:0 0 16px;border-bottom:.5px solid var(--dsw-alias-border-l2) }
       .rd-cavatar { width:40px;height:40px;border-radius:12px }
       .rd-ctitle { font-size:15px;font-weight:600 }
