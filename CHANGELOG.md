@@ -11,6 +11,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - v1.1.0: full xterm.js terminal, i18n (zh/en), explicit debug switch, virtualized large folders.
 
+## [1.36.0] - 2026-11-17
+
+### Changed
+
+- **Editing a host no longer runs the "add" flow.** The dialog fetched `~/.ssh/config` and rendered the whole multi-select
+  import list while you were editing an existing machine — a list whose only action creates *other* connections. Editing
+  now shows just the form, prefilled, with a subtitle that says what saving does; adding keeps the import flow unchanged.
+  A password or passphrase left empty means "keep the stored one", and saving never auto-connects.
+- The host's meta line drops the auth segment (密钥 id_rsa / 密码认证), leaving `user@host:port · OS kernel` — which key a
+  connection uses is configuration, not something the row needs to recite.
+- Closing the dialog restores the side panel to the state it had before: opening a dialog used to leave it closed.
+
 ## [1.35.6] - 2026-11-15
 
 ### Fixed

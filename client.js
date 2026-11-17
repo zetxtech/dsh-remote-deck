@@ -183,9 +183,7 @@ window.__ModuleLoader__.load({
       "字符设备": "Character device",
       "字距（−0.5–2）": "Letter spacing (−0.5–2)",
       "密码": "Password",
-      "密码认证": "Password auth",
       "密钥": "Key",
-      "密钥 {name}": "Key {name}",
       "导入中…": "Importing…",
       "导入后不会自动连接；可在机器卡上点连接，或打开「启动时自动连接」。": "Imported hosts don't connect automatically. Click Connect on a host card, or turn on Auto-connect on startup.",
       "导入选中 {n} 台": "Import {n} selected",
@@ -464,6 +462,7 @@ window.__ModuleLoader__.load({
       "连接正常": "Connected",
       "连接正常 · {n} 台在线": "Connected · {n} online",
       "适用于没有写入 SSH 配置的主机，或需要密码认证时。": "For hosts that aren't in your SSH config, or when you need password auth.",
+      "更新这台机器的连接信息；密码留空表示不修改": "Update this machine's connection details; leave the password blank to keep it",
       "选择一台机器": "Choose a machine",
       "配置里没有可导入的主机（通配符和 Match 会被跳过）。": "No importable hosts in the config (wildcards and Match blocks are skipped).",
       "采样中…": "Sampling…",
@@ -2136,7 +2135,9 @@ window.__ModuleLoader__.load({
     }
 
     function openHostDialog(record) {
-      store.dialog = { kind: 'host', record: record || null }
+      // The modal covers the panel; remember whether it was open so closing the
+      // dialog puts the sidebar back the way the user left it.
+      store.dialog = { kind: 'host', record: record || null, restoreOpen: store.open === true }
       store.open = false
       emit()
     }
@@ -2148,7 +2149,9 @@ window.__ModuleLoader__.load({
     }
 
     function closeDialog() {
+      const restore = store.dialog !== null && store.dialog !== undefined && store.dialog.restoreOpen === true
       store.dialog = null
+      if (restore) store.open = true
       emit()
     }
 
@@ -2193,7 +2196,10 @@ window.__ModuleLoader__.load({
         }
       }, [])
 
-      React.useEffect(() => { void loadConfig() }, [loadConfig])
+      // Importing belongs to "add": an existing host is edited, not re-imported.
+      React.useEffect(() => {
+        if (record === null) void loadConfig()
+      }, [loadConfig, record])
 
       const set = (patch) => setForm((current) => Object.assign({}, current, patch))
 
@@ -2360,12 +2366,14 @@ window.__ModuleLoader__.load({
         h('div', { className: 'rd-mhead3' },
           h('div', null,
             h('div', { className: 'rd-mtitle' }, record ? t('编辑机器') : t('添加机器')),
-            h('div', { className: 'rd-msub' }, t('从 ~/.ssh/config 导入，或手动填写一台 SSH 主机')),
+            h('div', { className: 'rd-msub' }, record !== null
+              ? t('更新这台机器的连接信息；密码留空表示不修改')
+              : t('从 ~/.ssh/config 导入，或手动填写一台 SSH 主机')),
           ),
           h('button', { className: 'rd-mclose', onClick: closeDialog }, h(Icon, { name: 'x', size: 14 })),
         ),
         h('div', { className: 'rd-mbody3' },
-          h('div', { className: 'rd-mleft3' },
+          record === null ? h('div', { className: 'rd-mleft3' },
             h('div', { className: 'rd-formtitle' }, t('从 SSH 配置导入')),
             h('div', { className: 'rd-formsub' }, t('自动识别主机、端口、用户与私钥，已有的连接会跳过。')),
             h('div', { className: 'rd-cfg' },
@@ -2398,7 +2406,7 @@ window.__ModuleLoader__.load({
                     busy === 'import' ? t('导入中…') : t("导入选中 {n} 台", { n: (selectedAliases.length) })),
                 ),
             h('div', { className: 'rd-formhint', style: { marginTop: 'auto' } }, t('导入后不会自动连接；可在机器卡上点连接，或打开「启动时自动连接」。')),
-          ),
+          ) : null,
           editor,
         ),
       )
@@ -4497,8 +4505,6 @@ window.__ModuleLoader__.load({
                 ),
                 h('div', { className: 'rd-cmeta' },
                   h('span', { className: 'mono' }, host.username + '@' + host.host + ':' + host.port),
-                  h('span', null, '·'),
-                  h('span', null, host.authType === 'password' ? t('密码认证') : t("密钥 {name}", { name: ((host.privateKeyPath ? host.privateKeyPath.split(/[\\/]/).pop() : '')) })),
                   host.sys ? h('span', null, '·') : null,
                   host.sys ? h('span', null, host.sys.os + ' ' + shortKernel(host.sys.kernel)) : null,
                 ),
